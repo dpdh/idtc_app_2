@@ -1,0 +1,181 @@
+{
+  "dewanPembina": {
+    "title": "Dewan Pembina",
+    "desc": "Arah strategis, nasihat, dan pengawasan.",
+    "ketua": {
+      "nama": "Nazib Faizal",
+      "peran": "Ketua Dewan Pembina",
+      "foto": "assets/img/people/nazib-faizal.jpg"
+    },
+    "unit": [
+      { "nama": "Dewan Pengarah", "desc": "Arah strategis dan pengawasan.", "icon": "compass" },
+      { "nama": "Dewan Pakar", "desc": "Kajian ilmiah, riset, dan rekomendasi.", "icon": "academic" }
+    ]
+  },
+  "pengurus": {
+    "title": "Pengurus IDTC 2026–2029",
+    "desc": "Kepemimpinan, koordinasi, dan pelaksanaan program.",
+    "ketua": {
+      "nama": "Benni Aguscandra",
+      "peran": "Ketua IDTC",
+      "foto": "assets/img/people/benni-aguscandra.jpg"
+    },
+    "wakil": [
+      {
+        "nama": "Komang Sri Hartini",
+        "peran": "Wakil Ketua I",
+        "foto": "assets/img/people/komang-sri-hartini.jpg"
+      },
+      {
+        "nama": "Syahrudin",
+        "peran": "Wakil Ketua II",
+        "foto": "assets/img/people/syahrudin.jpg"
+      }
+    ],
+    "sekjen": [
+      {
+        "nama": "Muhammad Ihsan",
+        "peran": "Sekretaris Jenderal I",
+        "foto": "assets/img/people/muhammad-ihsan.jpg"
+      },
+      {
+        "nama": "Teguh Fayakun Alif",
+        "peran": "Sekretaris Jenderal II",
+        "foto": "assets/img/people/teguh-fayakun-alif.jpg"
+      },
+      {
+        "nama": "Susi Asiatin",
+        "peran": "Ketua Tim Sekretariat",
+        "foto": "assets/img/people/susi-asiatin.jpg"
+      }
+    ]
+  },
+  "pokja": [
+    {
+      "id": "pokja1",
+      "nomor": 1,
+      "nama": "Standar & Kebijakan",
+      "slogan": "Membangun fondasi tata kelola",
+      "warna": "teal",
+      "banner": "assets/img/pokja/pokja1.jpg",
+      "ketua": {
+        "nama": "Deni Suwardhi",
+        "peran": "Ketua Pokja 1",
+        "foto": "assets/img/people/deni-suwardhi.jpg"
+      },
+      "wakil": [
+        { "nama": "", "peran": "Wakil Ketua Pokja – Pemerintahan", "foto": null },
+        { "nama": "", "peran": "Wakil Ketua Pokja – Swasta/Industri", "foto": null },
+        { "nama": "", "peran": "Wakil Ketua Pokja – Akademisi", "foto": null }
+      ],
+      "fokus": [
+        "Standardisasi Digital Twin",
+        "Data standard & interoperability",
+        "Tata kelola",
+        "Kebijakan & regulasi",
+        "Framework / guideline",
+        "Harmonisasi lintas sektor",
+        "Rekomendasi kebijakan"
+      ],
+      "output": ["Standar", "Guideline", "Framework", "Policy brief"]
+    },
+    {
+      "id": "pokja2",
+      "nomor": 2,
+      "nama": "Pilot Project",
+      "slogan": "Membuktikan melalui implementasi nyata",
+      "warna": "orange",
+      "banner": "assets/img/pokja/pokja2.jpg",
+      "ketua": {
+        "nama": "Tenty Melvianti Legarias",
+        "peran": "Ketua Pokja 2",
+        "foto": "assets/img/people/tenty-melvianti.jpg"
+      },
+      "wakil": [
+        { "nama": "", "peran": "Wakil Ketua Pokja – Pemerintahan", "foto": null },
+        { "nama": "", "peran": "Wakil Ketua Pokja – Swasta/Industri", "foto": null },
+        { "nama": "", "peran": "Wakil Ketua Pokja – Akademisi", "foto": null }
+      ],
+      "fokus": [
+        "Identifikasi pilot project",
+        "Seleksi lokasi/mitra",
+        "Perencanaan pilot",
+        "Integrasi data & teknologi",
+        "Implementasi",
+        "Pengujian",
+        "Evaluasi manfaat/dampak",
+        "Dokumentasi & replikasi"
+      ],
+      "output": [
+        "Pilot project Digital Twin yang nyata dan terukur",
+        "Dokumentasi dan model replikasi"
+      ]
+    },
+    {
+      "id": "pokja3",
+      "nomor": 3,
+      "nama": "SDM & Ekosistem",
+      "slogan": "Membangun kapasitas dan ekosistem",
+      "warna": "purple",
+      "banner": "assets/img/pokja/pokja3.jpg",
+      "ketua": {
+        "nama": "Gilang Widya Wisaksana",
+        "peran": "Ketua Pokja 3",
+        "foto": "assets/img/people/gilang-widya.jpg"
+      },
+      "wakil": [
+        {
+          "nama": "Chintia Dewi",
+          "peran": "Wakil Ketua Pokja – Pemerintahan",
+          "foto": "assets/img/people/chintia-dewi.jpg"
+        },
+        { "nama": "", "peran": "Wakil Ketua Pokja – Swasta/Industri", "foto": null },
+        { "nama": "", "peran": "Wakil Ketua Pokja – Akademisi", "foto": null }
+      ],
+      "fokus": [
+        "Training & workshop",
+        "Sertifikasi",
+        "Knowledge sharing",
+        "Expert session",
+        "Riset & inovasi",
+        "Pengembangan talenta",
+        "Kolaborasi kampus",
+        "Kolaborasi industri",
+        "Pengembangan komunitas"
+      ],
+      "output": ["SDM yang kompeten", "Knowledge & riset", "Ekosistem Digital Twin"]
+    }
+  ],
+  "unitPendukung": [
+    {
+      "id": "sapujagad",
+      "nama": "Tim Sekjen – Sapujagad",
+      "slogan": "Penggerak program & pengembangan IDTC",
+      "banner": "assets/img/pokja/sapujagad.jpg",
+      "fokus": [
+        "Fundraising & sustainability",
+        "Koordinasi program kerja",
+        "Publikasi & branding",
+        "Partnership & networking",
+        "Special task"
+      ]
+    },
+    {
+      "id": "sekretariatan",
+      "nama": "Sekretariatan",
+      "slogan": "Administrasi & dukungan operasional",
+      "banner": "assets/img/pokja/sekretariatan.jpg",
+      "fokus": [
+        "Administrasi",
+        "Surat-menyurat",
+        "Database anggota",
+        "Notulensi",
+        "Dokumentasi organisasi",
+        "Jadwal & agenda",
+        "Dukungan operasional",
+        "Arsip"
+      ],
+      "tujuan": "Tertib administrasi, lancar koordinasi, dan mendukung seluruh kegiatan IDTC."
+    }
+  ]
+}

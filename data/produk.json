@@ -1,0 +1,38 @@
+[
+  {
+    "id": "dt-f-01-klasifikasi-standar",
+    "pokja": "pokja1",
+    "judul": "Kerangka Klasifikasi Standar Digital Twin Indonesia",
+    "kategori": "Framework",
+    "deskripsi": "DT-F-01 — kerangka lima lapisan standar Digital Twin, dari konsep & terminologi hingga tata kelola, lengkap dengan pemilahan adopsi/adaptasi/perlu disusun dan profil implementasi per domain.",
+    "gambar": "assets/img/produk/dt-f-01.jpg",
+    "icon": "guide",
+    "tautan": "https://github.com/idtc-id/standar-dan-panduan/tree/main/panduan/DT-F-01-klasifikasi-standar",
+    "tag": ["framework", "standar", "draf"],
+    "tanggal": "2026-09"
+  },
+  {
+    "id": "pokja2-handbook",
+    "pokja": "pokja2",
+    "judul": "Pokja 2 Handbook",
+    "kategori": "Dokumen",
+    "deskripsi": "Buku pegangan Pokja 2: tujuan, alur kerja, seleksi pilot, dan kebijakan data untuk pilot project Digital Twin.",
+    "gambar": null,
+    "icon": "book",
+    "tautan": "https://github.com/idtc-id/pokja2-handbook",
+    "tag": ["handbook", "kebijakan-data", "pilot"],
+    "tanggal": "2026-09"
+  },
+  {
+    "id": "pilot-template",
+    "pokja": "pokja2",
+    "judul": "Pilot Project Template",
+    "kategori": "Template",
+    "deskripsi": "Template repo standar untuk memulai setiap pilot project Digital Twin: struktur data, dokumentasi arsitektur, KPI, hingga evaluasi dampak.",
+    "gambar": null,
+    "icon": "template",
+    "tautan": "https://github.com/idtc-id/pilot-template",
+    "tag": ["template", "arsitektur", "kpi"],
+    "tanggal": "2026-09"
+  }
+]

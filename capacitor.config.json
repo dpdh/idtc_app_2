@@ -1,0 +1,8 @@
+{
+  "appId": "idtc.mobile",
+  "appName": "IDTC Mobile",
+  "webDir": ".",
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b2530" />
+  <meta name="description" content="IDTC - Indonesia Digital Twin Community" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/img/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=11" />
+  <title>IDTC Mobile</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#home" data-route="home" aria-label="Beranda IDTC">
+        <img src="assets/img/emblem-white.png" alt="" />
+        <span><b>IDTC</b><small>Digital Twin Community</small></span>
+      </a>
+      <a class="auth-link" href="#auth" data-route="auth">Masuk</a>
+      <a class="github-link" href="https://github.com/idtc-id" target="_blank" rel="noreferrer" aria-label="Buka GitHub IDTC">↗</a>
+    </header>
+
+    <main id="app" aria-live="polite">
+      <div class="loading"><span></span><span></span><span></span></div>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navigasi aplikasi">
+      <a href="#home" data-route="home"><span>⌂</span><small>Home</small></a>
+      <a href="#pengurus" data-route="pengurus"><span>♙</span><small>Pengurus</small></a>
+      <a href="#tentang" data-route="tentang"><span>◎</span><small>Tentang</small></a>
+      <a href="#pokja" data-route="pokja"><span>◈</span><small>Pokja</small></a>
+      <a href="#belajar" data-route="belajar"><span>▣</span><small>Belajar</small></a>
+    </nav>
+  </div>
+  <script src="app.js?v=11" type="module"></script>
+</body>
+</html>

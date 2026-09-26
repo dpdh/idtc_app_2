@@ -1,0 +1,10 @@
+{
+  "name": "IDTC Mobile",
+  "short_name": "IDTC",
+  "description": "Indonesia Digital Twin Community",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#fffdf9",
+  "theme_color": "#102f3a",
+  "icons": [{"src":"assets/img/emblem-color.png","sizes":"192x192","type":"image/png"}]
+}

@@ -1,0 +1,178 @@
+{
+  "sumber": "Form Pendaftaran Anggota IDTC",
+  "respons": 254,
+  "namaUnik": 251,
+  "catatan": "Sektor boleh dipilih lebih dari satu, sehingga jumlahnya melebihi total responden.",
+  "ekosistem": [
+    {
+      "nama": "Pemerintah & BUMN",
+      "rincian": "Pemerintah + BUMN + BUMD + Danantara",
+      "jumlah": 144
+    },
+    {
+      "nama": "Swasta & Teknologi",
+      "rincian": "Perusahaan swasta + vendor teknologi + konsultan + EPC",
+      "jumlah": 63
+    },
+    {
+      "nama": "Akademisi & Riset",
+      "rincian": "Perguruan tinggi + lembaga penelitian + mahasiswa",
+      "jumlah": 40
+    },
+    {
+      "nama": "Profesional & lainnya",
+      "rincian": "Profesional/individu dan lainnya",
+      "jumlah": 7
+    }
+  ],
+  "institusi": [
+    {
+      "nama": "Pemerintah Pusat",
+      "jumlah": 67
+    },
+    {
+      "nama": "BUMN",
+      "jumlah": 53
+    },
+    {
+      "nama": "Perguruan Tinggi",
+      "jumlah": 33
+    },
+    {
+      "nama": "Perusahaan Swasta",
+      "jumlah": 31
+    },
+    {
+      "nama": "Pemerintah Daerah",
+      "jumlah": 22
+    },
+    {
+      "nama": "Vendor Teknologi",
+      "jumlah": 16
+    },
+    {
+      "nama": "Konsultan",
+      "jumlah": 14
+    },
+    {
+      "nama": "Profesional/Individu",
+      "jumlah": 6
+    },
+    {
+      "nama": "Mahasiswa",
+      "jumlah": 5
+    },
+    {
+      "nama": "Lainnya",
+      "jumlah": 5
+    },
+    {
+      "nama": "Lembaga Penelitian",
+      "jumlah": 2
+    }
+  ],
+  "sektor": [
+    {
+      "nama": "Geospasial",
+      "jumlah": 95
+    },
+    {
+      "nama": "Infrastruktur",
+      "jumlah": 76
+    },
+    {
+      "nama": "Bangunan/Gedung",
+      "jumlah": 74
+    },
+    {
+      "nama": "Teknologi Informasi",
+      "jumlah": 63
+    },
+    {
+      "nama": "Jalan & Jembatan",
+      "jumlah": 42
+    },
+    {
+      "nama": "Perencanaan Kota",
+      "jumlah": 39
+    },
+    {
+      "nama": "Pemerintahan",
+      "jumlah": 38
+    },
+    {
+      "nama": "Energi",
+      "jumlah": 33
+    },
+    {
+      "nama": "Transportasi",
+      "jumlah": 22
+    },
+    {
+      "nama": "Perkeretaapian",
+      "jumlah": 16
+    },
+    {
+      "nama": "Pendidikan",
+      "jumlah": 16
+    },
+    {
+      "nama": "Pertambangan",
+      "jumlah": 16
+    },
+    {
+      "nama": "Manufaktur",
+      "jumlah": 10
+    },
+    {
+      "nama": "Telekomunikasi",
+      "jumlah": 10
+    },
+    {
+      "nama": "Pertanian",
+      "jumlah": 6
+    }
+  ],
+  "topInstitusi": [
+    {
+      "nama": "Kementerian Pekerjaan Umum",
+      "jumlah": 21
+    },
+    {
+      "nama": "PT Pertamina (Persero)",
+      "jumlah": 14
+    },
+    {
+      "nama": "PT Esri Indonesia",
+      "jumlah": 14
+    },
+    {
+      "nama": "Badan Informasi Geospasial",
+      "jumlah": 13
+    },
+    {
+      "nama": "Kementerian ATR/BPN",
+      "jumlah": 13
+    },
+    {
+      "nama": "PT PP (Persero) Tbk",
+      "jumlah": 9
+    },
+    {
+      "nama": "Institut Teknologi Bandung",
+      "jumlah": 8
+    },
+    {
+      "nama": "PT Adhi Karya (Persero) Tbk",
+      "jumlah": 6
+    },
+    {
+      "nama": "Kementerian PPN/Bappenas",
+      "jumlah": 5
+    },
+    {
+      "nama": "PT Freeport Indonesia",
+      "jumlah": 3
+    }
+  ]
+}

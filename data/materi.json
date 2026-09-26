@@ -1,0 +1,48 @@
+{
+  "repo": "https://github.com/idtc-id/materi-belajar",
+  "handbook": "https://github.com/idtc-id/pokja3-handbook",
+  "jalur": [
+    {
+      "id": "jalur-a",
+      "kode": "A",
+      "nama": "Pengambil Keputusan",
+      "sasaran": "Pimpinan instansi, perencana, pejabat pengadaan",
+      "warna": "teal",
+      "modul": [
+        { "judul": "Pengantar Digital Twin: apa, untuk apa, batasnya", "tingkat": "Dasar", "status": "rencana", "tautan": null },
+        { "judul": "Membaca kebutuhan: kapan Digital Twin bukan jawabannya", "tingkat": "Dasar", "status": "rencana", "tautan": null },
+        { "judul": "Tata kelola & pengadaan Digital Twin", "tingkat": "Kepemimpinan", "status": "rencana", "tautan": null },
+        { "judul": "Mengukur manfaat: KPI dan evaluasi dampak", "tingkat": "Kepemimpinan", "status": "rencana", "tautan": null }
+      ]
+    },
+    {
+      "id": "jalur-b",
+      "kode": "B",
+      "nama": "Praktisi Data & Spasial",
+      "sasaran": "Staf GIS, BIM, dan IT di instansi maupun industri",
+      "warna": "orange",
+      "modul": [
+        { "judul": "Pengantar Digital Twin", "tingkat": "Dasar", "status": "rencana", "tautan": null },
+        { "judul": "Jenis data Digital Twin: 2D, 3D, BIM, point cloud, sensor", "tingkat": "Dasar", "status": "rencana", "tautan": null },
+        { "judul": "Standar & interoperabilitas", "tingkat": "Menengah", "status": "rencana", "tautan": null },
+        { "judul": "Reality capture: dari akuisisi ke model", "tingkat": "Menengah", "status": "rencana", "tautan": null },
+        { "judul": "Integrasi BIM–GIS", "tingkat": "Menengah", "status": "rencana", "tautan": null },
+        { "judul": "Praktik: membangun Digital Twin sederhana satu kawasan", "tingkat": "Menengah", "status": "rencana", "tautan": null }
+      ]
+    },
+    {
+      "id": "jalur-c",
+      "kode": "C",
+      "nama": "Pengembang & Arsitek Sistem",
+      "sasaran": "Pengembang perangkat lunak dan arsitek solusi",
+      "warna": "purple",
+      "modul": [
+        { "judul": "Arsitektur platform Digital Twin", "tingkat": "Lanjutan", "status": "rencana", "tautan": null },
+        { "judul": "Pipeline data & otomasi", "tingkat": "Lanjutan", "status": "rencana", "tautan": null },
+        { "judul": "Sensor/IoT dan data waktu nyata", "tingkat": "Lanjutan", "status": "rencana", "tautan": null },
+        { "judul": "AI untuk Digital Twin", "tingkat": "Lanjutan", "status": "rencana", "tautan": null },
+        { "judul": "Praktik: membangun layanan data Digital Twin", "tingkat": "Lanjutan", "status": "rencana", "tautan": null }
+      ]
+    }
+  ]
+}
