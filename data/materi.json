@@ -9,10 +9,10 @@
       "sasaran": "Pimpinan instansi, perencana, pejabat pengadaan",
       "warna": "teal",
       "modul": [
-        { "judul": "Pengantar Digital Twin: apa, untuk apa, batasnya", "tingkat": "Dasar", "status": "rencana", "tautan": null },
-        { "judul": "Membaca kebutuhan: kapan Digital Twin bukan jawabannya", "tingkat": "Dasar", "status": "rencana", "tautan": null },
-        { "judul": "Tata kelola & pengadaan Digital Twin", "tingkat": "Kepemimpinan", "status": "rencana", "tautan": null },
-        { "judul": "Mengukur manfaat: KPI dan evaluasi dampak", "tingkat": "Kepemimpinan", "status": "rencana", "tautan": null }
+        { "judul": "Pengantar Digital Twin: apa, untuk apa, batasnya", "tingkat": "Dasar", "status": "rencana", "tautan": null, "ringkasan": "Memahami definisi, tujuan, komponen, dan batas Digital Twin agar ekspektasi program tetap realistis.", "fokus": ["Konsep dasar", "Use case", "Batasan"], "hasil": "Mampu menjelaskan kapan Digital Twin memberi nilai tambah." },
+        { "judul": "Membaca kebutuhan: kapan Digital Twin bukan jawabannya", "tingkat": "Dasar", "status": "rencana", "tautan": null, "ringkasan": "Menganalisis masalah organisasi sebelum memilih teknologi Digital Twin sebagai solusi.", "fokus": ["Rumusan masalah", "Alternatif solusi", "Kelayakan"], "hasil": "Mampu menyusun keputusan go/no-go berbasis kebutuhan." },
+        { "judul": "Tata kelola & pengadaan Digital Twin", "tingkat": "Kepemimpinan", "status": "rencana", "tautan": null, "ringkasan": "Menyusun peran, kebijakan data, model pengadaan, dan mekanisme pengawasan program.", "fokus": ["Tata kelola", "Pengadaan", "Akuntabilitas"], "hasil": "Mampu menyiapkan kerangka tata kelola dan pengadaan." },
+        { "judul": "Mengukur manfaat: KPI dan evaluasi dampak", "tingkat": "Kepemimpinan", "status": "rencana", "tautan": null, "ringkasan": "Menerjemahkan tujuan Digital Twin menjadi KPI, indikator manfaat, dan evaluasi dampak yang terukur.", "fokus": ["KPI", "Baseline", "Evaluasi dampak"], "hasil": "Mampu membuat rancangan pengukuran manfaat." }
       ]
     },
     {
@@ -22,12 +22,12 @@
       "sasaran": "Staf GIS, BIM, dan IT di instansi maupun industri",
       "warna": "orange",
       "modul": [
-        { "judul": "Pengantar Digital Twin", "tingkat": "Dasar", "status": "rencana", "tautan": null },
-        { "judul": "Jenis data Digital Twin: 2D, 3D, BIM, point cloud, sensor", "tingkat": "Dasar", "status": "rencana", "tautan": null },
-        { "judul": "Standar & interoperabilitas", "tingkat": "Menengah", "status": "rencana", "tautan": null },
-        { "judul": "Reality capture: dari akuisisi ke model", "tingkat": "Menengah", "status": "rencana", "tautan": null },
-        { "judul": "Integrasi BIM–GIS", "tingkat": "Menengah", "status": "rencana", "tautan": null },
-        { "judul": "Praktik: membangun Digital Twin sederhana satu kawasan", "tingkat": "Menengah", "status": "rencana", "tautan": null }
+        { "judul": "Pengantar Digital Twin", "tingkat": "Dasar", "status": "rencana", "tautan": null, "ringkasan": "Mengenal siklus hidup Digital Twin dari data, model, analitik, hingga keputusan.", "fokus": ["Siklus hidup", "Komponen sistem", "Contoh penerapan"], "hasil": "Mampu memetakan komponen Digital Twin pada sebuah kawasan." },
+        { "judul": "Jenis data Digital Twin: 2D, 3D, BIM, point cloud, sensor", "tingkat": "Dasar", "status": "rencana", "tautan": null, "ringkasan": "Membandingkan karakteristik, kualitas, format, dan kebutuhan penggunaan berbagai jenis data.", "fokus": ["Data 2D/3D", "BIM", "Sensor"], "hasil": "Mampu memilih data yang sesuai untuk kebutuhan analisis." },
+        { "judul": "Standar & interoperabilitas", "tingkat": "Menengah", "status": "rencana", "tautan": null, "ringkasan": "Menerapkan standar pertukaran data, metadata, koordinat, dan kontrak antarsistem.", "fokus": ["Standar terbuka", "Metadata", "Interoperabilitas"], "hasil": "Mampu menyusun kebutuhan interoperabilitas sebuah proyek." },
+        { "judul": "Reality capture: dari akuisisi ke model", "tingkat": "Menengah", "status": "rencana", "tautan": null, "ringkasan": "Mengikuti alur pemotretan, pemindaian, point cloud, pembersihan data, hingga model 3D.", "fokus": ["Akuisisi", "Point cloud", "Quality control"], "hasil": "Mampu membuat alur kerja reality capture yang terdokumentasi." },
+        { "judul": "Integrasi BIM–GIS", "tingkat": "Menengah", "status": "rencana", "tautan": null, "ringkasan": "Menghubungkan detail aset dari BIM dengan konteks lokasi dan jaringan dari GIS.", "fokus": ["Koordinat", "Aset", "Analisis kawasan"], "hasil": "Mampu merancang skema integrasi BIM dan GIS." },
+        { "judul": "Praktik: membangun Digital Twin sederhana satu kawasan", "tingkat": "Menengah", "status": "rencana", "tautan": null, "ringkasan": "Latihan terpandu untuk menggabungkan data kawasan, model aset, dashboard, dan skenario sederhana.", "fokus": ["Data kawasan", "Dashboard", "Skenario"], "hasil": "Menghasilkan prototipe Digital Twin sederhana yang dapat dipresentasikan." }
       ]
     },
     {
@@ -37,11 +37,11 @@
       "sasaran": "Pengembang perangkat lunak dan arsitek solusi",
       "warna": "purple",
       "modul": [
-        { "judul": "Arsitektur platform Digital Twin", "tingkat": "Lanjutan", "status": "rencana", "tautan": null },
-        { "judul": "Pipeline data & otomasi", "tingkat": "Lanjutan", "status": "rencana", "tautan": null },
-        { "judul": "Sensor/IoT dan data waktu nyata", "tingkat": "Lanjutan", "status": "rencana", "tautan": null },
-        { "judul": "AI untuk Digital Twin", "tingkat": "Lanjutan", "status": "rencana", "tautan": null },
-        { "judul": "Praktik: membangun layanan data Digital Twin", "tingkat": "Lanjutan", "status": "rencana", "tautan": null }
+        { "judul": "Arsitektur platform Digital Twin", "tingkat": "Lanjutan", "status": "rencana", "tautan": null, "ringkasan": "Merancang lapisan ingest, penyimpanan, model, analitik, visualisasi, dan governance.", "fokus": ["Arsitektur", "API", "Keamanan"], "hasil": "Mampu membuat diagram arsitektur platform." },
+        { "judul": "Pipeline data & otomasi", "tingkat": "Lanjutan", "status": "rencana", "tautan": null, "ringkasan": "Membangun pipeline data yang dapat diulang dari validasi, transformasi, orkestrasi, hingga publikasi.", "fokus": ["ETL/ELT", "Orkestrasi", "Monitoring"], "hasil": "Mampu merancang pipeline data yang dapat dipantau." },
+        { "judul": "Sensor/IoT dan data waktu nyata", "tingkat": "Lanjutan", "status": "rencana", "tautan": null, "ringkasan": "Mengelola data sensor, protokol pesan, kualitas telemetry, dan kebutuhan latensi waktu nyata.", "fokus": ["IoT", "Telemetry", "Streaming"], "hasil": "Mampu memilih pola integrasi data waktu nyata." },
+        { "judul": "AI untuk Digital Twin", "tingkat": "Lanjutan", "status": "rencana", "tautan": null, "ringkasan": "Mengenal pemakaian AI untuk prediksi, deteksi anomali, optimasi, dan dukungan keputusan.", "fokus": ["Prediksi", "Anomali", "Responsible AI"], "hasil": "Mampu mengidentifikasi use case AI yang layak diuji." },
+        { "judul": "Praktik: membangun layanan data Digital Twin", "tingkat": "Lanjutan", "status": "rencana", "tautan": null, "ringkasan": "Proyek akhir untuk membuat layanan data terdokumentasi dengan endpoint, skema, kontrol akses, dan observability.", "fokus": ["Layanan data", "Dokumentasi", "Deployment"], "hasil": "Menghasilkan rancangan layanan data Digital Twin siap dikembangkan." }
       ]
     }
   ]

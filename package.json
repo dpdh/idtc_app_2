@@ -5,15 +5,16 @@
   "description": "IDTC Mobile - Indonesia Digital Twin Community",
   "type": "module",
   "scripts": {
-    "cap:init": "cap init IDTC Mobile idtc.mobile --web-dir .",
-    "cap:add:android": "cap add android",
-    "cap:add:ios": "cap add ios",
-    "cap:sync": "cap sync",
+    "build:web": "node build-web.mjs",
+    "cap:init": "cap init IDTC Mobile idtc.mobile --web-dir www",
+    "cap:add:android": "npm run build:web && cap add android",
+    "cap:add:ios": "npm run build:web && cap add ios",
+    "cap:sync": "npm run build:web && cap sync",
     "android:open": "cap open android",
-    "android:run": "cap run android",
+    "android:run": "npm run cap:sync && cap run android",
     "android:build": "npm run cap:sync && cd android && gradlew.bat assembleDebug",
     "ios:open": "cap open ios",
-    "ios:run": "cap run ios"
+    "ios:run": "npm run cap:sync && cap run ios"
   },
   "dependencies": {
     "@capacitor/core": "^7.4.0"
