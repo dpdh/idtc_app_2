@@ -1,0 +1,384 @@
+{
+  "version": 1,
+  "assistant": "TwiniAI",
+  "entries": [
+    {
+      "id": "definisi",
+      "category": "Konsep dasar",
+      "question": "Apa itu Digital Twin?",
+      "keywords": ["pengertian", "definisi", "representasi digital", "kembaran digital", "model virtual", "realitas nyata"],
+      "answer": "Digital Twin adalah representasi digital dari aset, proses, atau sistem nyata yang terhubung dengan data dan konteksnya. Tingkat koneksi dan pembaruan datanya ditentukan oleh tujuan, kemampuan sistem, dan tata kelola; tidak semua Digital Twin harus real-time atau berbentuk 3D."
+    },
+    {
+      "id": "manfaat",
+      "category": "Konsep dasar",
+      "question": "Apa manfaat utama Digital Twin?",
+      "keywords": ["manfaat", "kegunaan", "nilai", "tujuan", "keuntungan", "efisiensi", "keputusan"],
+      "answer": "Digital Twin membantu menyatukan konteks data, memahami kondisi, menguji skenario, dan mendukung keputusan operasional atau perencanaan. Manfaatnya perlu dibuktikan terhadap masalah dan indikator yang jelas, bukan diasumsikan hanya karena model 3D tersedia."
+    },
+    {
+      "id": "komponen",
+      "category": "Konsep dasar",
+      "question": "Apa saja komponen Digital Twin?",
+      "keywords": ["komponen", "elemen", "bagian", "model", "data", "integrasi", "visualisasi", "sensor"],
+      "answer": "Komponen umumnya meliputi objek atau proses nyata, representasi/model digital, data dan integrasi, konteks/identitas aset, analitik atau simulasi, antarmuka pengguna, serta tata kelola dan keamanan. Susunannya berbeda menurut use case; sensor bukan syarat wajib untuk setiap Digital Twin."
+    },
+    {
+      "id": "3d-bim-gis",
+      "category": "Konsep dasar",
+      "question": "Apa beda Digital Twin, model 3D, BIM, dan GIS?",
+      "keywords": ["beda", "perbedaan", "3d", "model 3d", "bim", "gis", "peta", "bangunan informasi"],
+      "answer": "Model 3D menggambarkan bentuk. BIM mengelola informasi aset/bangunan sepanjang siklus hidup, sedangkan GIS mengelola informasi yang memiliki lokasi dan konteks geografis. Digital Twin adalah pendekatan sistem yang menghubungkan representasi dengan data, proses, dan keputusan; ia dapat memakai BIM, GIS, model 3D, atau semuanya."
+    },
+    {
+      "id": "real-time",
+      "category": "Konsep dasar",
+      "question": "Apakah Digital Twin harus real-time?",
+      "keywords": ["waktu nyata", "real time", "realtime", "langsung", "sinkron", "pembaruan data", "frekuensi"],
+      "answer": "Tidak. Frekuensi pembaruan harus mengikuti kebutuhan keputusan dan risiko operasional. Pembaruan berkala, per kejadian, atau harian bisa memadai; real-time menambah biaya integrasi, jaringan, komputasi, dan operasi."
+    },
+    {
+      "id": "tingkat-koneksi",
+      "category": "Konsep dasar",
+      "question": "Apa beda digital model, digital shadow, dan digital twin?",
+      "keywords": ["digital model", "digital shadow", "tingkat koneksi", "satu arah", "dua arah", "otomatis"],
+      "answer": "Istilah ini sering dipakai untuk menjelaskan tingkat koneksi. Digital model biasanya tidak memiliki aliran data otomatis; digital shadow menerima pembaruan satu arah dari objek nyata; digital twin memiliki koneksi data yang lebih erat dan dapat mendukung umpan balik atau tindakan terkontrol. Definisi rinci bisa berbeda antar kerangka, jadi nyatakan kemampuan aktual sistem."
+    },
+    {
+      "id": "cakupan",
+      "category": "Konsep dasar",
+      "question": "Apa jenis Digital Twin berdasarkan cakupannya?",
+      "keywords": ["jenis", "tingkat", "cakupan", "aset", "produk", "proses", "sistem", "kota", "kawasan"],
+      "answer": "Cakupan dapat berupa komponen, aset/produk, proses, fasilitas, jaringan sistem, kawasan/kota, atau gabungan beberapa domain. Mulailah dari batas sistem dan keputusan yang ingin didukung; cakupan besar tanpa data dan pemilik yang jelas sulit dipelihara."
+    },
+    {
+      "id": "arsitektur",
+      "category": "Teknologi dan data",
+      "question": "Bagaimana arsitektur Digital Twin disusun?",
+      "keywords": ["arsitektur", "lapisan", "platform", "ingest", "penyimpanan", "analitik", "api", "dashboard"],
+      "answer": "Arsitektur lazim mencakup sumber data, ingest/validasi, penyimpanan dan katalog, integrasi/API, model aset atau domain, analitik/simulasi, visualisasi, keamanan, dan operasi. Tidak harus satu platform monolitik. Dokumentasikan aliran data, pemilik setiap komponen, antarmuka, dan kebutuhan layanan."
+    },
+    {
+      "id": "sumber-data",
+      "category": "Teknologi dan data",
+      "question": "Data apa yang dapat digunakan untuk Digital Twin?",
+      "keywords": ["sumber data", "data", "bim", "gis", "sensor", "iot", "buku aset", "telemetri", "citra"],
+      "answer": "Sumbernya dapat mencakup inventaris aset, BIM/CAD, GIS, sensor/IoT, telemetry, sistem operasi, inspeksi, citra atau point cloud, cuaca, dan data administrasi. Pilih sumber berdasarkan kebutuhan, hak akses, kualitas, frekuensi, format, dan biaya pemeliharaan."
+    },
+    {
+      "id": "iot-sensor",
+      "category": "Teknologi dan data",
+      "question": "Apakah Digital Twin selalu memerlukan sensor IoT?",
+      "keywords": ["iot", "sensor", "perangkat", "telemetri", "tanpa sensor", "data lapangan"],
+      "answer": "Tidak. Twin dapat dimulai dari data inventaris, inspeksi, jadwal, atau pembaruan manual/berkala. Sensor berguna ketika pengamatan kontinu memberi nilai keputusan yang lebih besar daripada biaya pemasangan, konektivitas, kalibrasi, keamanan, dan penggantian perangkat."
+    },
+    {
+      "id": "bim-gis-integrasi",
+      "category": "Teknologi dan data",
+      "question": "Bagaimana mengintegrasikan BIM dan GIS?",
+      "keywords": ["integrasi bim gis", "bim gis", "koordinat", "georeferensi", "aset", "konteks lokasi"],
+      "answer": "Tetapkan sistem koordinat dan transformasi, identitas aset yang konsisten, pemetaan atribut, tingkat detail, versi, dan aturan sinkronisasi. Uji pada beberapa aset nyata lebih dulu. Integrasi bukan sekadar menumpuk model; konteks lokasi dan makna atribut harus tetap terjaga."
+    },
+    {
+      "id": "koordinat",
+      "category": "Teknologi dan data",
+      "question": "Mengapa sistem koordinat penting?",
+      "keywords": ["sistem koordinat", "crs", "proyeksi", "datum", "epsg", "geospasial", "lokasi"],
+      "answer": "Sistem koordinat menentukan cara posisi ditafsirkan. CRS, datum, proyeksi, satuan, dan transformasi yang tidak konsisten dapat menggeser aset atau menghasilkan analisis jarak dan luas yang keliru. Catat CRS sumber dan target dalam metadata serta validasi titik kontrol."
+    },
+    {
+      "id": "identitas-aset",
+      "category": "Teknologi dan data",
+      "question": "Bagaimana menghubungkan data dengan aset yang benar?",
+      "keywords": ["identitas aset", "id aset", "asset id", "metadata", "master data", "identifier", "ontologi"],
+      "answer": "Gunakan pengenal aset yang stabil dan disepakati lintas sistem, bukan nama tampilan yang mudah berubah. Simpan metadata seperti tipe, lokasi, pemilik, sumber, waktu berlaku, versi, kualitas, dan hubungan antar aset; dokumentasikan aturan pemetaan ID lama ke ID baru."
+    },
+    {
+      "id": "interoperabilitas",
+      "category": "Standar",
+      "question": "Apa arti interoperabilitas dalam Digital Twin?",
+      "keywords": ["interoperabilitas", "interoperability", "pertukaran data", "format terbuka", "integrasi", "standar terbuka"],
+      "answer": "Interoperabilitas adalah kemampuan sistem dan organisasi bertukar serta menggunakan data dengan makna yang tetap dipahami. Ia membutuhkan kesepakatan pada format, skema, identitas, metadata, koordinat, API, hak akses, dan proses tata kelola; format file saja tidak cukup."
+    },
+    {
+      "id": "dt-f-01",
+      "category": "Standar",
+      "question": "Apa itu DT-F-01 dari IDTC?",
+      "keywords": ["dt-f-01", "klasifikasi standar", "kerangka standar", "panduan idtc", "lima lapisan"],
+      "answer": "DT-F-01 adalah kerangka klasifikasi standar Digital Twin Indonesia yang tercatat pada katalog produk IDTC. Kerangka tersebut membantu menata kebutuhan standar per lapisan serta pilihan adopsi, adaptasi, atau penyusunan. Periksa repositori dan versi dokumen terbaru untuk cakupan serta statusnya; jangan menganggapnya otomatis sebagai regulasi yang mengikat."
+    },
+    {
+      "id": "contoh-standar",
+      "category": "Standar",
+      "question": "Standar terbuka apa yang dapat dipertimbangkan?",
+      "keywords": ["ifc", "citygml", "ogc", "sensorthings", "3d tiles", "standar", "format", "openapi"],
+      "answer": "Contoh yang mungkin relevan antara lain IFC untuk pertukaran informasi bangunan, CityGML untuk model kota, OGC SensorThings API untuk data sensor, 3D Tiles untuk streaming konten geospasial 3D, dan OpenAPI untuk kontrak API. Pilih berdasarkan use case dan profil versi yang disepakati; tidak ada satu standar yang menyelesaikan seluruh integrasi."
+    },
+    {
+      "id": "twin-kota",
+      "category": "Penerapan",
+      "question": "Apa itu Digital Twin kota?",
+      "keywords": ["kota", "urban twin", "kawasan", "smart city", "tata ruang", "perkotaan"],
+      "answer": "Digital Twin kota menghubungkan representasi dan data lintas aset atau layanan perkotaan untuk mendukung keputusan tertentu, misalnya tata ruang, banjir, transportasi, atau operasi aset. Ia bukan sekadar visualisasi seluruh kota; batas data, skala, pemilik, dan kewenangan harus jelas."
+    },
+    {
+      "id": "twin-bangunan",
+      "category": "Penerapan",
+      "question": "Bagaimana Digital Twin bangunan digunakan?",
+      "keywords": ["bangunan", "gedung", "building twin", "bim", "hvac", "energi gedung", "operasi fasilitas"],
+      "answer": "Twin bangunan dapat menghubungkan BIM/as-built, inventaris, jadwal pemeliharaan, sistem HVAC, energi, okupansi, dan inspeksi. Mulailah dari tujuan operasi yang terukur seperti kondisi aset atau energi, lalu tetapkan siapa yang memperbarui data setelah perubahan bangunan."
+    },
+    {
+      "id": "infrastruktur",
+      "category": "Penerapan",
+      "question": "Apa contoh Digital Twin infrastruktur?",
+      "keywords": ["infrastruktur", "jalan", "jembatan", "air", "utilitas", "aset publik", "inspeksi"],
+      "answer": "Contohnya dapat berupa jaringan jalan, jembatan, air, drainase, energi, atau fasilitas publik yang menghubungkan lokasi, kondisi, inspeksi, dan riwayat pemeliharaan. Nilai praktisnya berasal dari prioritas risiko dan intervensi yang lebih baik, bukan dari model visual saja."
+    },
+    {
+      "id": "manufaktur",
+      "category": "Penerapan",
+      "question": "Bagaimana Digital Twin dipakai di manufaktur?",
+      "keywords": ["manufaktur", "pabrik", "produksi", "mesin", "predictive maintenance", "kualitas produksi"],
+      "answer": "Di manufaktur, Digital Twin dapat menghubungkan mesin, lini produksi, kondisi operasi, kualitas, dan jadwal pemeliharaan. Use case seperti prediksi downtime atau simulasi kapasitas harus diuji terhadap baseline dan divalidasi operator sebelum dipakai untuk keputusan."
+    },
+    {
+      "id": "kesehatan",
+      "category": "Penerapan",
+      "question": "Apakah Digital Twin dapat diterapkan di kesehatan?",
+      "keywords": ["kesehatan", "rumah sakit", "pasien", "medis", "klinis", "privasi kesehatan"],
+      "answer": "Penerapan dapat berfokus pada operasi fasilitas, alur kapasitas, perangkat, atau penelitian. Twin yang melibatkan data pasien memiliki risiko privasi dan keselamatan tinggi: perlu dasar pemrosesan yang sah, pembatasan akses, validasi klinis, audit, dan pengawasan tenaga profesional."
+    },
+    {
+      "id": "bencana-banjir",
+      "category": "Penerapan",
+      "question": "Bagaimana Digital Twin membantu banjir dan bencana?",
+      "keywords": ["banjir", "bencana", "risiko", "mitigasi", "evakuasi", "hidrologi", "simulasi bencana"],
+      "answer": "Twin dapat menggabungkan topografi, drainase, curah hujan, muka air, aset kritis, dan skenario untuk membantu analisis risiko atau koordinasi. Hasil simulasi bukan ramalan pasti; gunakan kalibrasi, ketidakpastian, sumber data, dan prosedur respons yang disahkan otoritas."
+    },
+    {
+      "id": "transportasi",
+      "category": "Penerapan",
+      "question": "Apa manfaat Digital Twin untuk transportasi?",
+      "keywords": ["transportasi", "lalu lintas", "jalan", "angkutan", "mobilitas", "kemacetan", "rute"],
+      "answer": "Twin transportasi dapat menyatukan jaringan, volume lalu lintas, layanan angkutan, gangguan, dan kondisi aset untuk menguji skenario atau mengelola operasi. Definisikan metrik seperti waktu tempuh, keselamatan, reliabilitas, atau aksesibilitas dan periksa dampak antar kelompok pengguna."
+    },
+    {
+      "id": "lingkungan",
+      "category": "Penerapan",
+      "question": "Bagaimana Digital Twin mendukung lingkungan dan iklim?",
+      "keywords": ["lingkungan", "iklim", "emisi", "energi", "kualitas udara", "ekosistem", "keberlanjutan"],
+      "answer": "Twin lingkungan dapat menghubungkan observasi, sensor, model spasial, dan skenario untuk mendukung pemantauan atau perencanaan. Nyatakan resolusi, rentang waktu, ketidakpastian, dan keterbatasan model agar hasil tidak ditafsirkan melampaui kualitas datanya."
+    },
+    {
+      "id": "ai",
+      "category": "Teknologi",
+      "question": "Apa peran AI dalam Digital Twin?",
+      "keywords": ["ai", "kecerdasan buatan", "machine learning", "prediksi", "anomali", "optimasi", "responsible ai"],
+      "answer": "AI dapat membantu prediksi, deteksi anomali, klasifikasi, optimasi, atau antarmuka bahasa. AI bukan syarat Digital Twin. Validasi model terhadap data independen, pantau perubahan kinerja, jelaskan batas penggunaan, dan sediakan pemeriksaan manusia untuk keputusan berdampak tinggi."
+    },
+    {
+      "id": "simulasi",
+      "category": "Teknologi",
+      "question": "Apa beda Digital Twin dan simulasi?",
+      "keywords": ["simulasi", "scenario", "what if", "skenario", "model matematika", "kalibrasi"],
+      "answer": "Simulasi menjalankan model untuk mengeksplorasi perilaku atau skenario. Digital Twin dapat menyediakan konteks dan data aktual bagi simulasi, tetapi tidak setiap Digital Twin memiliki mesin simulasi. Keandalan skenario bergantung pada asumsi, kalibrasi, dan validasi model."
+    },
+    {
+      "id": "kualitas-data",
+      "category": "Teknologi dan data",
+      "question": "Bagaimana menilai kualitas data Digital Twin?",
+      "keywords": ["kualitas data", "akurasi", "kelengkapan", "konsistensi", "ketepatan waktu", "validasi", "lineage"],
+      "answer": "Nilai kelengkapan, akurasi, konsistensi, ketepatan waktu, resolusi, cakupan, dan kesesuaian terhadap keputusan. Simpan sumber, waktu observasi, metode pengukuran, transformasi, versi, dan status validasi sehingga pengguna dapat menilai keterbatasan data."
+    },
+    {
+      "id": "pembaruan-data",
+      "category": "Teknologi dan data",
+      "question": "Seberapa sering data Digital Twin harus diperbarui?",
+      "keywords": ["update", "frekuensi pembaruan", "jadwal data", "latensi", "streaming", "harian", "berkala"],
+      "answer": "Tentukan frekuensi per jenis data berdasarkan umur informasi yang masih berguna bagi keputusan. Data aset statis mungkin cukup diperbarui saat ada perubahan, sedangkan telemetry operasi bisa lebih sering. Tetapkan target latensi, penanganan data terlambat, dan pemantauan kegagalan."
+    },
+    {
+      "id": "privasi",
+      "category": "Keamanan dan tata kelola",
+      "question": "Bagaimana menjaga privasi dalam Digital Twin?",
+      "keywords": ["privasi", "privacy", "data pribadi", "personal data", "pasien", "anonimisasi", "persetujuan"],
+      "answer": "Kumpulkan hanya data yang diperlukan, tetapkan tujuan dan dasar pemrosesan, minimalkan atau agregasikan data pribadi, batasi akses, tentukan masa simpan, dan dokumentasikan pembagian data. Lakukan penilaian risiko dan ikuti hukum serta kebijakan yang berlaku sebelum menghubungkan sumber baru."
+    },
+    {
+      "id": "keamanan-siber",
+      "category": "Keamanan dan tata kelola",
+      "question": "Apa langkah keamanan siber untuk Digital Twin?",
+      "keywords": ["keamanan", "cybersecurity", "siber", "ancaman", "kontrol akses", "enkripsi", "jaringan", "backup"],
+      "answer": "Terapkan inventaris aset dan ancaman, autentikasi kuat, hak akses minimum, segmentasi jaringan, enkripsi sesuai risiko, pengelolaan kunci, patching, logging, backup, pengujian pemulihan, dan respons insiden. Pisahkan jalur analitik dari kendali operasional bila kegagalan dapat berdampak fisik."
+    },
+    {
+      "id": "kepemilikan-data",
+      "category": "Keamanan dan tata kelola",
+      "question": "Siapa pemilik dan pengelola data Digital Twin?",
+      "keywords": ["pemilik data", "kepemilikan", "data owner", "data steward", "hak data", "izin data", "berbagi data"],
+      "answer": "Pemilik atau pengendali data ditentukan oleh peran, kontrak, kebijakan, dan hukum, bukan otomatis oleh platform Digital Twin. Tetapkan data owner, steward, custodian, hak penggunaan, tujuan, kualitas minimum, retensi, dan prosedur koreksi dalam perjanjian yang terdokumentasi."
+    },
+    {
+      "id": "tata-kelola",
+      "category": "Keamanan dan tata kelola",
+      "question": "Apa yang dimaksud tata kelola Digital Twin?",
+      "keywords": ["tata kelola", "governance", "peran", "akuntabilitas", "kebijakan", "pemilik", "pengawasan"],
+      "answer": "Tata kelola menetapkan tujuan, kewenangan, peran, kualitas data, akses, keamanan, standar, keputusan, pembiayaan, dan akuntabilitas sepanjang siklus hidup. Tata kelola perlu melibatkan pemilik aset/data, pengguna, operator, keamanan, hukum, dan pihak terdampak sesuai konteks."
+    },
+    {
+      "id": "regulasi-indonesia",
+      "category": "Keamanan dan tata kelola",
+      "question": "Apakah ada regulasi Digital Twin di Indonesia?",
+      "keywords": ["regulasi", "peraturan", "indonesia", "hukum", "kebijakan", "standar nasional", "otoritas"],
+      "answer": "Kewajiban dapat berasal dari aturan sektor, data, pengadaan, keamanan, bangunan, geospasial, atau privasi yang relevan; cakupannya tergantung jenis data dan use case. Periksa peraturan yang berlaku dan konsultasikan unit hukum/otoritas terkait. Kerangka komunitas atau standar teknis tidak otomatis menjadi peraturan pemerintah."
+    },
+    {
+      "id": "biaya",
+      "category": "Perencanaan",
+      "question": "Berapa biaya membuat Digital Twin?",
+      "keywords": ["biaya", "harga", "anggaran", "investasi", "tco", "lisensi", "infrastruktur", "operasi"],
+      "answer": "Tidak ada harga tunggal. Biaya dipengaruhi cakupan aset, akuisisi dan pembersihan data, integrasi, sensor, lisensi/komputasi, keamanan, tenaga ahli, validasi, serta operasi dan pembaruan. Hitung total biaya siklus hidup dan bandingkan beberapa opsi dengan asumsi yang sama."
+    },
+    {
+      "id": "roi-kpi",
+      "category": "Perencanaan",
+      "question": "Bagaimana mengukur ROI atau keberhasilan Digital Twin?",
+      "keywords": ["roi", "return on investment", "kpi", "keberhasilan", "manfaat", "baseline", "dampak", "nilai bisnis"],
+      "answer": "Tetapkan baseline dan indikator sebelum implementasi, misalnya waktu inspeksi, downtime, energi, biaya pemeliharaan, waktu respons, keselamatan, atau mutu layanan. Bandingkan hasil terhadap baseline dan biaya operasi; pisahkan kontribusi Digital Twin dari faktor lain dan laporkan keterbatasan evaluasi."
+    },
+    {
+      "id": "mulai-pilot",
+      "category": "Perencanaan",
+      "question": "Bagaimana memulai pilot Digital Twin?",
+      "keywords": ["mulai", "langkah pertama", "pilot", "proyek", "prototipe", "go no go", "baseline", "uji"],
+      "answer": "Mulai dengan masalah dan pengguna yang jelas, pilih satu aset/proses yang terukur, tetapkan baseline dan indikator, petakan data serta pemiliknya, uji akses dan kualitas, rancang arsitektur minimum, lalu evaluasi manfaat, risiko, dan biaya operasi. Tentukan kriteria lanjut, ubah, atau berhenti sebelum pilot dimulai."
+    },
+    {
+      "id": "pilih-use-case",
+      "category": "Perencanaan",
+      "question": "Bagaimana memilih use case Digital Twin yang tepat?",
+      "keywords": ["use case", "kasus penggunaan", "prioritas", "kelayakan", "masalah", "dampak", "kesiapan data"],
+      "answer": "Nilai besarnya masalah, frekuensi keputusan, dampak yang dapat diukur, ketersediaan dan hak data, kemampuan tim, risiko, biaya siklus hidup, serta kemungkinan integrasi. Bandingkan dengan solusi yang lebih sederhana; Digital Twin layak dipilih hanya bila memberi nilai tambahan yang dapat diuji."
+    },
+    {
+      "id": "bukan-solusi",
+      "category": "Perencanaan",
+      "question": "Kapan Digital Twin bukan solusi yang tepat?",
+      "keywords": ["bukan solusi", "tidak perlu", "kapan tidak", "alternatif", "dashboard", "sistem informasi", "masalah sederhana"],
+      "answer": "Jika masalah hanya membutuhkan inventaris, dashboard, peta, atau laporan statis tanpa hubungan tambahan antara data, representasi, dan keputusan, solusi tersebut mungkin lebih tepat dan murah. Hindari Digital Twin saat pemilik, tujuan, sumber data, atau anggaran pemeliharaan belum jelas."
+    },
+    {
+      "id": "vendor-lock-in",
+      "category": "Perencanaan",
+      "question": "Bagaimana menghindari vendor lock-in?",
+      "keywords": ["vendor lock in", "ketergantungan vendor", "portabilitas", "format terbuka", "keluar", "export data"],
+      "answer": "Tentukan hak ekspor data dan model, format/antarmuka terbuka yang sesuai, dokumentasi API dan skema, akses ke log, syarat terminasi, biaya keluar, serta uji portabilitas dalam pengadaan. Standar terbuka membantu, tetapi tidak menggantikan klausul kontrak dan rencana transisi."
+    },
+    {
+      "id": "cloud-edge",
+      "category": "Teknologi",
+      "question": "Kapan memakai cloud atau edge untuk Digital Twin?",
+      "keywords": ["cloud", "edge", "komputasi", "latensi", "offline", "on premise", "lokal"],
+      "answer": "Cloud cocok untuk kapasitas elastis, kolaborasi, dan analitik terpusat; edge berguna saat latensi rendah, koneksi terbatas, atau pemrosesan lokal dibutuhkan. Pilihan dapat berupa gabungan dan harus mempertimbangkan keamanan, kedaulatan data, biaya jaringan, ketersediaan, dan operasi."
+    },
+    {
+      "id": "data-lineage",
+      "category": "Teknologi dan data",
+      "question": "Apa itu lineage atau asal-usul data?",
+      "keywords": ["lineage", "asal usul", "sumber data", "provenance", "transformasi", "audit data", "jejak data"],
+      "answer": "Data lineage mencatat dari mana data berasal, siapa yang mengubahnya, transformasi dan validasi apa yang dilakukan, serta ke mana data disalurkan. Catatan ini membantu audit, reproduksi analisis, pemecahan masalah, dan penilaian kepercayaan terhadap hasil Twin."
+    },
+    {
+      "id": "cloud-vs-platform",
+      "category": "Teknologi",
+      "question": "Apakah Digital Twin harus memakai satu platform khusus?",
+      "keywords": ["platform khusus", "satu platform", "arsitektur terbuka", "modular", "produk", "software"],
+      "answer": "Tidak. Solusi dapat dibangun dari layanan dan sistem yang sudah ada, selama integrasi, identitas, keamanan, dan operasinya dapat dikelola. Evaluasi platform berdasarkan kebutuhan, interoperabilitas, total biaya, portabilitas, dukungan, dan kemampuan tim, bukan banyaknya fitur demo."
+    },
+    {
+      "id": "digital-thread",
+      "category": "Konsep dasar",
+      "question": "Apa beda Digital Twin dan Digital Thread?",
+      "keywords": ["digital thread", "siklus hidup", "jejak informasi", "riwayat aset", "hubungan data"],
+      "answer": "Digital Thread adalah rangkaian hubungan data dan informasi yang menjaga konteks sepanjang siklus hidup atau proses. Digital Twin adalah representasi dan hubungan dengan objek/proses nyata untuk tujuan tertentu. Keduanya saling melengkapi: thread dapat memberi jejak riwayat bagi Twin."
+    },
+    {
+      "id": "metaverse",
+      "category": "Konsep dasar",
+      "question": "Apa beda Digital Twin dan metaverse?",
+      "keywords": ["metaverse", "dunia virtual", "virtual world", "immersive", "vr", "ar"],
+      "answer": "Digital Twin berfokus pada representasi yang memiliki hubungan dan konteks terhadap aset, proses, atau sistem nyata. Metaverse biasanya merujuk pada ruang virtual bersama dan pengalaman sosial/interaktif. Teknologi 3D, VR, atau AR dapat dipakai pada keduanya, tetapi tidak membuat keduanya menjadi konsep yang sama."
+    },
+    {
+      "id": "pemeliharaan",
+      "category": "Operasi",
+      "question": "Bagaimana memelihara Digital Twin setelah pilot?",
+      "keywords": ["pemeliharaan", "operasi", "maintenance", "pasca pilot", "pembaruan model", "siklus hidup"],
+      "answer": "Tetapkan pemilik layanan dan data, anggaran operasi, jadwal pembaruan, pemantauan pipeline, pengelolaan perubahan aset, patch keamanan, backup, evaluasi manfaat, serta prosedur penghentian. Twin yang tidak diperbarui dapat memberi gambaran menyesatkan."
+    },
+    {
+      "id": "tim-keahlian",
+      "category": "SDM dan organisasi",
+      "question": "Keahlian apa yang dibutuhkan untuk Digital Twin?",
+      "keywords": ["keahlian", "sdm", "tim", "kompetensi", "gis", "bim", "data engineer", "domain"],
+      "answer": "Tim biasanya memerlukan pemilik domain/aset, pengelola data, ahli BIM/GIS atau model domain, data engineer, pengembang/integrator, keamanan, UX, serta pemilik keputusan dan operasi. Komposisinya mengikuti use case; koordinasi lintas disiplin sering lebih penting daripada satu spesialis teknologi."
+    },
+    {
+      "id": "kematangan",
+      "category": "SDM dan organisasi",
+      "question": "Apa tahapan kematangan Digital Twin?",
+      "keywords": ["kematangan", "maturity", "roadmap", "tahapan", "transformasi", "skala"],
+      "answer": "Roadmap praktis dapat bergerak dari inventaris dan kualitas data, representasi yang terdokumentasi, integrasi/pembaruan, analitik atau simulasi tervalidasi, lalu operasi dan umpan balik terkelola. Ini bukan urutan wajib; ukur kematangan dari kemampuan yang terbukti dan tata kelola, bukan label pemasaran."
+    },
+    {
+      "id": "open-source",
+      "category": "Teknologi",
+      "question": "Bisakah Digital Twin dibangun dengan open source?",
+      "keywords": ["open source", "sumber terbuka", "gratis", "lisensi", "perangkat lunak bebas"],
+      "answer": "Bisa. Komponen open source dapat mengurangi ketergantungan lisensi dan mendukung interoperabilitas, tetapi tetap memerlukan keahlian, hosting, integrasi, keamanan, pembaruan, dukungan, dan tata kelola lisensi. Bandingkan total biaya dan risiko operasi, bukan harga lisensi saja."
+    },
+    {
+      "id": "hak-penggunaan",
+      "category": "Keamanan dan tata kelola",
+      "question": "Apa yang perlu disepakati sebelum berbagi data?",
+      "keywords": ["berbagi data", "perjanjian", "izin", "lisensi", "akses", "retensi", "publikasi"],
+      "answer": "Sepakati tujuan dan dasar akses, pihak yang boleh menggunakan, jenis data, keamanan, masa berlaku, retensi/penghapusan, batas publikasi, tanggung jawab kualitas, penanganan insiden, serta hak atas turunan/hasil analisis. Pastikan kesepakatan konsisten dengan hukum dan kebijakan organisasi."
+    },
+    {
+      "id": "akurasi-model",
+      "category": "Teknologi dan data",
+      "question": "Bagaimana mengetahui model Digital Twin cukup akurat?",
+      "keywords": ["akurasi model", "validasi", "kalibrasi", "ground truth", "ketidakpastian", "kesalahan model"],
+      "answer": "Tentukan toleransi berdasarkan keputusan yang akan didukung, lalu validasi terhadap pengukuran, inspeksi, atau data acuan yang independen. Dokumentasikan metode, rentang validitas, ketidakpastian, versi model, dan kondisi ketika hasil tidak boleh digunakan."
+    },
+    {
+      "id": "pengadaan",
+      "category": "Perencanaan",
+      "question": "Apa yang perlu dicantumkan dalam pengadaan Digital Twin?",
+      "keywords": ["pengadaan", "kontrak", "rfi", "rencana kerja", "deliverable", "kriteria penerimaan"],
+      "answer": "Cantumkan masalah dan indikator, batas aset/use case, baseline, sumber dan hak data, standar/format pertukaran, keamanan, kriteria penerimaan yang dapat diuji, dokumentasi, pelatihan, biaya siklus hidup, kepemilikan hasil, portabilitas, dukungan, serta rencana keluar. Hindari spesifikasi yang hanya menyebut produk atau tampilan."
+    },
+    {
+      "id": "cadangan-pemulihan",
+      "category": "Keamanan dan tata kelola",
+      "question": "Bagaimana menjaga ketersediaan dan pemulihan layanan?",
+      "keywords": ["backup", "cadangan", "disaster recovery", "pemulihan", "ketersediaan", "continuity"],
+      "answer": "Tentukan target ketersediaan, RPO/RTO yang sesuai dampak, backup teruji, salinan terpisah, pemantauan, prosedur pemulihan, dan latihan berkala. Pastikan sumber data dan konfigurasi dapat dipulihkan serta pengguna tahu prosedur saat layanan Twin tidak tersedia."
+    },
+    {
+      "id": "kembar-manusia",
+      "category": "Keamanan dan tata kelola",
+      "question": "Apa risiko Digital Twin yang mewakili orang atau pasien?",
+      "keywords": ["human digital twin", "kembar manusia", "pasien", "individu", "profil pribadi", "bias", "etika"],
+      "answer": "Risikonya mencakup privasi, persetujuan, bias, ketidakakuratan, keselamatan, dan keputusan yang terlalu bergantung pada model. Batasi tujuan dan data, libatkan ahli domain/etik, validasi ketat, jelaskan ketidakpastian, dan jangan menggantikan pertimbangan profesional tanpa dasar dan pengawasan yang memadai."
+    },
+    {
+      "id": "istilah-twin-ai",
+      "category": "TwiniAI",
+      "question": "Apakah TwiniAI adalah Digital Twin?",
+      "keywords": ["twini ai", "asisten ini", "chatbot", "ai twini", "sumber jawaban"],
+      "answer": "TwiniAI di aplikasi ini adalah asisten berbasis basis pengetahuan lokal tentang Digital Twin. Jawabannya dicocokkan dari kumpulan tanya-jawab dan tidak mengakses sensor, sistem aset, akun, atau internet secara langsung. Untuk keputusan teknis penting, periksa sumber dan dokumen otoritatif."
+    }
+  ]
+}

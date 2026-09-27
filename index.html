@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=17" />
+  <link rel="stylesheet" href="styles.css?v=43" />
   <title>IDTC Mobile</title>
 </head>
 <body>
@@ -18,7 +18,7 @@
     <header class="topbar">
       <div class="topbar-atmosphere" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <a class="brand" href="#home" data-route="home" aria-label="Beranda IDTC">
-        <img src="assets/img/emblem-white.png" alt="" />
+        <span class="brand-mark" aria-hidden="true"><img src="assets/img/emblem-white.png" alt="" /><i></i><i></i><i></i><i></i><i></i><i></i></span>
         <span><b>IDTC</b><small>Digital Twin Community</small></span>
       </a>
       <a class="auth-link" href="#auth" data-route="auth">Masuk</a>
@@ -37,6 +37,39 @@
       <a href="#belajar" data-route="belajar"><span>▣</span><small>Belajar</small></a>
     </nav>
   </div>
-  <script src="app.js?v=15" type="module"></script>
+  <div class="launch-screen" data-launch-screen role="status" aria-label="Memuat aplikasi IDTC" aria-live="polite">
+    <div class="color-bubbles" data-launch-bubbles aria-hidden="true"></div>
+    <div class="launch-loading"><span class="launch-mark">IDTC</span><span class="launch-loading-dot"></span></div>
+    <div class="launch-brand"><img src="assets/img/dni/ITDC_icon.png" alt="Indonesia Digital Twin Community" fetchpriority="high" /></div>
+  </div>
+  <button class="back-fab" type="button" data-back aria-label="Kembali" title="Kembali"><span aria-hidden="true">←</span></button>
+  <a class="shop-fab" href="#shop" data-shop-fab aria-label="Buka TwiniShop"><span class="fab-icon-stage shop-icon-stage" aria-hidden="true"><i class="fab-icon-glow"></i><i class="fab-icon-particle particle-one"></i><i class="fab-icon-particle particle-two"></i><i class="fab-icon-particle particle-three"></i><i class="fab-icon-particle particle-four"></i><img src="assets/img/dni/twini-shop-icon.png" alt="" /></span><span class="fab-label shop-fab-label">TwiniShop</span></a>
+  <aside class="twini-widget" data-twini-widget>
+    <section class="twini-panel" data-twini-panel aria-label="Percakapan TwiniAI" aria-hidden="true" hidden>
+      <div class="twini-bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <header class="twini-header">
+        <span class="twini-avatar" aria-hidden="true">T</span>
+        <span class="twini-heading"><strong>TwiniAI</strong><small>Digital Twin · IDTC</small></span>
+        <button class="twini-close" type="button" data-twini-close aria-label="Tutup TwiniAI">×</button>
+      </header>
+      <div class="twini-topics" aria-label="Pertanyaan pilihan">
+        <button type="button" data-twini-prompt="Apa itu Digital Twin?">Konsep dasar</button>
+        <button type="button" data-twini-prompt="Bagaimana memulai pilot Digital Twin?">Mulai pilot</button>
+        <button type="button" data-twini-prompt="Bagaimana menjaga keamanan Digital Twin?">Keamanan</button>
+        <button type="button" data-twini-prompt="Apa itu DT-F-01 dari IDTC?">DT-F-01</button>
+      </div>
+      <div class="twini-messages" data-twini-messages role="log" aria-live="polite" aria-relevant="additions text"></div>
+      <form class="twini-form" data-twini-form>
+        <label class="twini-sr-only" for="twiniQuestion">Pertanyaan untuk TwiniAI</label>
+        <textarea id="twiniQuestion" data-twini-input rows="1" maxlength="500" placeholder="Tulis pertanyaan..." required></textarea>
+        <button class="twini-send" type="submit" aria-label="Kirim pertanyaan"><span aria-hidden="true">↑</span></button>
+      </form>
+      <p class="twini-disclaimer">Jawaban dari basis pengetahuan Digital Twin</p>
+    </section>
+    <button class="twini-fab" type="button" data-twini-toggle aria-label="Buka TwiniAI" aria-controls="twiniPanel" aria-expanded="false">
+      <span class="fab-icon-stage twini-icon-stage" aria-hidden="true"><i class="fab-icon-glow"></i><i class="fab-icon-particle particle-one"></i><i class="fab-icon-particle particle-two"></i><i class="fab-icon-particle particle-three"></i><i class="fab-icon-particle particle-four"></i><img src="assets/img/dni/twini-ai-icon.png" alt="" /></span><span class="fab-label twini-fab-label">TwiniAI</span>
+    </button>
+  </aside>
+  <script src="app.js?v=38" type="module"></script>
 </body>
 </html>

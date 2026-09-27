@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "currency": "IDR",
+  "estimatedShipping": 20000,
+  "items": [
+    {
+      "id": "maskot-idtc",
+      "name": "Maskot IDTC",
+      "category": "Aksesori",
+      "type": "physical",
+      "price": 185000,
+      "visual": "mascot",
+      "image": "assets/img/dni/merchant/boneka_maskot.jpeg",
+      "description": "Maskot koleksi komunitas untuk meja kerja dan ruang belajar Digital Twin."
+    },
+    {
+      "id": "gantungan-kunci",
+      "name": "Gantungan Kunci IDTC",
+      "category": "Aksesori",
+      "type": "physical",
+      "price": 45000,
+      "visual": "keychain",
+      "image": "assets/img/dni/merchant/Gantungan%20Kunci.jpeg",
+      "description": "Aksesori harian dengan emblem Indonesia Digital Twin Community."
+    },
+    {
+      "id": "jaket-idtc",
+      "name": "Jaket Komunitas IDTC",
+      "category": "Pakaian",
+      "type": "physical",
+      "price": 375000,
+      "visual": "jacket",
+      "image": "assets/img/dni/merchant/jaket_2.jpeg",
+      "description": "Jaket komunitas dengan visual konsep IDTC. Ukuran dan bahan dikonfirmasi sebelum produksi."
+    },
+    {
+      "id": "kaos-idtc",
+      "name": "Kaos Kerah IDTC",
+      "category": "Pakaian",
+      "type": "physical",
+      "price": 135000,
+      "visual": "shirt",
+      "image": "assets/img/dni/merchant/Kaos_kerah_2.jpeg",
+      "description": "Kaos komunitas dengan visual konsep IDTC. Pilihan ukuran dikonfirmasi sebelum produksi."
+    },
+    {
+      "id": "dasi-idtc",
+      "name": "Dasi IDTC",
+      "category": "Pakaian",
+      "type": "physical",
+      "price": 95000,
+      "visual": "tie",
+      "image": "assets/img/dni/merchant/Dasi.jpeg",
+      "description": "Dasi bermotif identitas komunitas untuk acara dan pertemuan resmi."
+    },
+    {
+      "id": "kaos-t-shirt-idtc",
+      "name": "Kaos IDTC",
+      "category": "Pakaian",
+      "type": "physical",
+      "price": 135000,
+      "visual": "shirt",
+      "image": "assets/img/dni/merchant/Kaos.jpeg",
+      "description": "Kaos komunitas IDTC. Pilihan ukuran dikonfirmasi sebelum produksi."
+    },
+    {
+      "id": "topi-idtc",
+      "name": "Topi IDTC",
+      "category": "Pakaian",
+      "type": "physical",
+      "price": 85000,
+      "visual": "cap",
+      "image": "assets/img/dni/merchant/Topi.jpeg",
+      "description": "Topi komunitas IDTC. Harga katalog ini masih contoh dan perlu dikonfirmasi penjual."
+    },
+    {
+      "id": "buku-catatan",
+      "name": "Buku Catatan Digital Twin",
+      "category": "Publikasi",
+      "type": "physical",
+      "price": 65000,
+      "visual": "notebook",
+      "image": "assets/img/dni/merchant/Buku%20Catatan.jpeg",
+      "description": "Buku catatan untuk ide, sketsa arsitektur, dan rencana pilot project."
+    },
+    {
+      "id": "ebook-digital-twin",
+      "name": "E-book Digital Twin Indonesia",
+      "category": "Publikasi",
+      "type": "digital",
+      "price": 49000,
+      "visual": "ebook",
+      "image": "assets/img/produk/dt-f-01.jpg",
+      "description": "Materi digital pengantar standar dan ekosistem Digital Twin Indonesia. File dikirim setelah pembayaran terkonfirmasi."
+    }
+  ]
+}
