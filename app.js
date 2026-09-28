@@ -1,7 +1,7 @@
 const app = document.querySelector('#app');
 const nav = document.querySelector('.bottom-nav');
 const backButton = document.querySelector('[data-back]');
-import { adminPanel, bindAdmin } from './admin-cms.js?v=2';
+import { adminPanel, bindAdmin } from './admin-cms.js?v=3';
 import { shopPage, bindShop } from './shop.js?v=3';
 import { hashPassword, verifyPassword } from './auth-security.js?v=1';
 import { bindImageZoom } from './image-zoom.js?v=2';
@@ -13,7 +13,7 @@ const appReady = new Promise(resolve => { completeAppLoad = resolve; });
 function startLaunchExperience() {
   const screen = document.querySelector('[data-launch-screen]');
   if (!screen) return;
-  screen.querySelector('[data-launch-bubbles]').innerHTML = bubbleFieldMarkup(34, 1);
+  screen.querySelector('[data-launch-bubbles]').innerHTML = bubbleFieldMarkup(16, 1);
   const splashDelay = new Promise(resolve => setTimeout(() => {
     screen.classList.add('is-logo');
     screen.setAttribute('aria-label', 'Indonesia Digital Twin Community');
@@ -51,7 +51,7 @@ const routeHistory = [location.hash.slice(1) || initialRoute()];
 let homeCarouselTimer = null;
 const onboardingSlides = [
   { kicker: 'INDONESIA DIGITAL TWIN COMMUNITY', title: 'Satu data.<br>Satu masa depan.', text: 'Ruang kolaborasi untuk membangun ekosistem Digital Twin Indonesia.', image: 'assets/img/dni/ITDC_icon.png', alt: 'Ikon Indonesia Digital Twin Community' },
-  { kicker: 'TWini MERCHANDISE', title: 'Selamat datang di TwiniShop.', text: 'Jelajahi merchandise dan koleksi komunitas Digital Twin Indonesia.', image: 'assets/img/dni/twini%20shop.png', alt: 'Maskot TwiniShop' },
+  { kicker: 'TWini MERCHANDISE', title: 'Selamat datang di TwiniShop.', text: 'Jelajahi merchandise dan koleksi komunitas Digital Twin Indonesia.', image: 'assets/img/dni/twini-shop-onboarding.png', alt: 'Maskot TwiniShop' },
   ...Array.from({ length: 16 }, (_, index) => {
     const number = String(index + 1).padStart(2, '0');
     return { kicker: `CERITA IDTC ${number} / 16`, title: 'Kolaborasi untuk masa depan digital.', text: `Dokumentasi komunitas dan perjalanan IDTC ${number}.`, image: `assets/img/dni/ITDC_${number}.jpeg`, alt: `Dokumentasi IDTC ${number}` };
@@ -98,7 +98,7 @@ function profileAvatarMarkup(session) {
   return photo ? `<img src="${esc(photo)}" alt="" data-profile-avatar-image />` : `<span aria-label="Avatar ${avatar.label}">${avatar.icon}</span>`;
 }
 function profileAccountMarkup(session) {
-  if (!session) return '<div class="card account-card"><h3>Akun</h3><p>Kamu belum masuk ke IDTC.</p><a class="button primary" href="#auth">Masuk / Daftar</a></div>';
+  if (!session) return '<div class="card account-card"><h3>Akun</h3><p>Kamu belum masuk ke IDTC.</p><a class="button primary profile-signin" href="#auth">Masuk / Daftar</a></div>';
   const selectedAvatar = profileAvatarId(session.avatar);
   const background = PROFILE_AVATARS.find(item => item.id === selectedAvatar).label;
   const avatarSource = session.avatarSource || (session.avatarPhoto ? 'upload' : session.provider === 'google' ? 'google' : 'preset');
@@ -109,12 +109,12 @@ function profileAccountMarkup(session) {
 }
 
 function onboarding() {
-  const slides = onboardingSlides.map((slide, index) => `<article class="onboarding-slide" data-slide="${index}"><div class="onboarding-visual"><img src="${slide.image}" alt="${esc(slide.alt)}" ${index > 1 ? 'loading="lazy"' : 'fetchpriority="high"'} /><i class="orbit orbit-a"></i><i class="orbit orbit-b"></i></div><div class="onboarding-copy"><p class="onboarding-kicker">${slide.kicker}</p><h1>${slide.title}</h1><p>${slide.text}</p><small class="onboarding-count">${index + 1} / ${onboardingSlides.length}</small></div></article>`).join('');
-  return `<section class="onboarding" aria-label="Pengenalan IDTC">${bubbleFieldMarkup(26, 1.35)}<button class="onboarding-skip" type="button" data-onboarding-skip>Lewati</button><div class="onboarding-track">${slides}</div><div class="onboarding-footer"><div class="onboarding-dots" data-onboarding-dots>${onboardingSlides.map((_, index) => `<button type="button" data-slide-dot="${index}" aria-label="Tampilkan slide ${index + 1} dari ${onboardingSlides.length}"></button>`).join('')}</div><div class="onboarding-actions"><button class="onboarding-back" type="button" data-onboarding-back>←</button><button class="button primary onboarding-next" type="button" data-onboarding-next>Berikutnya <span>→</span></button></div></div></section>`;
+  const slides = onboardingSlides.map((slide, index) => `<article class="onboarding-slide" data-slide="${index}"><div class="onboarding-visual"><img ${index === 0 ? `src="${slide.image}" loading="eager" fetchpriority="high"` : `data-src="${slide.image}" loading="lazy"`} decoding="async" alt="${esc(slide.alt)}" /><i class="orbit orbit-a"></i><i class="orbit orbit-b"></i></div><div class="onboarding-copy"><p class="onboarding-kicker">${slide.kicker}</p><h1>${slide.title}</h1><p>${slide.text}</p><small class="onboarding-count">${index + 1} / ${onboardingSlides.length}</small></div></article>`).join('');
+  return `<section class="onboarding" aria-label="Pengenalan IDTC">${bubbleFieldMarkup(12, 1.35)}<button class="onboarding-skip" type="button" data-onboarding-skip>Lewati</button><div class="onboarding-track">${slides}</div><div class="onboarding-footer"><div class="onboarding-dots" data-onboarding-dots>${onboardingSlides.map((_, index) => `<button type="button" data-slide-dot="${index}" aria-label="Tampilkan slide ${index + 1} dari ${onboardingSlides.length}"></button>`).join('')}</div><div class="onboarding-actions"><button class="onboarding-back" type="button" data-onboarding-back>←</button><button class="button primary onboarding-next" type="button" data-onboarding-next>Berikutnya <span>→</span></button></div></div></section>`;
 }
 
 function idtcAppAboutMarkup() {
-  return `<details class="idtc-about"><summary class="about-ribbon"><span><small>TENTANG APLIKASI</small><strong>IDTC Mobile</strong></span><span class="about-ribbon-icon" aria-hidden="true">+</span></summary><div class="about-content"><p class="idtc-about-description">Aplikasi komunitas Indonesia Digital Twin Community untuk belajar, berkolaborasi, mengenal Pokja, dan menjelajahi karya serta merchandise IDTC.</p><div class="idtc-about-grid"><article><h3>Fitur aplikasi</h3><ul><li>Materi dan jalur belajar Digital Twin</li><li>Informasi pengurus dan tiga Pokja</li><li>Profil anggota dan pengaturan aplikasi</li><li>TwiniAI dan katalog TwiniShop</li></ul></article><article><h3>Tujuan & manfaat</h3><ul><li>Menghubungkan pemerintah, akademisi, industri, dan komunitas</li><li>Mendukung literasi serta kolaborasi Digital Twin</li><li>Membantu gagasan berkembang menjadi pilot yang nyata</li></ul></article></div><article class="developer-card"><img src="assets/img/dni/aink.jpg" alt="" loading="lazy" />${bubbleFieldMarkup(20, 0.35)}<div><p class="section-label">DEVELOPER IT (MOBILE APP)</p><h3>Dani Hamdani</h3><p>Pengembang aplikasi IDTC Mobile.</p></div></article></div></details>`;
+  return `<details class="idtc-about"><summary class="about-ribbon"><span><small>TENTANG APLIKASI</small><strong>IDTC Mobile</strong></span><span class="about-ribbon-icon" aria-hidden="true">+</span></summary><div class="about-content"><p class="idtc-about-description">Aplikasi komunitas Indonesia Digital Twin Community untuk belajar, berkolaborasi, mengenal Pokja, dan menjelajahi karya serta merchandise IDTC.</p><div class="idtc-about-grid"><article><h3>Fitur aplikasi</h3><ul><li>Materi dan jalur belajar Digital Twin</li><li>Informasi pengurus dan tiga Pokja</li><li>Profil anggota dan pengaturan aplikasi</li><li>TwiniAI dan katalog TwiniShop</li></ul></article><article><h3>Tujuan & manfaat</h3><ul><li>Menghubungkan pemerintah, akademisi, industri, dan komunitas</li><li>Mendukung literasi serta kolaborasi Digital Twin</li><li>Membantu gagasan berkembang menjadi pilot yang nyata</li></ul></article></div><article class="developer-card">${bubbleFieldMarkup(8, 0.35)}<div class="developer-card-copy"><p class="section-label">DEVELOPER IT</p><h3>Dani Hamdani</h3><p>Pengembang aplikasi IDTC Mobile.</p></div><img class="developer-photo" src="assets/img/dni/aink.jpg" alt="Foto Dani Hamdani, pengembang aplikasi IDTC Mobile" loading="lazy" decoding="async" /></article></div></details>`;
 }
 
 function bindOnboarding() {
@@ -124,7 +124,7 @@ function bindOnboarding() {
   const slides = [...root.querySelectorAll('.onboarding-slide')];
   const dots = [...root.querySelectorAll('[data-slide-dot]')];
   const next = root.querySelector('[data-onboarding-next]');
-  const update = index => { current = Math.max(0, Math.min(index, slides.length - 1)); slides.forEach((slide, i) => slide.classList.toggle('is-visible', i === current)); dots.forEach((dot, i) => dot.classList.toggle('is-active', i === current)); dots[current].scrollIntoView({ block: 'nearest', inline: 'nearest' }); next.innerHTML = current === slides.length - 1 ? 'Mulai menjelajah <span>→</span>' : 'Berikutnya <span>→</span>'; };
+  const update = index => { current = Math.max(0, Math.min(index, slides.length - 1)); slides.forEach((slide, i) => slide.classList.toggle('is-visible', i === current)); const image = slides[current].querySelector('img'); image.loading = 'eager'; if (!image.hasAttribute('src')) image.src = image.dataset.src; dots.forEach((dot, i) => dot.classList.toggle('is-active', i === current)); dots[current].scrollIntoView({ block: 'nearest', inline: 'nearest' }); next.innerHTML = current === slides.length - 1 ? 'Mulai menjelajah <span>→</span>' : 'Berikutnya <span>→</span>'; };
   const finish = () => { localStorage.setItem('idtc-onboarding-seen', 'true'); location.hash = 'auth'; };
   next.addEventListener('click', () => current === slides.length - 1 ? finish() : update(current + 1));
   root.querySelector('[data-onboarding-back]').addEventListener('click', () => update(current - 1));
@@ -201,7 +201,7 @@ function bindAuth() {
 
 function home() {
   const { anggota, struktur, produk } = data;
-  const map = '<div class="hero-map" data-map-placeholder aria-hidden="true"></div>';
+  const map = '<div class="hero-map" aria-hidden="true"><img src="assets/img/indonesia-map.svg?v=2" alt="" loading="lazy" decoding="async" /></div>';
   return `<section class="hero">${map}<div class="hero-content"><p class="eyebrow">Connect · Collaborate · Innovate</p><h1>Satu Data, Satu Visi, <em>Satu Masa Depan</em></h1><p>Wadah kolaborasi pemerintah, akademisi, BUMN, dan swasta untuk membangun ekosistem Digital Twin Indonesia melalui pilot project nyata.</p><div class="hero-actions"><a class="button primary" href="#pokja">Jelajahi Pokja ↗</a><a class="button ghost" href="https://github.com/idtc-id" target="_blank" rel="noreferrer">Berkontribusi</a></div><img class="hero-art" src="assets/img/pokja/hero-maskot.jpg" alt="Maskot IDTC dan model digital twin kota" /></div></section><section class="section">${sectionHead('Snapshot komunitas','Kolaborasi yang bergerak','Data terbaru dari komunitas IDTC')}<div class="stat-grid"><div class="stat"><strong>${anggota.respons}</strong><span>Responden anggota</span></div><div class="stat"><strong>3</strong><span>Kelompok kerja</span></div><div class="stat"><strong>${produk.length}</strong><span>Produk terbaru</span></div></div>${sectionHead('Fokus kerja','Dari standar ke dampak')}<div class="card"><h3>Indonesia Digital Twin Community</h3><p>Netral platform, data sesuai izin, terbuka dan terdokumentasi. Semua kontribusi diarahkan untuk infrastruktur, lingkungan, dan masyarakat yang lebih baik.</p><div class="chips"><span class="chip">Standar terbuka</span><span class="chip orange">Pilot nyata</span><span class="chip purple">SDM & ekosistem</span></div></div></section>`;
 }
 function heroCarouselMarkup() {
@@ -262,7 +262,10 @@ function bindHomeCarousel() {
   startAuto();
 }
 function pokja() {
-  const cards = data.struktur.pokja.map(item => `<article class="card pokja-card"><div class="color-bar ${colorClass(item.warna)}"></div><img class="pokja-image" src="${esc(item.banner)}" alt="${esc(item.nama)}" onerror="this.style.display='none'" /><div class="card-body"><p class="role ${colorClass(item.warna)}">POKJA ${item.nomor}</p><h3>${esc(item.nama)}</h3><p>${esc(item.slogan)}</p><div class="chips">${item.fokus.slice(0,4).map(tag => `<span class="chip ${colorClass(item.warna)}">${esc(tag)}</span>`).join('')}</div><p style="margin-top:13px"><b>Ketua:</b> ${esc(item.ketua.nama)}</p></div></article>`).join('');
+  const cards = data.struktur.pokja.map(item => {
+    const program = item.arahProgram ? `<section class="pokja-program" aria-label="Arahan program kerja POKJA ${item.nomor}"><div class="pokja-program-intro"><p class="section-label">Arahan program kerja</p><h4>Blueprint Digital Twin Indonesia</h4><p>${esc(item.arahProgram.ringkasan)}</p></div><h5>Bidang kerja</h5><ol class="pokja-program-workstreams">${item.arahProgram.bidangKerja.map((workstream, index) => `<li><span class="pokja-program-number">${String(index + 1).padStart(2, '0')}</span><div><strong>${esc(workstream.judul)}</strong><p>${esc(workstream.cakupan)}</p></div></li>`).join('')}</ol><section class="pokja-program-outputs"><h5>Keluaran konkret</h5>${item.arahProgram.keluaran.map(output => `<div><strong>${esc(output.judul)}</strong><p>${esc(output.cakupan)}</p></div>`).join('')}</section><section class="pokja-program-distinction"><h5>Pembeda model 3D dan Digital Twin</h5>${item.arahProgram.pembeda.map(point => `<div><strong>${esc(point.judul)}</strong><p>${esc(point.cakupan)}</p></div>`).join('')}</section></section>` : '';
+    return `<article class="card pokja-card"><div class="color-bar ${colorClass(item.warna)}"></div><img class="pokja-image" src="${esc(item.banner)}" alt="${esc(item.nama)}" onerror="this.style.display='none'" /><div class="card-body"><p class="role ${colorClass(item.warna)}">POKJA ${item.nomor}</p><h3>${esc(item.nama)}</h3><p>${esc(item.slogan)}</p><div class="chips">${item.fokus.slice(0,4).map(tag => `<span class="chip ${colorClass(item.warna)}">${esc(tag)}</span>`).join('')}</div><p style="margin-top:13px"><b>Ketua:</b> ${esc(item.ketua.nama)}</p>${program}</div></article>`;
+  }).join('');
   return `<section class="section">${sectionHead('Kelompok kerja','Tiga jalur dampak','Setiap Pokja mengubah gagasan menjadi kontribusi yang terukur.')} ${cards}</section>`;
 }
 function pengurus() {
@@ -408,9 +411,62 @@ function bindProfile() {
 }
 
 function applyPreferences() { document.body.classList.toggle('mode-dark', localStorage.getItem('idtc-mode') === 'dark'); document.body.classList.toggle('theme-future', localStorage.getItem('idtc-theme') === 'future'); }
+function learningRoute(path, moduleIndex) { return `#pembelajaran/${path.id}/${moduleIndex}`; }
+function learningChecklistKey(path, module) { return `idtc-learning-checklist:${path.id}:${encodeURIComponent(module.judul)}`; }
+function checklistItems(module) { return ['Baca ringkasan dan tujuan pembelajaran', ...(module.fokus || []).map(item => `Pelajari: ${item}`)]; }
+function savedChecklist(key) {
+  try { const saved = JSON.parse(localStorage.getItem(key) || '[]'); return Array.isArray(saved) ? saved : []; } catch { return []; }
+}
+function renderLessonBlock(block, depth = 0) {
+  const heading = depth === 0 ? 'h3' : 'h4';
+  const title = block.judul ? `<${heading}>${esc(block.judul)}</${heading}>` : '';
+  const paragraphs = (block.paragraf || []).map(paragraph => `<p>${esc(paragraph)}</p>`).join('');
+  const points = (block.poin || []).length ? `<ul>${block.poin.map(point => `<li>${esc(point)}</li>`).join('')}</ul>` : '';
+  const steps = (block.langkah || []).length ? `<ol>${block.langkah.map(step => `<li>${esc(step)}</li>`).join('')}</ol>` : '';
+  const flow = (block.alur || []).length ? `<ol class="lesson-flow">${block.alur.map(step => `<li>${esc(step)}</li>`).join('')}</ol>` : '';
+  const quote = block.kutipan ? `<blockquote>${esc(block.kutipan)}</blockquote>` : '';
+  const note = block.catatan ? `<aside class="lesson-note"><strong>Catatan</strong><p>${esc(block.catatan)}</p></aside>` : '';
+  const table = block.tabel ? `<div class="lesson-table-wrap"><table><thead><tr>${block.tabel.kolom.map(cell => `<th scope="col">${esc(cell)}</th>`).join('')}</tr></thead><tbody>${block.tabel.baris.map(row => `<tr>${row.map(cell => `<td>${esc(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>` : '';
+  const subsections = (block.subbagian || []).map(item => renderLessonBlock(item, depth + 1)).join('');
+  return `<section class="lesson-block ${depth ? 'lesson-subsection' : ''}">${title}${paragraphs}${points}${steps}${flow}${table}${quote}${note}${subsections}</section>`;
+}
 function belajar() {
-  const paths = data.materi.jalur.map(path => { const ready = path.modul.filter(m => m.tautan).length; return `<article class="card"><div style="display:flex;justify-content:space-between;gap:12px"><div><p class="role ${colorClass(path.warna)}">JALUR ${path.kode}</p><h3>${esc(path.nama)}</h3><p>${esc(path.sasaran)}</p></div><strong style="font:700 22px 'Space Grotesk';color:var(--teal)">${ready}/${path.modul.length}</strong></div><div class="progress"><i style="width:${percent(ready,path.modul.length)}%"></i></div><div>${path.modul.map((m,i) => `<details class="module-detail"><summary><span class="index">${String(i+1).padStart(2,'0')}</span><span><strong>${esc(m.judul)}</strong><small>${esc(m.tingkat)} · ${esc(m.status)}</small></span><b>Lihat materi</b></summary><div class="module-content"><p>${esc(m.ringkasan || 'Materi pembelajaran akan segera tersedia.')}</p><div class="chips">${(m.fokus || []).map(tag => `<span class="chip ${colorClass(path.warna)}">${esc(tag)}</span>`).join('')}</div><p class="module-result"><strong>Hasil belajar:</strong> ${esc(m.hasil || 'Memahami topik modul dan kaitannya dengan Digital Twin.')}</p>${m.tautan ? `<a href="${esc(m.tautan)}" target="_blank" rel="noreferrer">Buka modul ↗</a>` : ''}</div></details>`).join('')}</div></article>`; }).join('');
-  return `<section class="section">${sectionHead('Materi belajar','Peta belajar Digital Twin','Pilih jalur yang sesuai dengan peran dan kebutuhanmu.')} ${paths}</section>`;
+  const paths = data.materi.jalur.map(path => { const completed = path.modul.filter(module => checklistItems(module).every((_, index) => savedChecklist(learningChecklistKey(path, module))[index])).length; return `<article class="card"><div style="display:flex;justify-content:space-between;gap:12px"><div><p class="role ${colorClass(path.warna)}">JALUR ${path.kode}</p><h3>${esc(path.nama)}</h3><p>${esc(path.sasaran)}</p></div><strong style="font:700 22px 'Space Grotesk';color:var(--teal)">${completed}/${path.modul.length}</strong></div><div class="progress"><i style="width:${percent(completed,path.modul.length)}%"></i></div><div>${path.modul.map((m,i) => `<details class="module-detail"><summary><span class="index">${String(i+1).padStart(2,'0')}</span><span><strong>${esc(m.judul)}</strong><small>${esc(m.tingkat)} · ${esc(m.status)}</small></span><b>Lihat materi</b></summary><div class="module-content"><p>${esc(m.ringkasan || 'Materi pembelajaran akan segera tersedia.')}</p><div class="chips">${(m.fokus || []).map(tag => `<span class="chip ${colorClass(path.warna)}">${esc(tag)}</span>`).join('')}</div><p class="module-result"><strong>Hasil belajar:</strong> ${esc(m.hasil || 'Memahami topik modul dan kaitannya dengan Digital Twin.')}</p><a class="button primary module-start" href="${learningRoute(path, i)}">Mulai Belajar</a>${m.tautan ? `<a href="${esc(m.tautan)}" target="_blank" rel="noreferrer">Buka modul ↗</a>` : ''}</div></details>`).join('')}</div></article>`; }).join('');
+  const introPath = data.materi.jalur.find(path => path.kode === 'A') || data.materi.jalur[0];
+  const introModuleIndex = introPath?.modul.findIndex(module => module.judul.startsWith('Pengantar Digital Twin')) ?? -1;
+  const startLink = introModuleIndex >= 0 ? `<a class="button primary learning-start" href="${learningRoute(introPath, introModuleIndex)}">Mulai Belajar <span aria-hidden="true">→</span></a>` : '';
+  return `<section class="section">${sectionHead('Materi belajar','Peta belajar Digital Twin','Pilih jalur yang sesuai dengan peran dan kebutuhanmu.')} ${startLink}${paths}</section>`;
+}
+function halamanPembelajaran(route) {
+  const [, pathId, moduleValue] = route.split('/');
+  const pathIndex = data.materi.jalur.findIndex(item => item.id === pathId);
+  const path = data.materi.jalur[pathIndex];
+  const moduleIndex = Number(moduleValue);
+  const module = path?.modul[moduleIndex];
+  if (!path || !Number.isInteger(moduleIndex) || !module) return belajar();
+  const checklist = checklistItems(module);
+  const key = learningChecklistKey(path, module);
+  const checked = savedChecklist(key);
+  const completed = checklist.reduce((total, _, index) => total + (checked[index] ? 1 : 0), 0);
+  const progress = checklist.length ? Math.round(completed / checklist.length * 100) : 0;
+  const previous = moduleIndex > 0 ? `<a class="button ghost" href="${learningRoute(path, moduleIndex - 1)}">← Sebelumnya</a>` : '<span></span>';
+  const next = moduleIndex < path.modul.length - 1 ? `<a class="button primary" href="${learningRoute(path, moduleIndex + 1)}">Berikutnya →</a>` : '<a class="button primary" href="#belajar">Selesai</a>';
+  return `<section class="section learning-page"><a class="learning-back" href="#belajar">← Kembali ke semua jalur</a>${sectionHead(`JALUR ${path.kode} · MODUL ${String(moduleIndex + 1).padStart(2, '0')}`, esc(module.judul), `${esc(path.nama)} · ${esc(module.tingkat)}`)}<article class="card learning-card"><p class="section-label">Materi inti</p><p class="learning-summary">${esc(module.ringkasan || 'Materi pembelajaran akan segera tersedia.')}</p><div class="chips">${(module.fokus || []).map(item => `<span class="chip ${colorClass(path.warna)}">${esc(item)}</span>`).join('')}</div>${module.konten?.length ? `<div class="learning-content">${module.konten.map(block => renderLessonBlock(block)).join('')}</div>` : ''}<p class="learning-outcome"><strong>Hasil belajar</strong>${esc(module.hasil || 'Memahami topik modul dan kaitannya dengan Digital Twin.')}</p><section class="learning-checklist" data-checklist-key="${esc(key)}" aria-labelledby="learning-checklist-title"><div class="learning-checklist-heading"><h3 id="learning-checklist-title">Checklist pembelajaran</h3><span data-checklist-count aria-live="polite">${completed} dari ${checklist.length} selesai</span></div><div class="progress learning-checklist-progress" role="progressbar" aria-label="Progres checklist" aria-valuemin="0" aria-valuemax="${checklist.length}" aria-valuenow="${completed}"><i style="width:${progress}%"></i></div><div class="learning-checklist-items">${checklist.map((item, index) => `<label class="learning-check-item"><input type="checkbox" data-learning-check ${checked[index] ? 'checked' : ''}><span>${esc(item)}</span></label>`).join('')}</div></section></article><nav class="learning-pagination" aria-label="Navigasi pembelajaran">${previous}${next}</nav></section>`;
+}
+function bindLearningChecklist() {
+  const checklist = app.querySelector('[data-checklist-key]');
+  if (!checklist) return;
+  const key = checklist.dataset.checklistKey;
+  const checkboxes = [...checklist.querySelectorAll('[data-learning-check]')];
+  checkboxes.forEach(checkbox => checkbox.addEventListener('change', () => {
+    const completed = checkboxes.filter(item => item.checked).length;
+    const progress = checkboxes.length ? Math.round(completed / checkboxes.length * 100) : 0;
+    localStorage.setItem(key, JSON.stringify(checkboxes.map(item => item.checked)));
+    checklist.querySelector('[data-checklist-count]').textContent = `${completed} dari ${checkboxes.length} selesai`;
+    const progressBar = checklist.querySelector('[role="progressbar"]');
+    progressBar.setAttribute('aria-valuenow', String(completed));
+    progressBar.querySelector('i').style.width = `${progress}%`;
+  }));
 }
 function profil() {
   const { anggota } = data; const max = anggota.ekosistem[0].jumlah;
@@ -428,6 +484,39 @@ function normalizeTwiniText(value) {
 }
 function twiniTokens(value) {
   return normalizeTwiniText(value).split(/\s+/).filter(token => token.length > 1 && !TWINIAI_STOP_WORDS.has(token));
+}
+function expandTwiniKnowledge(knowledge) {
+  const entries = Array.isArray(knowledge?.entries) ? [...knowledge.entries] : [];
+  const topics = (knowledge?.questionBanks?.topics || []).slice(0, 50);
+  const intents = knowledge?.questionBanks?.intents || [];
+  topics.forEach(topic => intents.forEach(intent => {
+    const replace = value => String(value).replaceAll('{topic}', topic.label).replaceAll('{context}', topic.context);
+    entries.push({
+      id: `bank-${topic.id}-${intent.id}`,
+      category: topic.category,
+      question: replace(intent.q),
+      keywords: [topic.label, topic.id, ...(intent.k || [])],
+      answer: replace(intent.a),
+    });
+  }));
+  return { ...knowledge, entries };
+}
+function mergeLessonContent(curriculum, savedCurriculum) {
+  if (!Array.isArray(savedCurriculum?.jalur)) return curriculum;
+  const savedPaths = new Map(savedCurriculum.jalur.map(path => [path.id, path]));
+  return {
+    ...curriculum,
+    ...savedCurriculum,
+    jalur: curriculum.jalur.map(path => {
+      const savedPath = savedPaths.get(path.id);
+      if (!savedPath) return path;
+      const modules = Array.isArray(savedPath.modul) ? savedPath.modul.map(savedModule => {
+        const currentModule = path.modul.find(module => module.judul === savedModule.judul);
+        return currentModule?.konten?.length ? { ...currentModule, ...savedModule, konten: currentModule.konten } : savedModule;
+      }) : path.modul;
+      return { ...path, ...savedPath, modul: modules };
+    }),
+  };
 }
 function matchTwiniQuestion(question) {
   const entries = data?.twini?.entries || [];
@@ -491,7 +580,7 @@ function initTwiniWidget() {
     input.style.height = '';
     input.focus();
   };
-  const setOpen = open => {
+  const setOpen = (open, restoreFocus = true) => {
     panel.hidden = !open;
     panel.setAttribute('aria-hidden', String(!open));
     toggle.setAttribute('aria-expanded', String(open));
@@ -499,8 +588,36 @@ function initTwiniWidget() {
     if (open) {
       if (!messages.childElementCount) appendMessage('assistant', 'Halo, saya TwiniAI. Ada yang ingin kamu ketahui tentang Digital Twin?');
       input.focus();
-    } else toggle.focus();
+    } else if (restoreFocus) toggle.focus();
   };
+  const syncRouteVisibility = () => {
+    const route = location.hash.slice(1) || initialRoute();
+    const visible = route === 'home';
+    document.body.classList.toggle('twini-visible-mode', visible);
+    if (!visible && !panel.hidden) setOpen(false, false);
+  };
+  let viewportBaseHeight = Math.max(window.innerHeight, window.visualViewport?.height || 0);
+  const updatePanelViewport = () => {
+    const viewport = window.visualViewport;
+    const viewportHeight = viewport?.height || window.innerHeight;
+    const viewportTop = viewport?.offsetTop || 0;
+    const keyboardOpen = document.activeElement === input && (viewportBaseHeight - viewportHeight > 120 || viewportHeight < 480);
+    document.documentElement.style.setProperty('--twini-viewport-height', `${viewportHeight}px`);
+    document.documentElement.style.setProperty('--twini-viewport-top', `${Math.max(0, viewportTop)}px`);
+    document.body.classList.toggle('twini-keyboard-open', keyboardOpen);
+    if (!keyboardOpen && document.activeElement !== input) viewportBaseHeight = Math.max(window.innerHeight, viewportHeight);
+  };
+  input.addEventListener('focus', () => {
+    viewportBaseHeight = Math.max(viewportBaseHeight, window.innerHeight, window.visualViewport?.height || 0);
+    requestAnimationFrame(updatePanelViewport);
+  });
+  input.addEventListener('blur', () => requestAnimationFrame(updatePanelViewport));
+  window.visualViewport?.addEventListener('resize', updatePanelViewport);
+  window.visualViewport?.addEventListener('scroll', updatePanelViewport);
+  window.addEventListener('resize', updatePanelViewport);
+  window.addEventListener('hashchange', syncRouteVisibility);
+  syncRouteVisibility();
+  updatePanelViewport();
   toggle.addEventListener('click', () => setOpen(panel.hidden));
   document.querySelector('[data-twini-close]')?.addEventListener('click', () => setOpen(false));
   form.addEventListener('submit', event => { event.preventDefault(); submitQuestion(input.value); });
@@ -516,19 +633,18 @@ function initTwiniWidget() {
 }
 async function load() {
   const [anggota, materi, struktur, produk, merch, twini] = await Promise.all([
-    ...['anggota', 'materi', 'struktur', 'produk'].map(name => fetch(`data/${name}.json?v=15`).then(response => response.json())),
-    fetch('data/merch.json?v=21').then(response => response.json()),
-    fetch('data/twini-ai.json?v=1').then(response => response.json()),
+    ...['anggota', 'materi', 'struktur', 'produk'].map(name => fetch(`data/${name}.json?v=22`).then(response => response.json())),
+    fetch('data/merch.json?v=22').then(response => response.json()),
+    fetch('data/twini-ai.json?v=3').then(response => response.json()),
   ]);
   await migrateLegacyPasswords();
   let overrides = {};
   try { overrides = JSON.parse(localStorage.getItem('idtc-cms-content') || '{}') || {}; } catch { overrides = {}; }
-  data = { anggota, materi: overrides.materi || materi, struktur, produk: overrides.produk || produk, twini: overrides.twini || twini, merch };
+  data = { anggota, materi: mergeLessonContent(materi, overrides.materi), struktur, produk: overrides.produk || produk, twini: expandTwiniKnowledge(overrides.twini || twini), merch };
   render();
 }
-async function loadHomeMap() { const target = app.querySelector('[data-map-placeholder]'); if (!target) return; try { const response = await fetch('assets/img/indonesia-map.svg?v=2'); target.innerHTML = await response.text(); target.querySelector('svg')?.setAttribute('aria-hidden', 'true'); } catch { target.classList.add('map-fallback'); } }
 function addHomeFeatures() { const actions = app.querySelector('.hero-actions'); if (!actions || app.querySelector('.feature-actions')) return; actions.insertAdjacentHTML('afterend', '<div class="feature-actions" aria-label="Fitur utama"><a href="#belajar" class="feature-button feature-literasi"><span>◫</span>Literasi</a><a href="#profile" class="feature-button feature-regulasi"><span>◇</span>Regulasi</a><a href="#pokja" class="feature-button feature-pilot"><span>◈</span>Pilot Project</a></div>'); }
-function render() { stopHomeCarousel(); const route = location.hash.slice(1) || initialRoute(); if (route === 'admin' && !hasCmsAccess()) { location.hash = getCurrentSession() ? 'profile' : 'auth'; return; } document.body.classList.toggle('onboarding-mode', route === 'onboarding'); document.body.classList.toggle('auth-mode', route === 'auth'); document.body.classList.toggle('shop-mode', route === 'shop'); applyPreferences(); app.innerHTML = views[route]?.() || home(); nav.querySelectorAll('a').forEach(link => link.classList.toggle('active', link.dataset.route === route)); if (route === 'onboarding') bindOnboarding(); if (route === 'auth') bindAuth(); if (route === 'profile') bindProfile(); if (route === 'admin') bindAdmin({ root: app.querySelector('.cms-page'), data, session: getCurrentSession(), getUsers: getLocalUsers, escapeHtml: esc }); if (route === 'shop') bindShop({ root: app.querySelector('.twini-shop'), catalog: data.merch, escapeHtml: esc }); if (route === 'home') { const heroImage = app.querySelector('.hero-art'); if (heroImage) heroImage.outerHTML = heroCarouselMarkup(); addHomeFeatures(); bindHomeCarousel(); loadHomeMap(); } window.scrollTo(0,0); }
+function render() { stopHomeCarousel(); const route = location.hash.slice(1) || initialRoute(); if (route === 'admin' && !hasCmsAccess()) { location.hash = getCurrentSession() ? 'profile' : 'auth'; return; } document.body.classList.toggle('home-mode', route === 'home'); document.body.classList.toggle('onboarding-mode', route === 'onboarding'); document.body.classList.toggle('auth-mode', route === 'auth'); document.body.classList.toggle('shop-mode', route === 'shop'); applyPreferences(); app.innerHTML = route.startsWith('pembelajaran/') ? halamanPembelajaran(route) : views[route]?.() || home(); app.querySelectorAll('img:not([loading])').forEach(image => { image.loading = 'lazy'; image.decoding = 'async'; }); nav.querySelectorAll('a').forEach(link => link.classList.toggle('active', link.dataset.route === route || (route.startsWith('pembelajaran/') && link.dataset.route === 'belajar'))); if (route === 'onboarding') bindOnboarding(); if (route === 'auth') bindAuth(); if (route === 'profile') bindProfile(); if (route.startsWith('pembelajaran/')) bindLearningChecklist(); if (route === 'admin') bindAdmin({ root: app.querySelector('.cms-page'), data, session: getCurrentSession(), getUsers: getLocalUsers, escapeHtml: esc }); if (route === 'shop') bindShop({ root: app.querySelector('.twini-shop'), catalog: data.merch, escapeHtml: esc }); if (route === 'home') { const heroImage = app.querySelector('.hero-art'); if (heroImage) heroImage.outerHTML = heroCarouselMarkup(); addHomeFeatures(); bindHomeCarousel(); } window.scrollTo(0,0); }
 window.addEventListener('hashchange', () => { const route = location.hash.slice(1) || 'home'; if (routeHistory.length > 1 && routeHistory[routeHistory.length - 2] === route) routeHistory.pop(); else if (routeHistory[routeHistory.length - 1] !== route) routeHistory.push(route); render(); });
 backButton.addEventListener('click', () => { if (routeHistory.length > 1) history.back(); else if (location.hash.slice(1) !== 'home') location.hash = 'home'; });
 nav.addEventListener('click', event => { const link = event.target.closest('a[data-route]'); if (!link) return; link.classList.remove('nav-bounce'); void link.offsetWidth; link.classList.add('nav-bounce'); setTimeout(() => link.classList.remove('nav-bounce'), 750); });

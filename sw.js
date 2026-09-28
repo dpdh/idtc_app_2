@@ -1,5 +1,73 @@
-const CACHE = 'idtc-mobile-v59';
-const ONBOARDING_ASSETS = Array.from({ length: 16 }, (_, index) => `./assets/img/dni/ITDC_${String(index + 1).padStart(2, '0')}.jpeg`);
-const CORE = ['./', './index.html', './styles.css?v=43', './app.js?v=38', './image-zoom.js?v=2', './auth-security.js?v=1', './admin-cms.js?v=2', './shop.js?v=3', './ambient-bubbles.js?v=1', './sw.js', './manifest.webmanifest', './assets/img/dni/ITDC_icon.png', './assets/img/dni/twini%20shop.png', './assets/img/dni/twini-ai-icon.png', './assets/img/dni/twini-shop-icon.png', './assets/img/dni/aink.jpg', ...ONBOARDING_ASSETS, './assets/img/dni/merchant/Gantungan%20Kunci.jpeg', './assets/img/dni/merchant/jaket_2.jpeg', './assets/img/dni/merchant/Kaos_kerah_2.jpeg', './assets/img/dni/merchant/Kaos.jpeg', './assets/img/dni/merchant/Dasi.jpeg', './assets/img/dni/merchant/boneka_maskot.jpeg', './assets/img/dni/merchant/Topi.jpeg', './assets/img/dni/merchant/Buku%20Catatan.jpeg', './data/twini-ai.json?v=1', './data/merch.json?v=21'];
-self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE))));
-self.addEventListener('fetch', event => event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request).then(response => { const copy = response.clone(); caches.open(CACHE).then(cache => cache.put(event.request, copy)); return response; }))));
+const CACHE_VERSION = 'v94';
+const SHELL_CACHE = `idtc-mobile-${CACHE_VERSION}`;
+const RUNTIME_CACHE = `idtc-runtime-${CACHE_VERSION}`;
+const CORE = [
+  './',
+  './index.html',
+  './styles.css?v=66',
+  './app.js?v=51',
+  './image-zoom.js?v=2',
+  './auth-security.js?v=1',
+  './admin-cms.js?v=3',
+  './shop.js?v=3',
+  './ambient-bubbles.js?v=1',
+  './sw.js',
+  './manifest.webmanifest',
+  './assets/img/favicon.png',
+  './assets/img/emblem-white.png',
+  './assets/img/dni/ITDC_icon.png',
+  './assets/img/dni/twini-ai-icon.png',
+  './assets/img/dni/twini-shop-icon.png',
+  './data/anggota.json?v=22',
+  './data/materi.json?v=22',
+  './data/struktur.json?v=22',
+  './data/produk.json?v=22',
+  './data/merch.json?v=22',
+  './data/twini-ai.json?v=3',
+];
+const MAX_RUNTIME_ENTRIES = 60;
+
+self.addEventListener('install', event => {
+  event.waitUntil(caches.open(SHELL_CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting()));
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(keys
+        .filter(key => (key.startsWith('idtc-mobile-') || key.startsWith('idtc-runtime-'))
+          && key !== SHELL_CACHE && key !== RUNTIME_CACHE)
+        .map(key => caches.delete(key))))
+      .then(() => self.clients.claim()),
+  );
+});
+
+self.addEventListener('fetch', event => {
+  const request = event.request;
+  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
+
+  if (request.mode === 'navigate') {
+    event.respondWith(fetch(request).catch(() => caches.match('./index.html')));
+    return;
+  }
+
+  if (request.headers.has('range')) return;
+
+  event.respondWith((async () => {
+    const cached = await caches.match(request);
+    if (cached) return cached;
+
+    const response = await fetch(request);
+    if (response.ok && response.type === 'basic') {
+      event.waitUntil((async () => {
+        const cache = await caches.open(RUNTIME_CACHE);
+        await cache.put(request, response.clone());
+        const keys = await cache.keys();
+        if (keys.length > MAX_RUNTIME_ENTRIES) {
+          await Promise.all(keys.slice(0, keys.length - MAX_RUNTIME_ENTRIES).map(key => cache.delete(key)));
+        }
+      })());
+    }
+    return response;
+  })());
+});

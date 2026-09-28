@@ -146,7 +146,8 @@ export function bindAdmin({ root, data, session, getUsers, escapeHtml }) {
       if (index < 0) data.twini.entries.unshift(item); else data.twini.entries[index] = item;
     } else {
       const pathIndex = Number(values.get('path'));
-      const module = { judul: title, tingkat: category || 'Dasar', status: editingKey === null ? 'rencana' : data.materi.jalur[Number(editingKey.split(':')[0])].modul[Number(editingKey.split(':')[1])].status, tautan: link, ringkasan: description, fokus: tags, hasil: String(values.get('result') || '').trim() };
+      const previousModule = editingKey === null ? {} : data.materi.jalur[Number(editingKey.split(':')[0])].modul[Number(editingKey.split(':')[1])];
+      const module = { ...previousModule, judul: title, tingkat: category || 'Dasar', status: previousModule.status || 'rencana', tautan: link, ringkasan: description, fokus: tags, hasil: String(values.get('result') || '').trim() };
       if (editingKey === null) data.materi.jalur[pathIndex].modul.push(module);
       else { const [oldPath, moduleIndex] = editingKey.split(':').map(Number); if (oldPath === pathIndex) data.materi.jalur[pathIndex].modul[moduleIndex] = module; else { data.materi.jalur[oldPath].modul.splice(moduleIndex, 1); data.materi.jalur[pathIndex].modul.push(module); } }
     }

@@ -109,7 +109,29 @@
       "output": [
         "Pilot project Digital Twin yang nyata dan terukur",
         "Dokumentasi dan model replikasi"
-      ]
+      ],
+      "arahProgram": {
+        "ringkasan": "Menyusun acuan bersama untuk merancang, membangun, dan menilai Digital Twin di Indonesia. Framework ini menghubungkan kebutuhan data spasial, platform, analitik, tata kelola, dan implementasi pilot.",
+        "bidangKerja": [
+          { "judul": "Sumber dan akuisisi data spasial", "cakupan": "Menetapkan cara memilih serta memperoleh data dari UAV, LiDAR, satelit, BIM, GIS eksisting, survei, dan sumber lain sesuai kebutuhan use case." },
+          { "judul": "Model 3D dan tingkat detail", "cakupan": "Mengkaji point cloud, mesh, BIM, semantic 3D, Level of Detail (LOD), Gaussian Splatting, dan representasi lain; pilih format serta detail berdasarkan tujuan penggunaan." },
+          { "judul": "Manajemen big geospatial data", "cakupan": "Merumuskan kebutuhan penyimpanan, basis data spasial, cloud atau on-premises, pengelolaan skala besar, serta data multi-temporal." },
+          { "judul": "Interoperabilitas", "cakupan": "Menyusun pola pertukaran format, API, dan standar terbuka, termasuk alur validasi serta pemetaan agar model BIM yang sudah tersedia dapat masuk ke platform." },
+          { "judul": "Platform Digital Twin", "cakupan": "Menentukan kemampuan visualisasi 2D/3D, dashboard, pencarian dan query, pemantauan, serta pengelolaan informasi aset." },
+          { "judul": "Integrasi IoT dan sensor waktu nyata", "cakupan": "Menentukan cara menghubungkan sensor dan sistem operasional, mengelola timestamp, frekuensi pembaruan, kualitas data, dan keterlambatan." },
+          { "judul": "GeoAI, analitik, dan simulasi", "cakupan": "Mengembangkan use case agar platform mendukung pemantauan, analisis, prediksi, simulasi, dan pengambilan keputusan, bukan hanya visualisasi." },
+          { "judul": "Tata kelola dan keamanan", "cakupan": "Menetapkan kepemilikan dan hak akses data, metadata, kualitas, tanggung jawab pembaruan, keamanan, privasi, dan audit." }
+        ],
+        "keluaran": [
+          { "judul": "Reference Architecture Digital Twin Indonesia", "cakupan": "Acuan komponen, aliran data, integrasi, dan pilihan implementasi yang dapat disesuaikan lintas sektor." },
+          { "judul": "Minimum Requirement dan Maturity Level", "cakupan": "Persyaratan minimum serta model tingkat kematangan Digital Twin versi Indonesia beserta indikator dan bukti penilaiannya." },
+          { "judul": "Pilot implementation dan use case", "cakupan": "Contoh implementasi terukur untuk menguji arsitektur, persyaratan, interoperabilitas, dan model kematangan." }
+        ],
+        "pembeda": [
+          { "judul": "Model 3D atau 3D GIS", "cakupan": "Dapat menyajikan bentuk, lokasi, dan atribut, tetapi belum tentu terhubung dengan kondisi operasional atau diperbarui untuk mendukung keputusan." },
+          { "judul": "Digital Twin", "cakupan": "Memiliki use case dan aset yang jelas, menghubungkan representasi dengan data aktual atau historis sesuai kebutuhan, mengatur pembaruan dan tata kelolanya, serta menggunakan informasi untuk pemantauan, analisis, simulasi, atau tindakan yang dapat dievaluasi." }
+        ]
+      }
     },
     {
       "id": "pokja3",

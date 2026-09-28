@@ -9,9 +9,522 @@
       "sasaran": "Pimpinan instansi, perencana, pejabat pengadaan",
       "warna": "teal",
       "modul": [
-        { "judul": "Pengantar Digital Twin: apa, untuk apa, batasnya", "tingkat": "Dasar", "status": "rencana", "tautan": null, "ringkasan": "Memahami definisi, tujuan, komponen, dan batas Digital Twin agar ekspektasi program tetap realistis.", "fokus": ["Konsep dasar", "Use case", "Batasan"], "hasil": "Mampu menjelaskan kapan Digital Twin memberi nilai tambah." },
-        { "judul": "Membaca kebutuhan: kapan Digital Twin bukan jawabannya", "tingkat": "Dasar", "status": "rencana", "tautan": null, "ringkasan": "Menganalisis masalah organisasi sebelum memilih teknologi Digital Twin sebagai solusi.", "fokus": ["Rumusan masalah", "Alternatif solusi", "Kelayakan"], "hasil": "Mampu menyusun keputusan go/no-go berbasis kebutuhan." },
-        { "judul": "Tata kelola & pengadaan Digital Twin", "tingkat": "Kepemimpinan", "status": "rencana", "tautan": null, "ringkasan": "Menyusun peran, kebijakan data, model pengadaan, dan mekanisme pengawasan program.", "fokus": ["Tata kelola", "Pengadaan", "Akuntabilitas"], "hasil": "Mampu menyiapkan kerangka tata kelola dan pengadaan." },
+        {
+          "judul": "Pengantar Digital Twin: apa, untuk apa, batasnya",
+          "tingkat": "Dasar",
+          "status": "rencana",
+          "tautan": null,
+          "ringkasan": "Memahami definisi, tujuan, komponen, dan batas Digital Twin agar ekspektasi program tetap realistis.",
+          "fokus": ["Konsep dasar", "Use case", "Batasan"],
+          "hasil": "Mampu menjelaskan kapan Digital Twin memberi nilai tambah.",
+          "konten": [
+            {
+              "type": "section",
+              "judul": "Apa itu Digital Twin?",
+              "paragraf": [
+                "Digital Twin (kembaran digital) adalah representasi digital dari objek, sistem, proses, atau lingkungan fisik yang terhubung dengan data tentang keadaan atau perilaku dunia nyata. Representasi ini membantu orang memantau kondisi, menganalisis perubahan, menguji skenario, dan mengambil keputusan dengan lebih terinformasi.",
+                "Bentuknya tidak harus berupa model 3D. Digital Twin dapat menggabungkan model geometri, data aset, aturan operasional, simulasi, dan analitik. Seberapa sering data diperbarui, seberapa rinci modelnya, dan apakah ada aliran balik ke aset fisik ditentukan oleh tujuan serta risiko penggunaannya."
+              ],
+              "kutipan": "Digital Twin menghubungkan representasi digital dengan bukti dari sistem nyata agar kondisi dan konsekuensi suatu keputusan dapat dipahami dengan lebih baik.",
+              "subbagian": [
+                {
+                  "judul": "Contoh sederhana: mesin di pabrik",
+                  "paragraf": ["Sebuah turbin dilengkapi pengukuran suhu, getaran, dan tekanan. Data operasi dikaitkan dengan model dan riwayat perawatan, lalu ditampilkan untuk membantu teknisi menilai kondisi mesin. Analitik dapat memberi peringatan dini, tetapi teknisi tetap memeriksa bukti dan menentukan tindakan."],
+                  "poin": ["Objek fisik: turbin yang beroperasi.", "Data: pengukuran sensor dan catatan perawatan.", "Representasi digital: model aset beserta kondisi dan konteksnya.", "Keputusan: inspeksi atau perawatan berdasarkan kebutuhan dan tingkat risiko."]
+                }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Komponen utama Digital Twin",
+              "paragraf": ["Digital Twin adalah susunan komponen yang saling terhubung, bukan sekadar visualisasi atau model tiga dimensi."],
+              "subbagian": [
+                { "judul": "Objek atau proses fisik", "paragraf": ["Aset yang menjadi fokus, misalnya mesin, gedung, kendaraan, jaringan energi, kawasan, atau proses layanan. Sensor dapat dipasang langsung, tetapi data juga dapat berasal dari inspeksi, dokumen, sistem operasional, atau sumber lain yang tepercaya."] },
+                { "judul": "Representasi digital", "paragraf": ["Representasi dapat memuat geometri 2D/3D, struktur aset, hubungan antarbagian, parameter teknik, aturan proses, atau model matematis. Model yang diperlukan bergantung pada keputusan yang hendak didukung."], "poin": ["Model geometri untuk bentuk, lokasi, dan visualisasi.", "Model fisik atau matematis untuk perilaku sistem.", "Model analitik atau AI untuk klasifikasi, deteksi anomali, dan prediksi."] },
+                { "judul": "Data dan sumber informasi", "paragraf": ["Kualitas, waktu pencatatan, satuan, konteks, dan asal data perlu diketahui. Data yang tidak lengkap atau tidak sinkron dapat membuat gambaran kondisi menyesatkan."], "tabel": { "kolom": ["Sumber", "Contoh informasi"], "baris": [["Sensor IoT", "Suhu, tekanan, getaran, kelembapan"], ["Kamera dan pemindaian", "Kondisi visual, bentuk, point cloud"], ["GPS dan GIS", "Lokasi, jaringan, konteks wilayah"], ["BIM dan sistem aset", "Komponen, spesifikasi, relasi aset"], ["ERP, SCADA, dan operasi", "Produksi, status operasi, pemakaian energi"], ["Riwayat dan inspeksi", "Gangguan, perbaikan, hasil pemeriksaan"]] } },
+                { "judul": "Koneksi, integrasi, dan tata kelola", "paragraf": ["Data berpindah melalui jaringan, API, platform integrasi, atau proses pemutakhiran berkala. Cloud dan edge computing dapat digunakan sesuai kebutuhan. Pengelola juga perlu menetapkan pemilik data, hak akses, keamanan, kualitas, dan tanggung jawab atas keputusan."], "alur": ["Objek atau proses nyata", "Sensor, inspeksi, dan sistem sumber", "Integrasi, validasi, dan penyimpanan", "Model, analitik, atau simulasi", "Visualisasi untuk analisis", "Keputusan dan tindakan yang berwenang"] }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Model, Digital Shadow, dan Digital Twin",
+              "paragraf": ["Istilah tingkatan konektivitas sering dipakai untuk menjelaskan kematangan hubungan antara aset dan representasi digital. Batas dan penamaannya tidak seragam di semua standar atau literatur, sehingga gunakan sebagai kerangka diskusi, bukan aturan universal."],
+              "tabel": { "kolom": ["Istilah praktis", "Arah hubungan data", "Contoh"], "baris": [["Digital Model", "Model digital berdiri sendiri atau diperbarui manual", "Model CAD atau BIM tanpa sinkronisasi otomatis"], ["Digital Shadow", "Data kondisi fisik mengalir ke representasi digital", "Dashboard yang menerima telemetri mesin"], ["Digital Twin", "Representasi digital terhubung dengan data sistem nyata; pembaruan dan umpan balik dapat bervariasi", "Model aset yang diperbarui berkala dan dipakai mengevaluasi skenario operasi"]] },
+              "catatan": "Kendali otomatis dari model digital ke aset fisik bukan syarat untuk setiap Digital Twin. Jika umpan balik otomatis digunakan, terapkan pengujian, batas kendali, keamanan, dan persetujuan manusia sesuai risiko. Istilah Autonomous Digital Twin juga bukan tingkat baku yang wajib dicapai; otonomi adalah kemampuan tambahan yang memerlukan pengawasan kuat."
+            },
+            {
+              "type": "section",
+              "judul": "Cara kerja dalam satu siklus",
+              "paragraf": ["Siklus implementasi dapat berlangsung langsung, berkala, atau melalui analisis sesuai kebutuhan. Tidak semua proyek memerlukan pembaruan waktu nyata."],
+              "langkah": ["Kumpulkan data dari sensor, inspeksi, sistem operasional, dan sumber lain yang relevan.", "Validasi waktu, satuan, identitas aset, kelengkapan, dan kualitas data.", "Hubungkan data dengan representasi digital serta konteks proses atau lokasi.", "Analisis kondisi, bandingkan dengan batas yang disepakati, atau jalankan simulasi skenario.", "Tinjau hasil bersama pemilik proses, putuskan tindakan, lalu catat hasilnya untuk evaluasi berikutnya."]
+            },
+            {
+              "type": "section",
+              "judul": "Tujuan dan fungsi",
+              "paragraf": ["Digital Twin bernilai ketika informasi yang dihubungkan membantu menyelesaikan masalah operasional atau perencanaan yang spesifik."],
+              "subbagian": [
+                { "judul": "Pemantauan kondisi", "paragraf": ["Menggabungkan status aset dan indikator operasional agar perubahan dapat diketahui lebih cepat. Tampilan dashboard saja belum cukup; indikator harus punya konteks dan penanggung jawab."] },
+                { "judul": "Perawatan berbasis kondisi dan prediksi", "paragraf": ["Riwayat gangguan dan telemetri dapat membantu menentukan prioritas pemeriksaan. Prediksi bukan kepastian, sehingga ambang peringatan dan tindak lanjut perlu diuji terhadap hasil lapangan."] },
+                { "judul": "Simulasi dan evaluasi skenario", "paragraf": ["Model dapat dipakai membandingkan pilihan sebelum perubahan dilakukan, misalnya dampak jadwal operasi, perubahan desain, atau strategi pemeliharaan. Hasil hanya seandal asumsi dan data modelnya."] },
+                { "judul": "Optimasi dan keputusan berbasis data", "paragraf": ["Analisis dapat membantu mengidentifikasi penggunaan energi, kapasitas, atau urutan pekerjaan yang lebih efisien. Tetapkan indikator awal (baseline), target, biaya, dan risiko agar manfaat dapat dievaluasi."] }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Penerapan di berbagai bidang",
+              "paragraf": ["Ruang lingkup Digital Twin mengikuti aset, proses, dan kebutuhan keputusan. Contoh berikut bukan jaminan manfaat; tiap use case perlu diuji dengan data dan ukuran dampak yang sesuai."],
+              "poin": ["Manufaktur: memantau mesin dan lini produksi, membandingkan skenario, serta merencanakan perawatan.", "Energi: memahami kondisi pembangkit, turbin, dan jaringan untuk membantu inspeksi serta perencanaan operasi.", "Konstruksi dan bangunan: menghubungkan BIM, data aset, dan operasi gedung untuk mendukung pemeliharaan atau analisis energi.", "Transportasi: menggabungkan lokasi dan status armada, atau menguji skenario operasi bandara dan pelabuhan.", "Kesehatan: mendukung analisis dan perencanaan klinis melalui model yang tervalidasi; data pasien memerlukan perlindungan privasi dan pengawasan ahli.", "Kawasan dan kota: menghubungkan informasi bangunan, jalan, jaringan, dan layanan untuk menguji pilihan perencanaan secara terukur."]
+            },
+            {
+              "type": "section",
+              "judul": "Teknologi pendukung",
+              "paragraf": ["Teknologi dipilih berdasarkan kebutuhan dan kemampuan organisasi. Tidak semua proyek memerlukan seluruh teknologi berikut."],
+              "tabel": { "kolom": ["Teknologi", "Peran yang mungkin"], "baris": [["IoT dan sensor", "Mengambil pengukuran dari aset atau lingkungan"], ["AI dan machine learning", "Membantu klasifikasi, deteksi pola, atau prediksi"], ["Cloud dan edge computing", "Menyediakan komputasi dan penyimpanan sesuai latensi serta tata kelola"], ["GIS, BIM, dan model 3D", "Memberi konteks lokasi, bentuk, komponen, dan hubungan aset"], ["API dan platform integrasi", "Menghubungkan sistem, menyelaraskan skema, dan mengelola pertukaran data"], ["AR/VR", "Menyajikan model secara imersif untuk kebutuhan tertentu"], ["Blockchain", "Dapat dipertimbangkan untuk kasus pencatatan bersama tertentu, tetapi bukan komponen inti Digital Twin"]] }
+            },
+            {
+              "type": "section",
+              "judul": "Manfaat yang dapat diukur",
+              "paragraf": ["Manfaat harus dirumuskan sebagai hipotesis dan diukur terhadap kondisi awal. Contoh indikator: waktu henti, biaya perawatan, konsumsi energi per unit, waktu inspeksi, atau ketepatan pemenuhan layanan."],
+              "poin": ["Efisiensi operasi jika informasi membantu mengurangi waktu tunggu atau pemborosan.", "Perencanaan perawatan yang lebih tepat jika kondisi dan riwayat aset tersedia.", "Pengujian alternatif desain atau operasi sebelum perubahan diterapkan.", "Koordinasi lintas tim yang lebih baik ketika definisi dan sumber data disepakati.", "Pengambilan keputusan yang lebih transparan melalui asumsi, data, dan hasil yang terdokumentasi."]
+            },
+            {
+              "type": "section",
+              "judul": "Batasan dan tantangan",
+              "paragraf": ["Digital Twin tidak otomatis membuat data benar atau keputusan lebih baik. Implementasi perlu mempertimbangkan biaya siklus hidup, kemampuan organisasi, serta dampak jika model atau koneksi gagal."],
+              "poin": ["Biaya dan kapasitas: sensor, integrasi, pemeliharaan model, lisensi, infrastruktur, dan tenaga ahli harus dihitung sepanjang siklus hidup.", "Kualitas dan kesenjangan data: data terlambat, hilang, salah satuan, atau salah identitas aset dapat menghasilkan analisis keliru.", "Kompleksitas dan ketidakpastian: model adalah penyederhanaan; kondisi nyata yang tidak dimodelkan dapat mengubah hasil.", "Keamanan dan privasi: batasi akses, lindungi data, catat aktivitas, siapkan pemulihan, dan kelola risiko perangkat serta jaringan.", "Interoperabilitas: sistem lama, format tertutup, koordinat, identitas aset, dan arti istilah perlu diselaraskan.", "Ketergantungan vendor dan tata kelola: pastikan portabilitas data, dokumentasi, hak akses, peran, serta keberlanjutan layanan.", "Batas model: hasil prediksi memiliki ketidakpastian. Keputusan berdampak tinggi tetap membutuhkan validasi dan tanggung jawab manusia."]
+            },
+            {
+              "type": "section",
+              "judul": "Perbedaan dengan teknologi terkait",
+              "tabel": { "kolom": ["Teknologi", "Fokus utama", "Hubungannya dengan Digital Twin"], "baris": [["Simulasi", "Menguji perilaku model berdasarkan asumsi", "Dapat menjadi kemampuan di dalam Digital Twin, tetapi tidak selalu terhubung ke data aset aktual"], ["CAD", "Merancang geometri dan spesifikasi", "Dapat menyumbang model geometri, tetapi bukan keseluruhan sistem operasional"], ["IoT", "Menghubungkan perangkat dan mengirim pengukuran", "Dapat menyediakan data, tetapi tidak dengan sendirinya menjadi model kontekstual"], ["BIM", "Mengelola informasi aset bangunan dan konstruksi", "Dapat menjadi bagian representasi digital untuk aset atau kawasan"], ["AI", "Menemukan pola dan menghasilkan analisis", "Dapat memperkaya analitik, tetapi bukan representasi aset dengan sendirinya"], ["Digital Twin", "Menghubungkan representasi, data, konteks, dan penggunaan untuk keputusan", "Menggabungkan kemampuan yang relevan sesuai tujuan"]] }
+            },
+            {
+              "type": "section",
+              "judul": "Skenario: pemeliharaan mesin pabrik",
+              "subbagian": [
+                { "judul": "Tanpa alur data terhubung", "langkah": ["Mesin beroperasi tanpa pemantauan kondisi yang memadai.", "Gangguan baru diketahui setelah performa turun atau mesin berhenti.", "Produksi tertunda sambil tim mencari penyebab dan melakukan perbaikan."] },
+                { "judul": "Dengan representasi dan analisis kondisi", "langkah": ["Data getaran, suhu, dan riwayat perawatan dikaitkan dengan identitas mesin.", "Pemeriksaan kualitas data dan ambang peringatan membantu membedakan sinyal dari gangguan pengukuran.", "Teknisi meninjau peringatan terhadap kondisi aktual dan menentukan pemeriksaan.", "Tindakan serta hasil inspeksi dicatat untuk memperbaiki aturan dan mengevaluasi manfaat."] }
+              ],
+              "catatan": "Digital Twin tidak menjamin kerusakan dapat diprediksi atau dihindari. Keberhasilan dinilai dengan data lapangan, tingkat kesalahan peringatan, waktu henti, biaya, dan risiko keselamatan."
+            },
+            {
+              "type": "section",
+              "judul": "Arah perkembangan",
+              "paragraf": ["AI, sensor yang lebih terjangkau, konektivitas, komputasi edge, serta teknologi spasial dapat memperluas kemampuan Digital Twin. Namun, kemampuan lebih lanjut juga menambah kebutuhan validasi, keamanan, keterampilan, dan tata kelola."],
+              "poin": ["AI dapat membantu analisis dan rekomendasi, tetapi hasilnya perlu diuji dan dapat dijelaskan sesuai risikonya.", "Lingkungan yang makin terkoneksi memperbesar kebutuhan interoperabilitas dan perlindungan data.", "AR/VR dan spatial computing dapat membantu interaksi dengan model untuk tugas tertentu; keduanya bukan syarat Digital Twin.", "Otomasi keputusan hanya layak jika batas kendali, pengawasan, kegagalan, dan akuntabilitas dirancang dengan jelas."]
+            },
+            {
+              "type": "section",
+              "judul": "Kesimpulan",
+              "paragraf": ["Digital Twin menghubungkan representasi digital dengan data dan konteks dunia nyata untuk membantu pemantauan, analisis, simulasi, dan keputusan. Nilai tambahnya bergantung pada masalah yang dipilih, mutu data, model yang sesuai, tata kelola, dan kemampuan organisasi menindaklanjuti hasil."],
+              "kutipan": "Mulailah dari keputusan yang ingin diperbaiki, bukan dari teknologi yang ingin dipasang.",
+              "poin": ["Tentukan aset, proses, pengguna, dan keputusan yang ingin didukung.", "Pilih data dan tingkat detail model secukupnya.", "Tetapkan baseline, indikator manfaat, risiko, dan penanggung jawab.", "Uji dalam lingkup terbatas dan perluas hanya jika hasilnya terbukti berguna."]
+            }
+          ]
+        },
+        {
+          "judul": "Menilai kebutuhan dan kelayakan Digital Twin",
+          "tingkat": "Dasar",
+          "status": "rencana",
+          "tautan": null,
+          "ringkasan": "Menganalisis masalah organisasi sebelum memilih teknologi Digital Twin sebagai solusi.",
+          "fokus": ["Rumusan masalah", "Alternatif solusi", "Kelayakan"],
+          "hasil": "Mampu menyusun keputusan go/no-go berbasis kebutuhan.",
+          "konten": [
+            {
+              "type": "section",
+              "judul": "Tujuan pembelajaran",
+              "paragraf": ["Setelah mempelajari materi ini, peserta diharapkan mampu menilai apakah Digital Twin tepat untuk suatu kebutuhan, serta menentukan langkah yang sebanding dengan kesiapan dan risikonya."],
+              "poin": ["Memahami kebutuhan dan kelayakan Digital Twin.", "Mengidentifikasi masalah yang benar-benar membutuhkan representasi digital terhubung.", "Membedakan kebutuhan BIM, model 3D, IoT, CMMS, dan Digital Twin.", "Menilai kesiapan aset, data, teknologi, proses, organisasi, dan anggaran.", "Membandingkan manfaat, biaya siklus hidup, risiko, dan alternatif solusi.", "Menyusun penilaian kelayakan dan rekomendasi: lanjut, pilot, tunda, atau tidak dilanjutkan."]
+            },
+            {
+              "type": "section",
+              "judul": "Mengapa kebutuhan harus dinilai?",
+              "paragraf": ["Digital Twin dapat membantu pengelolaan konstruksi, manufaktur, infrastruktur, energi, dan fasilitas. Namun, tidak semua aset memerlukan model terhubung, sensor, atau analitik. Keputusan investasi sebaiknya dimulai dari masalah dan manfaat yang bisa diukur, bukan dari tren atau keinginan memiliki visualisasi 3D."],
+              "subbagian": [
+                { "judul": "Contoh: gedung kantor kecil", "paragraf": ["Gedung dengan sedikit aset, jadwal servis sederhana, dan gangguan yang mudah ditemukan mungkin cukup dikelola dengan daftar aset, model as-built, spreadsheet terstruktur, atau CMMS sederhana. Digital Twin penuh berpotensi menambah biaya dan pekerjaan tanpa manfaat sepadan."] },
+                { "judul": "Contoh: rumah sakit besar", "paragraf": ["Fasilitas dengan banyak aset berkekritisan berbeda, sistem HVAC kompleks, dan operasi 24 jam mungkin memerlukan integrasi informasi model, sensor terpilih, serta riwayat pemeliharaan. Manfaat potensialnya perlu dibuktikan pada use case yang spesifik, misalnya pencarian aset kritis atau pemantauan kondisi HVAC di area tertentu."] }
+              ],
+              "kutipan": "Problem first, technology second: pahami masalahnya dahulu, baru pilih tingkat teknologi yang sesuai.",
+              "poin": ["Masalah apa yang ingin diselesaikan?", "Mengapa Digital Twin lebih sesuai daripada solusi sederhana?", "Apakah data tersedia dan dapat dipercaya?", "Apakah organisasi siap dari sisi biaya, teknologi, SDM, dan proses?", "Apakah manfaat yang diharapkan sebanding dengan biaya dan risiko?"]
+            },
+            {
+              "type": "section",
+              "judul": "Memahami kebutuhan Digital Twin",
+              "paragraf": ["Kebutuhan muncul ketika organisasi perlu menghubungkan representasi aset dengan informasi aktual atau historis untuk memperbaiki pemantauan, analisis, pemeliharaan, keselamatan, efisiensi, atau keputusan operasional. Kebutuhan dapat berada pada beberapa tingkat."],
+              "tabel": { "kolom": ["Tingkat kebutuhan", "Pertanyaan utama", "Contoh"], "baris": [["Visibilitas", "Di mana aset dan bagaimana statusnya?", "Petugas sulit menemukan valve atau panel listrik."], ["Analisis", "Apa yang terjadi dan mengapa?", "Tim ingin menelusuri kenaikan konsumsi energi atau gangguan berulang."], ["Optimasi", "Skenario atau tindakan apa yang memberi hasil lebih baik?", "Tim membandingkan jadwal pemeliharaan atau operasi chiller."]] },
+              "catatan": "Kebutuhan analisis dan optimasi dapat membuka potensi manfaat yang lebih besar, tetapi biasanya juga menambah kompleksitas, ketergantungan data, dan biaya. Satu indikator masalah saja belum membuktikan Digital Twin diperlukan."
+            },
+            {
+              "type": "section",
+              "judul": "BIM, IoT, dan Digital Twin: pilih sesuai kebutuhan",
+              "paragraf": ["BIM, IoT, dan Digital Twin dapat saling melengkapi, tetapi menjawab kebutuhan yang berbeda. Digital Twin tidak selalu memerlukan model 3D atau data waktu nyata; keduanya bergantung pada keputusan yang hendak didukung."],
+              "tabel": { "kolom": ["Aspek", "BIM", "IoT", "Digital Twin"], "baris": [["Fokus", "Informasi dan representasi aset sepanjang proyek", "Mengukur dan mengirim data perangkat", "Menghubungkan representasi, data, konteks, dan penggunaan untuk keputusan"], ["Data umum", "Geometri, properti, spesifikasi, dokumen", "Telemetri seperti suhu, tekanan, dan status", "Data BIM/aset, operasi, sensor, pemeliharaan, dan historis sesuai use case"], ["Contoh penggunaan", "Koordinasi desain, konstruksi, serah terima", "Mengirim pengukuran sensor", "Pemantauan, analisis, simulasi, atau optimasi aset"], ["Pembaruan", "Mengikuti perubahan dan tata kelola informasi", "Mengikuti frekuensi pengukuran", "Mengikuti kebutuhan operasional; tidak harus waktu nyata"], ["Keterbatasan", "Tidak otomatis mencerminkan kondisi operasi", "Data tanpa konteks belum tentu menjelaskan kondisi aset", "Membutuhkan tata kelola, integrasi, dan pembuktian nilai"]] },
+              "catatan": "Model BIM yang terpelihara dapat menjadi sumber informasi Digital Twin. Sistem IoT dapat memasok pengukuran. Keduanya sendiri belum tentu membentuk Digital Twin."
+            },
+            {
+              "type": "section",
+              "judul": "Indikator dan kriteria kebutuhan",
+              "paragraf": ["Digital Twin patut dipertimbangkan ketika masalah berulang atau berdampak besar, informasi yang diperlukan tersebar, dan solusi terhubung dapat mengubah keputusan atau proses kerja."],
+              "tabel": { "kolom": ["Indikator", "Masalah yang terlihat", "Kemungkinan respons"], "baris": [["Data aset tersebar", "Informasi berada di banyak file dan sistem", "Integrasi data aset"], ["Sulit menemukan aset", "Tim membuang waktu mencari lokasi dan identitas", "Pencarian aset berbasis lokasi atau model"], ["Gangguan berulang", "Penyebab dan riwayat sulit ditelusuri", "Analisis histori dan kondisi"], ["Downtime tinggi", "Gangguan menghentikan layanan atau produksi", "Pemantauan dan analisis operasional"], ["Biaya perawatan meningkat", "Pekerjaan darurat dan jadwal kurang terencana", "Evaluasi CMMS dan optimasi pemeliharaan"], ["Model tidak sesuai kondisi", "Informasi as-built sudah usang", "Verifikasi dan pembaruan model"], ["Konsumsi energi tinggi", "Penyebab pemborosan tidak diketahui", "Analisis data energi dan operasi"], ["Aset kritis", "Kegagalan berdampak besar pada keselamatan atau layanan", "Penilaian kondisi, respons, dan risiko"], ["Sistem kompleks", "Ketergantungan antar-aset sulit dipahami", "Analisis hubungan dan skenario"], ["Keputusan lambat", "Informasi penting tidak terintegrasi", "Perbaikan alur informasi dan analitik"]] },
+              "catatan": "Nilai tingkat keparahan dan frekuensi masalah, dampaknya, alternatif penyelesaian, serta kemampuan pengguna untuk menindaklanjuti informasi."
+            },
+            {
+              "type": "section",
+              "judul": "Kapan Digital Twin tepat dipertimbangkan?",
+              "subbagian": [
+                { "judul": "Aset dan sistem kompleks", "paragraf": ["Bangunan atau fasilitas dengan sistem struktur, HVAC, plumbing, listrik, proteksi kebakaran, lift, keamanan, BMS, dan IoT yang saling berhubungan dapat memerlukan pemahaman hubungan antar-aset serta dampak gangguan."] },
+                { "judul": "Kekritisan aset tinggi", "paragraf": ["Rumah sakit, bandara, pusat data, pembangkit listrik, transportasi, pengolahan air, atau pabrik dapat memiliki aset yang kegagalannya berdampak pada keselamatan, layanan, lingkungan, operasi, atau keuangan. Prioritaskan aset dan keputusan yang risikonya paling berarti."] },
+                { "judul": "Informasi kondisi yang lebih mutakhir", "paragraf": ["Data operasional seperti suhu, tekanan, getaran, energi, status, dan kondisi lingkungan dapat berasal dari sensor, BMS, SCADA, CMMS, inspeksi manual, atau sumber lain. Frekuensi data perlu mengikuti kebutuhan; pembaruan waktu nyata bukan keharusan universal."] },
+                { "judul": "Analisis lintas waktu dan tim", "paragraf": ["Use case yang menggabungkan kondisi terkini, histori gangguan, pemeliharaan, dan konteks aset dapat membantu menjawab apa yang terjadi, mengapa, serta tindakan apa yang perlu diuji. Manfaat juga mungkin muncul ketika owner, engineering, BIM, facility management, maintenance, HSE, dan manajemen perlu bekerja dari informasi yang konsisten."] }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Kapan Digital Twin belum tepat?",
+              "paragraf": ["Pertimbangkan solusi yang lebih sederhana atau tunda implementasi apabila masalah belum jelas, keputusan tidak akan berubah, atau biaya dan risiko melebihi nilai yang dapat dibuktikan."],
+              "poin": ["Masalah dapat diselesaikan dengan daftar aset, formulir digital, spreadsheet terstruktur, BIM as-built, atau CMMS.", "Jumlah dan kompleksitas aset rendah serta tidak ada kebutuhan menghubungkan data aktual.", "Belum ada pengguna dan keputusan operasional yang akan didukung.", "Data sumber tidak tersedia, tidak konsisten, tidak memiliki pemilik, atau tidak dapat digunakan secara sah.", "Organisasi belum memiliki anggaran, kemampuan teknis, proses, atau penanggung jawab untuk mengelola solusi sepanjang siklus hidup.", "Biaya pengembangan dan operasi lebih besar daripada manfaat yang masuk akal.", "Sistem yang ada sudah menyelesaikan kebutuhan tanpa integrasi tambahan yang berarti."],
+              "subbagian": [
+                { "judul": "Contoh gedung kantor kecil", "paragraf": ["Sebuah kantor dua lantai memiliki 15 unit AC, dua pompa air, satu panel utama, serta masalah keterlambatan servis dan catatan yang sulit dicari. Langkah yang proporsional dapat berupa inventaris aset, jadwal pemeliharaan, QR code, dan CMMS sederhana. Digital Twin dengan sensor di semua aset dan visualisasi 3D interaktif belum tentu membenarkan biaya tambahannya."] },
+                { "judul": "Pilih kompleksitas terendah yang memadai", "paragraf": ["Jika laporan kerusakan terlambat diterima, formulir digital dan notifikasi mungkin cukup. Jika histori, work order, dan jadwal sulit dikelola, CMMS dapat menjadi pilihan. Jika kebutuhan berkembang menjadi analisis kondisi, hubungan antar-aset, dan evaluasi skenario, Digital Twin dapat dinilai lebih lanjut."] }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Kesalahan umum dalam pengambilan keputusan",
+              "tabel": { "kolom": ["Kesalahan", "Dampak yang mungkin", "Respons yang lebih baik"], "baris": [["Mengikuti tren", "Solusi tidak menjawab kebutuhan", "Mulai dengan problem statement dan pengguna"], ["Memulai dari visualisasi 3D", "Model menarik tetapi tidak mendukung alur kerja", "Tentukan keputusan dan kebutuhan informasi dahulu"], ["Memasang sensor sebanyak mungkin", "Biaya, alarm, dan beban pengelolaan meningkat", "Pilih aset dan pengukuran berdasarkan use case"], ["Mengabaikan mutu data", "Analisis dan keputusan tidak dapat dipercaya", "Validasi identitas, satuan, waktu, dan kelengkapan"], ["Tidak menetapkan KPI", "Manfaat sulit dievaluasi", "Tetapkan baseline dan target terukur"], ["Mengabaikan pengguna akhir", "Sistem tidak digunakan secara konsisten", "Libatkan pengguna dalam desain dan uji coba"], ["Mengabaikan biaya jangka panjang", "Biaya operasi dan pemeliharaan membengkak", "Hitung total cost of ownership"], ["Menganggap AI wajib", "Kompleksitas bertambah tanpa manfaat jelas", "Gunakan analitik hanya jika dibutuhkan dan tervalidasi"], ["Mengabaikan sistem yang ada", "Fungsi tumpang tindih dan investasi terduplikasi", "Nilai integrasi serta alternatif terhadap sistem eksisting"]] }
+            },
+            {
+              "type": "section",
+              "judul": "Digital Twin Feasibility Assessment",
+              "paragraf": ["Penilaian kelayakan adalah proses sistematis untuk mengetahui apakah solusi dapat dilaksanakan, memberi manfaat yang relevan, dan dapat dikelola secara berkelanjutan. Lakukan sebelum investasi besar atau implementasi skala penuh."],
+              "subbagian": [
+                { "judul": "Kelayakan strategis", "poin": ["Apakah masalah merupakan prioritas organisasi?", "Apakah use case mendukung tujuan dan layanan?", "Apakah sponsor dan pemilik keputusan tersedia?"] },
+                { "judul": "Kelayakan teknis", "poin": ["Apakah model aset, jaringan, platform, dan infrastruktur memadai?", "Dapatkah sistem sumber diintegrasikan dan diuji?", "Apakah solusi dapat dipelihara dan dikembangkan?"] },
+                { "judul": "Kelayakan finansial", "poin": ["Berapa investasi awal dan biaya tahunan?", "Manfaat apa yang dapat diukur dan divalidasi?", "Bagaimana ROI, payback, TCO, serta NPV pada berbagai skenario?"] },
+                { "judul": "Kelayakan operasional", "poin": ["Apakah alur kerja maintenance atau operasi telah didefinisikan?", "Apakah pengguna mampu memakai informasi dan menangani alarm?", "Siapa pemilik proses, data, dan sistem?"] },
+                { "judul": "Kelayakan data", "poin": ["Apakah data aset dan historis tersedia serta cukup berkualitas?", "Apakah Asset ID konsisten antar-sistem?", "Apakah hak akses, pemilik, dan frekuensi pembaruan jelas?"] },
+                { "judul": "Risiko dan keamanan", "poin": ["Bagaimana mengelola keamanan siber, privasi, keselamatan, dan akses?", "Apakah tersedia backup, pemulihan, pencatatan aktivitas, dan respons insiden?", "Apakah risiko vendor dan keberlanjutan layanan dapat diterima?"] }
+              ],
+              "catatan": "Bobot dan pertanyaan penilaian perlu disesuaikan dengan aset, use case, dan tingkat risikonya. Contoh integrasi perangkat lunak tertentu bukan rekomendasi vendor; evaluasi interoperabilitas dan persyaratan organisasi."
+            },
+            {
+              "type": "section",
+              "judul": "Matriks dan skor kelayakan",
+              "paragraf": ["Gunakan skala 1 sampai 5 dengan bukti pendukung: 1 berarti kesiapan sangat rendah, 2 rendah, 3 sedang atau sebagian siap, 4 baik, dan 5 sangat baik atau siap. Skor bukan pengganti business case maupun penilaian risiko kritis."],
+              "tabel": { "kolom": ["Dimensi", "Bobot contoh", "Skor simulasi", "Nilai tertimbang"], "baris": [["Strategis", "15%", "5", "15"], ["Teknis", "20%", "4", "16"], ["Finansial", "20%", "3", "12"], ["Operasional", "15%", "3", "9"], ["Data", "20%", "3", "12"], ["Risiko dan keamanan", "10%", "4", "8"], ["Total", "100%", "", "72 dari 100"]] },
+              "alur": ["Beri skor setiap dimensi berdasarkan bukti, asumsi, dan kesenjangan yang terdokumentasi.", "Kalikan skor dimensi dengan bobotnya, lalu bagi dengan skor maksimum 5.", "Jumlahkan nilai tertimbang untuk memperoleh skor total dari 100.", "Tinjau dimensi berskor rendah dan risiko kritis secara terpisah; tetapkan tindakan perbaikan."],
+              "catatan": "Contoh bobot bukan standar industri. Contoh skor 72 dari 100 menunjukkan potensi untuk dikaji melalui pilot, bukan persetujuan otomatis. Skor tinggi pun tidak membuktikan kebutuhan atau manfaat bisnis."
+            },
+            {
+              "type": "section",
+              "judul": "Menilai kebutuhan secara sistematis",
+              "subbagian": [
+                { "judul": "Tulis problem statement", "paragraf": ["Contoh: tim pengelola gedung 20 lantai kesulitan mengetahui lokasi, kondisi, dan riwayat pemeliharaan aset HVAC. Data tersebar, inspeksi dan pelaporan masih manual, sehingga pencarian informasi lambat dan analisis kinerja terbatas. Tujuan awalnya adalah mempercepat identifikasi aset, menyatukan informasi pemeliharaan, dan memperbaiki keputusan perawatan."] },
+                { "judul": "Ukur kondisi awal", "paragraf": ["Catat baseline yang relevan, misalnya jumlah aset, waktu pencarian, gangguan per bulan, downtime, biaya perawatan darurat, kelengkapan data, dan pekerjaan yang terlambat. Angka simulasi harus diberi label sebagai contoh, bukan kondisi aktual."], "tabel": { "kolom": ["Indikator", "Contoh baseline simulasi"], "baris": [["Aset HVAC", "450 unit"], ["Waktu pencarian aset", "20 menit"], ["Gangguan per bulan", "30 kasus"], ["Downtime rata-rata", "4 jam per gangguan"], ["Biaya perawatan darurat", "Rp600 juta per tahun"], ["Kelengkapan data aset", "65%"], ["Pekerjaan maintenance terlambat", "25%"]] } },
+                { "judul": "Pilih use case dan KPI", "paragraf": ["Prioritaskan use case yang memiliki pengguna, keputusan, dan dampak yang jelas. Pilih metrik yang dapat dikumpulkan sebelum dan sesudah uji coba."], "tabel": { "kolom": ["Use case", "Tujuan", "Contoh KPI"], "baris": [["Pencarian aset", "Menemukan dan mengidentifikasi aset lebih cepat", "Waktu pencarian, kesalahan identifikasi"], ["Pemantauan kondisi", "Mengenali perubahan kondisi aset terpilih", "Waktu deteksi, alarm yang ditindaklanjuti"], ["Perawatan prediktif", "Membantu memperkirakan risiko gangguan", "Downtime tak terencana, biaya darurat, validasi prediksi"], ["Optimasi energi", "Memahami penggunaan energi per ruang atau aset", "kWh per meter persegi atau unit layanan"]] } },
+                { "judul": "Tentukan kapabilitas yang diperlukan", "paragraf": ["Gunakan klasifikasi praktis berikut untuk menyesuaikan ruang lingkup. Ini bukan tingkat kematangan universal."], "tabel": { "kolom": ["Kapabilitas", "Kemampuan", "Contoh kebutuhan"], "baris": [["Model informasi aset", "Informasi digital tersedia tanpa koneksi dinamis", "Dokumentasi, koordinasi, pencarian"], ["Model digital terhubung", "Model dikaitkan dengan sistem lain dan diperbarui sesuai kebutuhan", "Manajemen aset dan status"], ["Pemantauan kondisi", "Data aktual dari sensor atau sistem ditampilkan bersama konteks aset", "Aset yang memerlukan pemantauan lebih sering"], ["Analitik", "Data historis dan aktual dipakai memahami performa atau skenario", "Investigasi gangguan dan evaluasi kinerja"], ["Prediktif atau preskriptif", "Model tervalidasi membantu memperkirakan kondisi atau membandingkan tindakan", "Aset dengan data dan manfaat yang cukup untuk membenarkan prediksi"]] } }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Kelayakan finansial dan biaya siklus hidup",
+              "paragraf": ["Gunakan total cost of ownership (TCO), bukan hanya biaya pembuatan model atau pembelian perangkat lunak. Bedakan biaya investasi awal dan biaya berulang."],
+              "tabel": { "kolom": ["Kelompok biaya", "Contoh komponen"], "baris": [["Investasi awal (CAPEX)", "Pemodelan BIM dan verifikasi as-built, pemindaian LiDAR, sensor dan gateway, platform, integrasi API, dashboard, infrastruktur awal, pengujian, dan pelatihan"], ["Operasi (OPEX)", "Hosting dan penyimpanan, lisensi, pemeliharaan sensor, dukungan teknis, pembaruan model, kualitas data, keamanan, backup, dan pelatihan lanjutan"]] },
+              "subbagian": [
+                { "judul": "Contoh business case simulasi", "paragraf": ["Asumsi latihan: CAPEX Rp1,2 miliar; OPEX Rp240 juta per tahun; manfaat finansial potensial Rp750 juta per tahun. Manfaat tersebut perlu dibuktikan terhadap baseline dan tidak boleh dianggap sebagai hasil proyek nyata."], "tabel": { "kolom": ["Komponen investasi awal", "Nilai simulasi"], "baris": [["BIM as-built dan data aset", "Rp250 juta"], ["Sensor dan gateway IoT", "Rp300 juta"], ["Platform Digital Twin", "Rp350 juta"], ["Integrasi sistem", "Rp150 juta"], ["Pengujian dan pelatihan", "Rp150 juta"], ["Total CAPEX", "Rp1,2 miliar"]] } },
+                { "judul": "ROI dan payback sederhana", "paragraf": ["Dengan asumsi di atas, arus bersih tahunan = manfaat tahunan − OPEX = Rp510 juta. ROI tahunan sederhana = arus bersih tahunan ÷ CAPEX × 100% = 42,5%. Payback sederhana = CAPEX ÷ arus bersih tahunan ≈ 2,35 tahun atau sekitar 2 tahun 4 bulan."], "catatan": "Perhitungan sederhana ini belum memasukkan pajak, depresiasi, perubahan biaya dan manfaat, nilai waktu uang, risiko manfaat tidak tercapai, atau biaya penghentian. Jangan gunakan sebagai satu-satunya dasar persetujuan." },
+                { "judul": "NPV dan manfaat nonfinansial", "paragraf": ["Untuk beberapa tahun, NPV menghitung nilai sekarang dari arus kas bersih setelah diskonto: NPV = − investasi awal + jumlah arus kas bersih tahun ke-t ÷ (1 + tingkat diskonto)^t. NPV positif berarti proyeksi melampaui investasi awal pada asumsi yang dipakai, bukan jaminan proyek sukses."], "poin": ["Manfaat keselamatan: membantu mengidentifikasi risiko dan merencanakan inspeksi.", "Keandalan: meningkatkan visibilitas kondisi aset.", "Produktivitas: mengurangi waktu pencarian informasi.", "Keputusan: memperkuat penggunaan bukti operasional.", "Keberlanjutan: mendukung pemantauan energi dan air.", "Retensi pengetahuan dan ketangguhan: menjaga informasi aset dan mendukung respons gangguan."] }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Kesiapan data",
+              "paragraf": ["Digital Twin membutuhkan data yang sesuai dengan use case. Model 3D yang rinci tidak otomatis memiliki informasi aset yang benar atau berguna."],
+              "tabel": { "kolom": ["Kelompok data", "Contoh"], "baris": [["Geometri dan spasial", "BIM, point cloud, koordinat, posisi dan hubungan aset"], ["Informasi aset", "Asset ID, equipment tag, pabrikan, spesifikasi, umur, status"], ["Operasional", "Suhu, tekanan, getaran, energi, alarm, status mesin"], ["Historis", "Work order, downtime, inspeksi, kerusakan, penggantian komponen"]] },
+              "poin": ["Model tersedia dan dapat dibuka; kondisi as-built telah diverifikasi sesuai kebutuhan.", "Asset ID konsisten dan atribut penting tersedia.", "Data pemeliharaan dan historis dapat diakses untuk use case.", "Sumber operasional atau sensor tersedia jika memang diperlukan.", "Mekanisme integrasi, pemilik data, dan frekuensi pembaruan sudah ditetapkan.", "Prosedur validasi, hak akses, dan keamanan data telah ditentukan."],
+              "catatan": "Tingkat informasi yang dibutuhkan ditentukan oleh keputusan. Pencarian lokasi pompa mungkin hanya memerlukan model geometri dan Asset ID; analisis prediktif membutuhkan data operasi, riwayat gangguan, dan bukti yang memadai. Hindari detail model yang tidak dipakai."
+            },
+            {
+              "type": "section",
+              "judul": "Kesiapan organisasi dan peran",
+              "paragraf": ["Digital Twin mengubah pengelolaan informasi, proses bisnis, dan cara keputusan dibuat. Keberhasilan tidak hanya bergantung pada platform."],
+              "tabel": { "kolom": ["Faktor", "Kondisi yang diharapkan"], "baris": [["Kepemimpinan", "Tujuan, sponsor, dan pendanaan jelas"], ["Tata kelola", "Pemilik data, sistem, dan keputusan ditetapkan"], ["SDM", "Keterampilan relevan tersedia atau direncanakan"], ["Proses", "Workflow operasi dan penanganan alarm terdefinisi"], ["Teknologi", "Infrastruktur, integrasi, dan keamanan memadai"], ["Budaya dan kolaborasi", "Pengguna bersedia memakai data dan bekerja lintas fungsi"], ["Perubahan", "Pelatihan, dukungan, dan adopsi direncanakan"]] },
+              "poin": ["Owner atau executive sponsor: strategi, pendanaan, dan keputusan.", "Digital Twin atau BIM manager: koordinasi implementasi, informasi, dan integrasi.", "Engineering dan BIM: model, data aset, dan verifikasi.", "IT dan IoT: infrastruktur, integrasi, operasi, dan keamanan.", "Facility management dan maintenance: use case, workflow, serta tindak lanjut.", "Analis data: KPI, analisis, dan validasi model."],
+              "catatan": "Organisasi dapat bermitra untuk kompetensi tertentu, tetapi kepemilikan kebutuhan, proses, dan tata kelola data tetap perlu jelas."
+            },
+            {
+              "type": "section",
+              "judul": "Penilaian risiko",
+              "tabel": { "kolom": ["Risiko", "Dampak potensial", "Contoh mitigasi"], "baris": [["Data BIM tidak akurat", "Keputusan memakai informasi yang salah", "Verifikasi as-built dan kontrol perubahan"], ["Integrasi gagal", "Data tidak tersinkronisasi", "Uji API dan pilot integrasi"], ["Sensor tidak andal", "Alarm palsu atau kondisi terlewat", "Kalibrasi dan pemantauan kesehatan sensor"], ["Serangan siber", "Gangguan layanan atau kebocoran data", "Kontrol akses, segmentasi, logging, dan respons insiden"], ["Ketergantungan vendor", "Migrasi atau ekspansi sulit", "Standar terbuka, portabilitas data, dan rencana keluar"], ["Biaya membengkak", "Investasi melampaui business case", "Kontrol ruang lingkup dan stage gate"], ["Adopsi rendah", "Sistem tidak dipakai", "Libatkan pengguna, uji workflow, dan pelatihan"], ["Model tidak diperbarui", "Representasi menyimpang dari kondisi aktual", "Tetapkan pemilik dan alur pembaruan"], ["Prediksi keliru", "Tindakan pemeliharaan tidak tepat", "Validasi, batas penggunaan, dan pengawasan manusia"]] },
+              "catatan": "Nilai kemungkinan dan dampak sesuai konteks proyek. Risiko keselamatan, sistem kritis, dan keamanan siber perlu diperlakukan khusus; skor kelayakan total tidak boleh menutupi risiko kritis tanpa mitigasi."
+            },
+            {
+              "type": "section",
+              "judul": "Pilot project dan Proof of Concept",
+              "paragraf": ["Pilot atau PoC membantu menguji kebutuhan, integrasi, mutu data, manfaat, keamanan, dan penerimaan pengguna pada lingkup yang dibatasi sebelum ekspansi."],
+              "poin": ["Pilih masalah spesifik, terukur, dan punya pengguna yang jelas.", "Pilih aset representatif dengan data yang cukup.", "Tetapkan durasi, anggaran, ruang lingkup, KPI, dan kriteria penerimaan.", "Libatkan pengguna akhir sejak penemuan kebutuhan hingga evaluasi.", "Uji keamanan, integrasi, usability, dan skenario kegagalan.", "Tentukan sejak awal kondisi untuk lanjut, perbaiki, ulangi, atau hentikan."],
+              "subbagian": [
+                { "judul": "Contoh pilot HVAC 12 minggu", "alur": ["Minggu 1–2: discovery, masalah, stakeholder, aset, dan baseline KPI.", "Minggu 3–4: verifikasi BIM, Asset ID, informasi peralatan, dan sumber operasional.", "Minggu 5–7: integrasi data dan pengembangan tampilan yang dibutuhkan.", "Minggu 8–9: pengujian kualitas data, integrasi, usability, dan keamanan.", "Minggu 10–11: uji coba oleh tim fasilitas pada skenario pekerjaan nyata.", "Minggu 12: evaluasi KPI, biaya, risiko, dan rekomendasi langkah berikutnya."] },
+                { "judul": "Contoh kriteria keberhasilan", "tabel": { "kolom": ["KPI simulasi", "Contoh target"], "baris": [["Ketepatan identifikasi aset", "≥95%"], ["Kelengkapan data aset terpilih", "≥95%"], ["Keberhasilan integrasi", "≥95%"], ["Pengurangan waktu pencarian", "≥30%"], ["Keberhasilan pengguna menyelesaikan skenario", "≥90%"], ["Insiden keamanan kritis yang belum ditangani", "0"]] }, "catatan": "Angka hanya contoh latihan, bukan standar universal. Target aktual perlu ditentukan dari baseline, risiko, dan sasaran organisasi. Pilot dinilai dari perbaikan proses serta nilai yang dibuktikan, bukan hanya karena teknologi berhasil berjalan." }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Kerangka pengambilan keputusan",
+              "subbagian": [
+                { "judul": "Decision gate", "alur": ["Gate 1 – kebutuhan bisnis: jika tidak ada masalah yang jelas, gunakan solusi sederhana atau tinjau ulang di kemudian hari.", "Gate 2 – kelayakan: jika ada kesenjangan, perbaiki kesiapan; jika layak diuji, rancang pilot dengan KPI.", "Gate 3 – validasi pilot: jika kriteria belum tercapai, perbaiki, persempit, uji ulang, atau hentikan.", "Gate 4 – implementasi: jika bukti memadai, lakukan penerapan bertahap, ukur manfaat, dan kelola peningkatan berkelanjutan."] },
+                { "judul": "Empat kemungkinan rekomendasi", "tabel": { "kolom": ["Keputusan", "Kondisi", "Tindakan"], "baris": [["Lanjut", "Kebutuhan jelas dan kelayakan terbukti", "Implementasi bertahap"], ["Pilot", "Potensi ada, tetapi bukti belum cukup", "PoC atau pilot terbatas"], ["Tunda", "Kebutuhan ada, kesiapan belum memadai", "Perbaiki data, proses, atau SDM lalu nilai ulang"], ["Tidak dilanjutkan", "Kebutuhan lemah atau business case tidak dapat dibenarkan", "Pilih alternatif yang lebih sesuai"]] }, "catatan": "Keputusan tidak dilanjutkan berarti kasus yang dinilai belum dapat dibenarkan dalam kondisi saat ini, bukan berarti Digital Twin tidak bermanfaat secara umum." }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Studi kasus terintegrasi: rumah sakit perkotaan",
+              "paragraf": ["Skenario pembelajaran ini menggambarkan rumah sakit dengan area aktif dan pekerjaan konstruksi yang berjalan. Angka penilaian dan kondisi berikut adalah simulasi, bukan audit atau klaim tentang rumah sakit tertentu."],
+              "poin": ["Masalah: informasi aset tersebar, kondisi as-built perlu diverifikasi, lokasi peralatan sulit dicari, dan data maintenance belum terintegrasi.", "Use case: model as-built, pencarian aset, manajemen informasi aset, integrasi maintenance, manajemen ruang, serta pemantauan kondisi aset terpilih.", "Arsitektur konseptual: aset fisik dan survei → BIM serta Asset ID → lapisan integrasi dan validasi → platform tampilan dan analitik → tim engineering dan fasilitas.", "Skor simulasi: strategis 5/5 dengan bobot 15%, teknis 4/5 dengan 20%, finansial 3/5 dengan 20%, operasional 3/5 dengan 15%, data 3/5 dengan 20%, risiko dan keamanan 4/5 dengan 10%; hasil tertimbang 72/100."],
+              "langkah": ["Tahap 1: verifikasi BIM as-built, kondisi lapangan, Asset ID, dan standar informasi.", "Tahap 2: hubungkan informasi aset dengan proses manajemen dan pemeliharaan.", "Tahap 3: integrasikan sensor hanya untuk aset yang memerlukan pemantauan kondisi.", "Tahap 4: kembangkan analitik setelah kualitas data dan workflow terbukti.", "Tahap 5: evaluasi pemeliharaan prediktif hanya jika data historis dan manfaatnya memadai."],
+              "catatan": "Skor 72/100 menunjukkan potensi untuk diuji, bukan keputusan otomatis untuk implementasi penuh. Kesenjangan finansial, operasional, dan data perlu divalidasi."
+            },
+            {
+              "type": "section",
+              "judul": "Template laporan kelayakan",
+              "paragraf": ["Gunakan struktur ini untuk mendokumentasikan bukti, asumsi, kesenjangan, dan alasan rekomendasi."],
+              "poin": ["Ringkasan eksekutif: aset, pemilik, tujuan penilaian, masalah, hasil, dan rekomendasi.", "Latar proyek: lingkup, sistem eksisting, kondisi aset, dan stakeholder.", "Kebutuhan bisnis: problem statement, sasaran, pain point, baseline, dan KPI target.", "Use case: prioritas, pengguna, workflow yang didukung, dan manfaat.", "Kelayakan teknis: BIM, IoT, integrasi, infrastruktur, perangkat lunak, dan skalabilitas.", "Kesiapan data: ketersediaan, kualitas, identitas aset, pemilik, interoperabilitas, dan tata kelola.", "Kesiapan organisasi: tim, kompetensi, proses, perubahan, dan pelatihan.", "Finansial: CAPEX, OPEX, TCO, analisis biaya-manfaat, ROI, payback, dan NPV.", "Risiko: teknis, operasi, finansial, keamanan siber, privasi, dan mitigasi.", "Usulan pilot: ruang lingkup, durasi, anggaran, KPI, kriteria penerimaan, dan evaluasi.", "Skor kelayakan: bukti, asumsi, bobot, skor, dan kesenjangan kritis.", "Rekomendasi dan persetujuan: lanjut, pilot, tunda, atau tidak dilanjutkan beserta roadmap."]
+            },
+            {
+              "type": "section",
+              "judul": "Latihan dan kuis pemahaman",
+              "subbagian": [
+                { "judul": "Latihan kelompok: gedung perkantoran 30 lantai", "paragraf": ["Skenario: gedung memiliki 2.000 aset, 8 chiller, 30 AHU, dan 50 pompa. Downtime meningkat dan informasi aset tersebar. BIM tersedia tetapi belum diverifikasi menyeluruh; data BMS tersedia; histori maintenance hanya ada untuk sebagian aset; platform integrasi belum tersedia; anggaran terbatas; manajemen mengharapkan hasil terukur dalam enam bulan."], "langkah": ["Tulis problem statement dan baseline yang perlu dikumpulkan.", "Identifikasi sedikitnya lima use case dan urutkan berdasarkan dampak, biaya, serta kesiapan.", "Buat feasibility matrix dan daftar kesenjangan data.", "Susun perkiraan CAPEX, OPEX, dan risiko utama.", "Rancang pilot dengan ruang lingkup, KPI, serta acceptance criteria.", "Berikan rekomendasi akhir dan jelaskan bukti yang masih perlu dikumpulkan."] },
+                { "judul": "Knowledge check", "poin": ["Prinsip awal penilaian: identifikasi masalah bisnis sebelum memilih teknologi.", "Digital Twin penuh mungkin belum diperlukan jika kebutuhan cukup dipenuhi CMMS sederhana.", "Data readiness menilai ketersediaan dan kualitas data, bukan tampilan visual.", "Pilot menguji manfaat, teknis, dan penggunaan dalam lingkup terbatas; pilot tidak menghilangkan seluruh risiko.", "TCO mencakup biaya kepemilikan selama periode analisis, bukan CAPEX saja.", "NPV positif menunjukkan proyeksi arus kas melampaui investasi setelah diskonto pada asumsi yang digunakan, bukan jaminan sukses.", "Sensor dipasang sesuai kebutuhan aset dan keputusan, bukan sebanyak mungkin.", "Jika kebutuhan jelas tetapi data belum siap, perbaiki kesiapan dan nilai ulang sebelum implementasi skala penuh."], "catatan": "Untuk diskusi mandiri, jelaskan alasan di balik setiap jawaban dan bukti apa yang diperlukan sebelum keputusan investasi." }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Kesimpulan dan prinsip utama",
+              "paragraf": ["Digital Twin bukan kebutuhan wajib untuk setiap aset atau organisasi. Penerapan harus berangkat dari masalah yang nyata dan dinilai dari manfaat, kesiapan, biaya, risiko, serta kemampuan organisasi mengelolanya."],
+              "poin": ["Problem before technology: rumuskan masalah dan tujuan terlebih dahulu.", "Right-sized solution: pilih tingkat teknologi sesuai kebutuhan aset.", "Data before intelligence: tata data sebelum analitik yang kompleks.", "Value before scale: buktikan manfaat melalui use case dan pilot sebelum ekspansi.", "People and process matter: pengguna, tata kelola, dan workflow menentukan apakah solusi benar-benar dipakai."],
+              "kutipan": "Digital Twin yang berhasil bukan yang memiliki model paling detail atau teknologi paling canggih, melainkan yang membantu menyelesaikan masalah yang tepat dan menghasilkan nilai yang dapat dibuktikan.",
+              "catatan": "Peran pengelola bukan hanya membangun model, sensor, atau dashboard, tetapi memastikan teknologi menyelesaikan masalah yang tepat, dapat digunakan organisasi, dan mendukung keputusan yang lebih baik."
+            }
+          ]
+        },
+        {
+          "judul": "Tata kelola & pengadaan Digital Twin",
+          "tingkat": "Kepemimpinan",
+          "status": "rencana",
+          "tautan": null,
+          "ringkasan": "Menyusun peran, kebijakan data, model pengadaan, dan mekanisme pengawasan program.",
+          "fokus": ["Tata kelola", "Pengadaan", "Akuntabilitas"],
+          "hasil": "Mampu menyiapkan kerangka tata kelola dan pengadaan.",
+          "konten": [
+            {
+              "type": "section",
+              "judul": "Pendahuluan dan tujuan pembelajaran",
+              "paragraf": ["Digital Twin bukan sekadar proyek teknologi untuk membuat model 3D yang terhubung dengan sensor. Implementasinya melibatkan data, sistem, manusia, proses bisnis, keamanan, investasi, dan pengelolaan aset jangka panjang." , "Tata kelola menetapkan kebijakan, peran, standar, kualitas data, keamanan, keputusan, dan pengawasan. Pengadaan menerjemahkan kebutuhan menjadi ruang lingkup, spesifikasi, pemilihan penyedia, kontrak, penerimaan, dan dukungan berkelanjutan. Teknologi harus mengikuti kebutuhan bisnis, bukan sebaliknya."],
+              "poin": ["Memahami prinsip dan ruang lingkup tata kelola Digital Twin.", "Menyusun struktur organisasi dan pembagian tanggung jawab.", "Menetapkan kebijakan data, model, integrasi, keamanan, dan perubahan.", "Menyusun strategi, kebutuhan, KAK/TOR, spesifikasi, dan evaluasi pengadaan.", "Mengelola kontrak, lisensi, hak data, risiko vendor, dan biaya siklus hidup.", "Mengawasi kualitas, pengujian, penerimaan, serah terima, dan operasi.", "Membuat roadmap tata kelola dan pengadaan yang berkelanjutan."],
+              "kutipan": "Tata kelola memastikan Digital Twin dikelola dengan benar. Pengadaan membantu organisasi memperoleh solusi yang tepat, dengan biaya wajar, hasil terukur, dan risiko terkendali."
+            },
+            {
+              "type": "section",
+              "judul": "Memahami tata kelola Digital Twin",
+              "paragraf": ["Tata kelola Digital Twin adalah kerangka kebijakan, struktur organisasi, standar, proses, dan pengawasan untuk memastikan solusi memberi manfaat sesuai tujuan organisasi. Tata kelola berlangsung sepanjang siklus hidup, dari identifikasi kebutuhan sampai sistem diganti atau dihentikan. Ini adalah tanggung jawab lintas fungsi, bukan hanya IT atau BIM."],
+              "tabel": { "kolom": ["Area tata kelola", "Cakupan"], "baris": [["Arah strategis", "Visi, tujuan bisnis, ruang lingkup, dan manfaat"], ["Organisasi dan peran", "Pemilik aset, BIM, IT/OT, operasi, pengadaan, dan manajemen"], ["Data dan standar", "Kualitas, identitas aset, klasifikasi, model, metadata, dan integrasi"], ["Risiko dan keamanan", "Akses, privasi, keamanan siber, kontinuitas, dan kepatuhan"], ["Proses dan pengawasan", "Perubahan, persetujuan, pengujian, audit, KPI, dan kinerja"]] }
+            },
+            {
+              "type": "section",
+              "judul": "Prinsip tata kelola",
+              "tabel": { "kolom": ["Prinsip", "Penerapan"], "baris": [["Berbasis bisnis", "Setiap kemampuan mendukung tujuan dan use case yang jelas"], ["Akuntabilitas", "Pemilik data, sistem, proses, manfaat, dan keputusan ditetapkan"], ["Kepemilikan data", "Hak akses dan kewenangan memperbarui data ditentukan secara formal"], ["Interoperabilitas", "Pertukaran data, format, API, dan sistem sumber disepakati"], ["Keamanan sejak awal", "Akses, enkripsi, audit, backup, dan pengendalian dirancang sejak perencanaan"], ["Berbasis siklus hidup", "Informasi dikelola dari desain dan konstruksi sampai operasi dan pengakhiran"], ["Transparansi", "Versi, perubahan, persetujuan, dan keputusan dapat ditelusuri"], ["Skalabilitas", "Solusi dikembangkan bertahap berdasarkan prioritas"], ["Manfaat terukur", "KPI, baseline, target, pemilik manfaat, dan evaluasi ditetapkan"], ["Peningkatan berkelanjutan", "Data, teknologi, dan proses ditinjau dan diperbaiki berkala"]] },
+              "subbagian": [
+                { "judul": "Business-driven governance", "paragraf": ["Hubungkan Digital Twin dengan sasaran organisasi seperti pengurangan biaya pemeliharaan, penanganan gangguan yang lebih cepat, akurasi data aset, perencanaan penggantian, efisiensi energi, atau kesiapan operasi. Setiap sasaran perlu indikator, pemilik manfaat, target, dan periode evaluasi."] },
+                { "judul": "Akuntabilitas dan interoperabilitas", "paragraf": ["Tim BIM dapat mengelola struktur model, sementara pemilik aset atau pengelola yang berwenang memvalidasi kapasitas dan kondisi peralatan. Tetapkan pula format pertukaran, system of record untuk setiap data, Asset ID, versi API, alur perubahan integrasi, dan metode ekspor jika platform diganti."] }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Struktur organisasi, peran, dan RACI",
+              "paragraf": ["Struktur tata kelola disesuaikan dengan skala program. RACI membantu membedakan Responsible (melaksanakan), Accountable (bertanggung jawab akhir), Consulted (dimintai masukan), dan Informed (menerima informasi). Setiap aktivitas sebaiknya memiliki satu pihak Accountable yang jelas."],
+              "tabel": { "kolom": ["Peran", "Tanggung jawab utama"], "baris": [["Executive sponsor", "Arah strategis, dukungan anggaran, dan penyelesaian hambatan"], ["Steering committee", "Prioritas, keputusan utama, risiko, dan perubahan besar"], ["Digital Twin program manager", "Ruang lingkup, jadwal, biaya, manfaat, dan koordinasi lintas fungsi"], ["BIM manager / digital engineering", "Standar model, koordinasi, as-built, dan CDE"], ["Data owner dan steward", "Kebenaran, penggunaan, kualitas, klasifikasi, dan konsistensi data domain"], ["IT / OT / IoT", "Infrastruktur, integrasi, jaringan, sensor, keamanan, dan operasi platform"], ["Asset / facility manager", "Kebutuhan operasi, pemeliharaan, validasi aset, workflow, dan KPI"], ["Cybersecurity lead", "Penilaian dan pengawasan pengendalian keamanan"], ["Procurement / legal / finance", "Strategi pemilihan, kontrak, risiko komersial, anggaran, dan kepatuhan"], ["Vendor / system integrator", "Pembangunan, integrasi, pengujian, dokumentasi, dan dukungan sesuai kontrak"]] },
+              "subbagian": [
+                { "judul": "Contoh pembagian RACI", "tabel": { "kolom": ["Aktivitas", "Sponsor", "Program manager", "BIM/data", "IT/OT", "Asset manager", "Procurement/legal"], "baris": [["Menetapkan visi dan manfaat", "A", "R", "C", "C", "C", "I"], ["Menetapkan kebutuhan pengguna", "I", "A", "C", "C", "R", "I"], ["Menetapkan standar BIM dan data", "I", "A", "R", "C", "C", "I"], ["Menetapkan arsitektur dan keamanan", "I", "A", "C", "R", "C", "I"], ["Menyusun dokumen tender", "I", "C", "C", "C", "C", "A/R"], ["Evaluasi teknis penawaran", "I", "A", "R", "R", "R", "C"], ["Persetujuan kontrak", "A", "C", "C", "C", "C", "R"], ["Pengujian dan penerimaan", "I", "A", "R", "R", "R", "C"], ["Evaluasi manfaat", "A", "R", "C", "C", "C", "I"]] }, "catatan": "Contoh awal saja. Penetapan akhir harus mengikuti struktur organisasi, batas kewenangan, dan prosedur internal." }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Kebijakan, standar, dan dokumen tata kelola",
+              "paragraf": ["Kebijakan menetapkan aturan tingkat organisasi, standar mengatur persyaratan teknis, dan prosedur menjelaskan langkah pelaksanaannya."],
+              "tabel": { "kolom": ["Dokumen", "Fungsi"], "baris": [["Digital Twin Governance Policy dan Strategy", "Prinsip, tujuan, ruang lingkup, dan roadmap"], ["Digital Twin Execution Plan", "Rencana pelaksanaan program atau proyek"], ["BEP dan Information Requirements", "Cara informasi BIM diproduksi, dikoordinasikan, diperiksa, dan diserahkan"], ["AIR", "Informasi aset yang dibutuhkan untuk operasi dan pemeliharaan"], ["Data Governance Standard", "Kualitas, klasifikasi, kepemilikan, dan pengendalian data"], ["CDE Procedure", "Penyimpanan, review, persetujuan, distribusi, dan arsip informasi"], ["Integration Standard", "API, konektivitas, skema, dan pertukaran data"], ["Cybersecurity Standard", "Akses, pengamanan, monitoring, dan respons insiden"], ["Change Management Procedure", "Perubahan model, data, aplikasi, konfigurasi, dan integrasi"], ["Operations Manual dan Exit Plan", "Operasi, pemeliharaan, backup, pemulihan, migrasi, dan pengakhiran"]] },
+              "subbagian": [
+                { "judul": "Memilih referensi standar", "paragraf": ["Rujukan dapat mencakup ISO 19650 untuk pengelolaan informasi BIM, ISO 55000 untuk manajemen aset, ISO/IEC 27001 untuk sistem manajemen keamanan informasi, ISO 31000 untuk risiko, IEC 62443 untuk keamanan sistem otomasi dan kontrol industri, ISO 23247 untuk Digital Twin manufaktur, serta IFC/openBIM untuk pertukaran model. Periksa edisi, ruang lingkup, regulasi, dan relevansi sebelum menetapkan penerapan; tidak semua standar cocok untuk setiap proyek."] },
+                { "judul": "Hubungan EIR, BEP, AIR, CDE, dan Digital Twin", "alur": ["EIR: informasi apa yang diperlukan, oleh siapa, kapan, dan untuk tujuan apa?", "BEP: bagaimana informasi diproduksi, dikoordinasikan, dan diperiksa?", "AIR: informasi apa yang diperlukan untuk mengelola aset?", "CDE: bagaimana informasi dikendalikan, ditinjau, disetujui, dan didistribusikan?", "Digital Twin: bagaimana informasi terverifikasi dan data operasional digunakan untuk mendukung proses bisnis?"] }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Tata kelola data, identitas aset, dan kualitas",
+              "paragraf": ["Model 3D yang menarik tidak cukup jika informasi aset tidak lengkap, tidak konsisten, atau tidak sesuai kondisi lapangan. Digital Twin dapat menyajikan data dari beberapa sistem tanpa harus menjadi pemilik utama seluruh data."],
+              "tabel": { "kolom": ["Kategori data", "Contoh", "Sumber yang mungkin"], "baris": [["Geometri", "Ruang, dinding, pipa, ducting, peralatan", "BIM, CAD, LiDAR"], ["Identitas", "Asset ID, tag, lokasi, tipe", "Asset register, BIM, CMMS"], ["Spesifikasi", "Kapasitas, material, dimensi, produsen", "Submittal, manual O&M"], ["Kondisi dan operasi", "Status, suhu, tekanan, energi", "Inspeksi, BMS, IoT, SCADA"], ["Pemeliharaan", "Work order dan riwayat kerusakan", "CMMS"], ["Dokumen", "Manual, garansi, sertifikat, as-built", "CDE, DMS"], ["Finansial", "Biaya perawatan dan penggantian", "ERP, finance"], ["Penggunaan dan lingkungan", "Fungsi ruang, okupansi, kelembapan", "BIM, CAFM, BMS, IoT"]] },
+              "subbagian": [
+                { "judul": "Asset Master Register", "paragraf": ["Asset Master Register menjadi daftar acuan untuk identitas dan pertukaran data lintas sistem. Field yang lazim meliputi Asset ID, nama, Facility ID, lantai, Space ID, sistem, produsen, nomor model dan seri, tanggal instalasi, garansi, BIM GUID, CMMS ID, BMS Point ID, serta status. Field wajib ditentukan sesuai use case, bukan diisi sekadar untuk melengkapi template."] },
+                { "judul": "Dimensi kualitas dan aturan validasi", "poin": ["Completeness: atribut wajib terisi.", "Accuracy: sesuai kondisi aktual atau sumber resmi.", "Consistency: nilai dan struktur selaras antar-sistem.", "Timeliness: data diperbarui sesuai kebutuhan.", "Uniqueness: identitas tidak duplikat.", "Validity: nilai mengikuti format dan aturan.", "Traceability: asal data, waktu, dan perubahan dapat ditelusuri."], "catatan": "Aturan contoh: aset kritikal memiliki Asset ID unik; AHU memiliki lokasi, sistem, produsen, dan kapasitas; data sensor memuat satuan, sumber, timestamp, dan frekuensi; dokumen O&M ditautkan ke aset yang benar. Tetapkan target sesuai risiko dan kebutuhan." },
+                { "judul": "System of record dan data owner", "tabel": { "kolom": ["Jenis informasi", "Sumber resmi contoh", "Pemilik domain"], "baris": [["Geometri dan koordinasi", "BIM / CDE", "BIM manager"], ["Identitas dan hierarki aset", "Asset register / EAM", "Asset manager"], ["Work order dan histori", "CMMS", "Maintenance manager"], ["Status dan pembacaan sensor", "BMS / IoT platform", "Facility / OT"], ["Dokumen teknis", "CDE / DMS", "Document controller"], ["Biaya aset", "ERP", "Finance / asset owner"]] } }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "CDE, integrasi sistem, keamanan, dan perubahan",
+              "subbagian": [
+                { "judul": "Common Data Environment", "alur": ["Work in Progress: tim menyiapkan dan memeriksa informasi internal.", "Shared: informasi dibagikan untuk koordinasi dan review lintas disiplin.", "Published / Authorized: informasi yang telah disetujui untuk tujuan yang ditentukan.", "Archived: versi dan rekaman keputusan disimpan untuk audit serta kebutuhan mendatang."], "poin": ["Gunakan status, kode, revisi, dan penamaan yang konsisten.", "Catat perubahan dan berikan akses berdasarkan peran.", "Jangan gunakan informasi belum disetujui sebagai data resmi operasi.", "Atur persetujuan, backup, pemulihan, retensi, dan pengarsipan.", "Batasi akses vendor dan cabut ketika tidak lagi diperlukan."] },
+                { "judul": "Arsitektur integrasi", "tabel": { "kolom": ["Lapisan", "Contoh komponen", "Peran"], "baris": [["Aset fisik", "Gedung dan peralatan", "Objek yang diwakili"], ["Sensing dan kontrol", "Sensor, PLC, BMS, gateway", "Mengambil atau mengendalikan data lapangan"], ["Integrasi", "API, middleware, message broker", "Menghubungkan sistem"], ["Platform data", "Database, time-series database, data lake", "Menyimpan data dan histori"], ["Representasi", "BIM, 3D, GIS, asset graph", "Memberi konteks aset"], ["Analitik dan aplikasi", "Rules, analitik, dashboard, workflow", "Mendukung interpretasi dan tindakan"], ["Governance dan security", "Identity, logging, monitoring, policy", "Mengendalikan akses, risiko, dan kualitas"]] }, "poin": ["Tentukan sumber resmi dan kebutuhan data setiap use case.", "Gunakan Asset ID yang konsisten sebagai kunci penghubung.", "Dokumentasikan skema, API, timestamp, sinkronisasi, toleransi keterlambatan, dan penanganan kegagalan.", "Hindari koneksi tidak terkendali ke sistem kontrol kritikal; uji integrasi dengan skenario realistis."] },
+                { "judul": "Keamanan siber, IT/OT, dan privasi", "tabel": { "kolom": ["Area", "Pengendalian yang dapat diterapkan"], "baris": [["Identitas dan akses", "RBAC, MFA, peninjauan hak akses"], ["Perlindungan data", "Enkripsi saat transit dan tersimpan"], ["Jaringan", "Segmentasi IT/OT, firewall, pembatasan komunikasi"], ["Aplikasi dan API", "Secure development, autentikasi, patching, logging"], ["Monitoring", "Audit log, deteksi anomali, dan respons insiden"], ["Backup dan pemulihan", "Backup teruji, prosedur recovery, target pemulihan"], ["Vendor dan privasi", "Due diligence, minimisasi data pribadi, tujuan dan retensi jelas"]] }, "catatan": "IT umumnya melayani aplikasi bisnis dan pengguna, sedangkan OT berkaitan dengan pemantauan atau kendali peralatan fisik. Akses lintas jaringan perlu dinilai dan disetujui pihak berwenang. Integrasi awal yang read-only dapat mengurangi risiko perubahan pada sistem kontrol, tetapi tetap memerlukan pengamanan." },
+                { "judul": "Perubahan dan konfigurasi", "alur": ["Pemohon mendokumentasikan alasan, ruang lingkup, dan urgensi perubahan.", "Tim menganalisis dampak teknis, biaya, jadwal, data, keamanan, dan operasi.", "Pihak berwenang menyetujui, menolak, atau meminta revisi.", "Perubahan diterapkan dan diuji di lingkungan yang sesuai.", "Versi model, konfigurasi, API, dan dokumentasi diperbarui.", "Rilis dipantau dan hasilnya dievaluasi."], "catatan": "Perubahan berisiko tinggi memerlukan rencana rollback, uji pemulihan, dan persetujuan tambahan sesuai kritikalitas." }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Siklus hidup dan KPI tata kelola",
+              "alur": ["Strategi dan kebutuhan: tetapkan masalah, manfaat, pengguna, use case, dan indikator.", "Desain dan perencanaan: tetapkan arsitektur, informasi, keamanan, anggaran, dan pengadaan.", "Pembangunan dan integrasi: siapkan model, data, koneksi, dan aplikasi.", "Pengujian dan penerimaan: verifikasi fungsi, data, keamanan, performa, dan kesiapan operasi.", "Operasi dan pemeliharaan: pantau layanan, perbarui informasi, tangani insiden, dan dukung pengguna.", "Evaluasi dan peningkatan: ukur manfaat dan prioritaskan perbaikan.", "Penggantian atau penghentian: migrasikan atau arsipkan data, akhiri lisensi, cabut akses, dan hapus data sesuai kebijakan."],
+              "tabel": { "kolom": ["Dimensi", "Contoh KPI"], "baris": [["Data", "Kelengkapan dan akurasi aset kritikal; aset dengan ID unik"], ["Model", "Elemen kritikal yang tervalidasi"], ["Integrasi dan operasi", "Ketersediaan koneksi dan platform sesuai target"], ["Keamanan", "Hak akses sesuai peran; temuan kritikal lewat SLA"], ["Perubahan", "Perubahan dengan rekam review dan persetujuan"], ["Pengguna", "Pengguna aktif dibanding target"], ["Manfaat dan biaya", "Use case dengan baseline/KPI; biaya operasi terhadap anggaran"]] },
+              "catatan": "Angka target harus disesuaikan dengan kritikalitas aset, layanan, risiko, kemampuan organisasi, dan ketentuan kontrak. Gunakan stage gate agar setiap investasi tahap berikutnya didukung bukti."
+            },
+            {
+              "type": "section",
+              "judul": "Memahami pengadaan Digital Twin",
+              "paragraf": ["Pengadaan Digital Twin dapat mencakup konsultansi, BIM dan pemodelan aset, reality capture, sensor, platform data, cloud, aplikasi, integrasi, analitik, keamanan, pelatihan, dukungan, serta pemeliharaan. Tujuannya memperoleh kemampuan yang sesuai kebutuhan dan bisa dioperasikan, bukan hanya membeli fitur."],
+              "poin": ["Penuhi kebutuhan bisnis dan teknis yang dapat diuji.", "Sesuaikan solusi dengan kapabilitas organisasi.", "Hitung biaya kepemilikan dan risiko jangka panjang.", "Pastikan akses, kepemilikan, portabilitas, dan penggunaan data jelas.", "Jaga interoperabilitas, keamanan, kepatuhan, dan keberlanjutan.", "Tetapkan cara mengukur manfaat dan penerimaan hasil."]
+            },
+            {
+              "type": "section",
+              "judul": "Strategi dan ruang lingkup pengadaan",
+              "tabel": { "kolom": ["Strategi", "Kelebihan", "Pertimbangan"], "baris": [["Pengembangan internal", "Kontrol dan penyesuaian tinggi", "Memerlukan tim pengembangan, keamanan, operasi, dan dukungan"], ["Konsultan", "Membantu strategi, arsitektur, dan spesifikasi", "Pastikan transfer pengetahuan dan independensi rekomendasi"], ["System integrator", "Mengoordinasikan integrasi lintas sistem", "Tegaskan tanggung jawab produk pihak ketiga dan komponen khusus"], ["Platform / SaaS", "Dapat mempercepat penyediaan layanan", "Tinjau biaya berulang, data, lisensi, keamanan, dan exit"], ["Hybrid / multi-vendor", "Fleksibel dan dapat mengurangi ketergantungan tunggal", "Memerlukan arsitektur, koordinasi, dan pengelolaan kontrak yang kuat"]] },
+              "subbagian": [
+                { "judul": "Ruang lingkup kerja", "poin": ["Konsultansi: studi kebutuhan, business case, arsitektur, tata kelola.", "Data dan model: review BIM, survei/LiDAR, as-built, asset register, validasi.", "Platform: cloud/server, database, viewer, lisensi, dan konfigurasi.", "Integrasi dan aplikasi: BMS, CMMS, ERP, API, dashboard, workflow, analitik.", "Pengujian: QA/QC, integrasi, performa, keamanan, UAT.", "Implementasi: deployment, pelatihan, dokumentasi, serah terima, dan dukungan operasi."] },
+                { "judul": "Make, buy, atau partner", "paragraf": ["Bangun internal jika kapabilitas merupakan inti organisasi dan tim mampu merawatnya. Beli jika solusi standar pasar memenuhi kebutuhan. Bermitra bila organisasi membutuhkan keahlian atau penguatan kapasitas. Bandingkan TCO dan keberlanjutan kemampuan, bukan hanya biaya awal."] }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Tahapan pengadaan Digital Twin",
+              "alur": ["Identifikasi masalah, pengguna, use case, kondisi saat ini, dan manfaat.", "Lakukan studi kelayakan teknis, data, operasi, keamanan, organisasi, finansial, dan risiko.", "Tentukan model pengadaan, paket pekerjaan, anggaran, jadwal, dan metode sesuai aturan yang berlaku.", "Susun KAK/TOR, spesifikasi, BoQ, kriteria evaluasi, rancangan kontrak, dan penerimaan.", "Jika diizinkan, lakukan market sounding atau RFI untuk memahami pilihan pasar.", "Pilih penyedia melalui evaluasi administratif, teknis, komersial, keamanan, referensi, dan demonstrasi yang konsisten.", "Negosiasikan dan sahkan kontrak, deliverables, hak data, SLA, biaya, perubahan, keamanan, dan exit.", "Mobilisasi, pengawasan, pengujian, commissioning, penerimaan, serah terima, lalu evaluasi manfaat."],
+              "catatan": "Setiap tahap sebaiknya menghasilkan dokumen, bukti, atau persetujuan yang bisa ditelusuri. Ikuti kebijakan pengadaan, kewenangan, dan regulasi yang berlaku di organisasi."
+            },
+            {
+              "type": "section",
+              "judul": "Menyusun KAK/TOR dan spesifikasi yang dapat diuji",
+              "paragraf": ["KAK yang hanya menyebut “membangun Digital Twin berbasis BIM dan IoT” terlalu umum dan membuat penawaran sulit dibandingkan. Nyatakan masalah, pengguna, lingkup, hasil, persyaratan, bukti pengujian, dan batasan secara jelas. Persyaratan harus berbasis kebutuhan dan sedapat mungkin tidak mengunci merek tanpa alasan yang sah."],
+              "tabel": { "kolom": ["Bagian KAK/TOR", "Isi utama"], "baris": [["Latar dan tujuan", "Kondisi, masalah, tujuan, dan hasil bisnis"], ["Ruang lingkup dan kondisi eksisting", "Aset, lokasi, sistem, BIM, data, jaringan, serta batasan"], ["Kebutuhan pengguna dan use case", "Peran, skenario kerja, dan keputusan yang didukung"], ["Fungsional dan nonfungsional", "Fitur, performa, ketersediaan, skalabilitas, usability"], ["Data dan integrasi", "Asset ID, skema, format, API, frekuensi, dan kualitas"], ["Keamanan dan kepatuhan", "Akses, enkripsi, audit, backup, pengujian, dan kewajiban"], ["Deliverables dan jadwal", "Hasil per milestone, ketergantungan, dan organisasi proyek"], ["Pengujian dan penerimaan", "Metode verifikasi, bukti, kriteria kelulusan, dan remediasi"], ["Pelatihan dan operasi", "Transfer pengetahuan, dukungan, SLA, pemeliharaan"], ["Komersial dan hak", "Harga, lisensi, data, kekayaan intelektual, risiko, dan exit"]] },
+              "subbagian": [
+                { "judul": "Persyaratan fungsional", "tabel": { "kolom": ["ID", "Kebutuhan", "Contoh verifikasi"], "baris": [["FR-01", "Melihat model gedung", "Model termuat dan dapat dinavigasi sesuai cakupan"], ["FR-02", "Mencari aset berdasarkan Asset ID", "Hasil menunjuk aset yang benar"], ["FR-03", "Melihat atribut dan dokumen aset", "Informasi dan dokumen sesuai skema serta ID"], ["FR-04", "Melihat data BMS dan histori", "Data menunjukkan sumber, timestamp, satuan, dan rentang waktu"], ["FR-05", "Melihat status pemeliharaan", "Status sesuai sumber CMMS dan jadwal sinkronisasi"], ["FR-06", "Menerapkan akses berbasis peran", "Pengguna hanya dapat memakai fungsi sesuai hak"], ["FR-07", "Merekam aktivitas", "Audit log dapat diperiksa pihak berwenang"], ["FR-08", "Mengekspor data", "Ekspor sesuai format dan skema yang disepakati"]] } },
+                { "judul": "Persyaratan nonfungsional", "poin": ["Performance: skenario, beban, ukuran model, dan batas waktu respons didefinisikan.", "Availability: target dan metode pengukuran SLA jelas.", "Scalability: kapasitas aset, pengguna, dan data dapat berkembang.", "Usability dan accessibility: tugas utama serta kebutuhan aksesibilitas diuji.", "Maintainability dan interoperability: dokumentasi, format, API, dan prosedur pemeliharaan tersedia.", "Security, resilience, dan portability: pengendalian, pemulihan, dan ekspor diuji."] }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Persyaratan teknis: BIM, reality capture, IoT, platform, dan AI",
+              "subbagian": [
+                { "judul": "BIM, model, dan LiDAR", "poin": ["Tentukan format model dan pertukaran, federasi, koordinat, satuan, klasifikasi, Asset ID/GUID, atribut wajib, status existing/design/as-built, validasi, serta alur pembaruan.", "Tetapkan area survei, akurasi, kepadatan, koordinat, registrasi, format point cloud, verifikasi, batasan pemindaian, dan kepemilikan data mentah serta hasil olahan.", "Tentukan kebutuhan informasi sesuai tujuan operasi; detail geometri tertinggi tidak selalu memberi nilai lebih daripada identitas, lokasi, dan informasi pemeliharaan yang benar."] },
+                { "judul": "IoT, BMS, dan platform", "tabel": { "kolom": ["Komponen", "Persyaratan yang perlu ditentukan"], "baris": [["Sensor", "Jenis, rentang, akurasi, kalibrasi, dan pemeliharaan"], ["Gateway dan konektivitas", "Protokol, kapasitas, jaringan, penyimpanan sementara, dan pemulihan"], ["Data point", "ID, nama, satuan, sumber, timestamp, frekuensi, retensi"], ["Integrasi", "API, protokol, mapping, autentikasi, dan toleransi sinkronisasi"], ["Platform", "Deployment, browser/perangkat, pencarian, akses, logging, backup, ekspor, versi, dan lisensi"]] }, "catatan": "Protokol yang didukung tidak otomatis berarti aman atau kompatibel. Cocokkan dengan sistem yang terpasang, dokumentasi vendor perangkat, dan hasil penilaian keamanan." },
+                { "judul": "Analitik dan AI", "paragraf": ["Jika analitik atau AI masuk ruang lingkup, jelaskan masalah, sumber dan input data, hasil, batasan, metrik evaluasi yang relevan, penanganan data abnormal, keterlacakan rekomendasi, validasi ahli, dan pemantauan performa."], "catatan": "Jangan jadikan AI prediktif persyaratan wajib bila data historis, proses pemeliharaan, atau kemampuan validasi belum memadai. Tetapkan batas otomasi serta kapan persetujuan manusia diwajibkan." }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Dokumen pengadaan, kualifikasi, dan evaluasi vendor",
+              "poin": ["Siapkan business case, strategi/roadmap, URS, EIR, AIR, kebutuhan BEP, spesifikasi teknis, KAK/TOR, BoQ, dokumen tender, kualifikasi vendor, matriks evaluasi, draft kontrak/SLA, persyaratan keamanan, rencana pengujian/penerimaan, pelatihan/operasi, hak data, dan exit plan.", "Gabungkan dokumen jika sesuai skala proyek, tetapi jaga kejelasan, kelengkapan, dan keterlacakan persyaratan."],
+              "subbagian": [
+                { "judul": "Kualifikasi penyedia", "poin": ["Pengalaman relevan dan bukti penyelesaian proyek.", "Kompetensi BIM, IoT, integrasi, data, aplikasi, dan keamanan sesuai ruang lingkup.", "Kualitas metodologi, tim inti, dan ketersediaan sumber daya.", "Dukungan teknis, kemampuan operasi, serta rencana transfer pengetahuan.", "Pengelolaan subkontraktor, lisensi pihak ketiga, dan kewajiban komersial."] },
+                { "judul": "Contoh matriks evaluasi", "tabel": { "kolom": ["Kriteria", "Bobot contoh"], "baris": [["Pemahaman kebutuhan dan metodologi", "15%"], ["Arsitektur dan kesesuaian teknis", "20%"], ["BIM dan pengelolaan data", "15%"], ["Integrasi dan interoperabilitas", "10%"], ["Keamanan dan risiko", "10%"], ["Tim dan pengalaman", "10%"], ["Pelatihan dan dukungan", "5%"], ["Biaya dan TCO", "15%"], ["Total", "100%"]] }, "catatan": "Bobot hanya ilustrasi. Tetapkan dan sahkan metode, bobot, ambang, serta bukti evaluasi sebelum penilaian dan terapkan konsisten sesuai kebijakan pengadaan." },
+                { "judul": "Demonstrasi atau PoC", "langkah": ["Gunakan skenario yang sama bagi seluruh penyedia.", "Cari AHU menggunakan Asset ID dan tunjukkan lokasinya pada model.", "Tampilkan data BMS, timestamp, histori temperatur, dokumen O&M, dan work order CMMS.", "Uji notifikasi berdasarkan ambang yang disepakati, audit aktivitas, dan ekspor data.", "Catat bukti dan nilai dengan kriteria yang telah disetujui sebelumnya."] }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Biaya, BoQ, dan Total Cost of Ownership",
+              "paragraf": ["Biaya Digital Twin mencakup konsultansi, survei dan data, BIM, sensor dan jaringan, perangkat lunak, pengembangan, integrasi, keamanan, deployment, pelatihan, operasi, peningkatan, serta transisi atau penghentian. TCO menilai seluruh periode penggunaan, bukan hanya CAPEX awal."],
+              "kutipan": "TCO = CAPEX + jumlah OPEX selama periode analisis + biaya transisi + biaya pengakhiran.",
+              "tabel": { "kolom": ["Kelompok BoQ", "Contoh satuan"], "baris": [["Studi dan arsitektur", "Paket"], ["Governance framework", "Paket"], ["Reality capture / LiDAR", "Area sesuai survei"], ["BIM as-built dan asset register", "Area atau jumlah aset"], ["Platform dan visualisasi", "Paket atau tahun lisensi"], ["Integrasi BMS, IoT, CMMS", "Sistem atau titik data"], ["Dashboard dan workflow", "Modul"], ["Pengujian keamanan dan kinerja", "Paket"], ["Pelatihan dan dukungan", "Sesi, bulan, atau tahun"], ["Exit dan migrasi", "Paket"]] },
+              "subbagian": [
+                { "judul": "Ketentuan harga dan simulasi TCO", "paragraf": ["Pisahkan biaya sekali bayar dan berulang; jelaskan lisensi per pengguna/aset/modul, penyimpanan dan transfer data, konektor/API, pengembangan tambahan, peningkatan kapasitas, dukungan, perpanjangan, pajak, dan biaya penghentian. Contoh nominal lima tahun: opsi platform terkelola dengan CAPEX Rp1,0 miliar dan OPEX Rp450 juta per tahun menghasilkan TCO nominal Rp3,25 miliar; opsi hybrid dengan CAPEX Rp1,5 miliar dan OPEX Rp300 juta per tahun menghasilkan Rp3,0 miliar. Ini simulasi, bukan harga pasar."], "catatan": "Bandingkan pula kemampuan internal, kualitas layanan, kontrol teknis, biaya migrasi, data portability, dan risiko, bukan hanya angka TCO." },
+                { "judul": "Perbandingan nilai sekarang", "paragraf": ["Untuk memperhitungkan nilai waktu uang, NPV dapat dihitung sebagai jumlah nilai sekarang manfaat dikurangi biaya tiap periode: NPV = Σ (B_t − C_t) / (1 + r)^t, dengan B_t manfaat, C_t biaya, r tingkat diskonto, dan t periode. Gunakan skenario serta asumsi yang terdokumentasi."] }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Kontrak, SLA, hak data, dan vendor lock-in",
+              "tabel": { "kolom": ["Model kontrak", "Hal yang perlu dikendalikan"], "baris": [["Fixed price", "Deliverables, batas ruang lingkup, dan prosedur perubahan"], ["Time and materials", "Batas anggaran, timesheet, dan persetujuan pekerjaan"], ["Milestone-based", "Bukti capaian dan kriteria penerimaan tiap milestone"], ["Subscription / SaaS", "SLA, perubahan harga, data portability, dan exit"], ["Managed services", "KPI layanan, tanggung jawab operasi, dan eskalasi"], ["Framework / hybrid", "Mekanisme pemesanan, harga, risiko, dan tanggung jawab antarpihak"]] },
+              "subbagian": [
+                { "judul": "Klausul penting", "poin": ["Ruang lingkup, aset, sistem, deliverables, jadwal, asumsi, dan tanggung jawab organisasi.", "Kepemilikan serta hak akses, unduh, penggunaan, pemindahan, dan penghapusan data.", "Hak penggunaan perangkat lunak pihak ketiga dan komponen yang dibuat khusus.", "Kerahasiaan, perlindungan data, pembatasan penggunaan data oleh vendor.", "Kriteria acceptance, kewajiban perbaikan, dan pembayaran berbasis hasil yang terverifikasi.", "SLA, dukungan, eskalasi, ketersediaan, respons dan penyelesaian insiden, backup serta pemulihan.", "Prosedur Change Request dengan persetujuan tertulis, dampak biaya/jadwal, dan pembaruan deliverables.", "Exit plan, ekspor dalam format yang disepakati, bantuan transisi, penghentian lisensi, dan penghapusan data."] },
+                { "judul": "Mengurangi vendor lock-in", "paragraf": ["Vendor lock-in terjadi ketika data, model, konfigurasi, integrasi, atau aplikasi sulit dipakai tanpa satu penyedia. Kelola dengan format terbuka bila relevan, dokumentasi API dan skema, hak penggunaan yang jelas, uji ekspor data sebelum penerimaan, dan rencana migrasi yang dapat dilaksanakan."] },
+                { "judul": "SLA", "tabel": { "kolom": ["Indikator", "Parameter yang perlu disepakati"], "baris": [["Availability", "Persentase layanan, periode, pengecualian, dan bukti ukur"], ["Incident response", "Waktu respons per tingkat keparahan"], ["Resolution", "Target penyelesaian dan eskalasi"], ["Integrasi data", "Keteraturan pengiriman dan toleransi keterlambatan"], ["Backup dan recovery", "Frekuensi, retensi, RTO, dan RPO"], ["Support dan patching", "Jam layanan serta tenggat berdasar risiko"], ["Reporting", "Laporan SLA, insiden, pemeliharaan, dan remediasi"]] } }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Risiko pengadaan dan pengawasan vendor",
+              "tabel": { "kolom": ["Risiko", "Dampak", "Pengendalian"], "baris": [["Kebutuhan tidak jelas", "Perubahan ruang lingkup dan biaya", "Problem statement, URS, dan baseline yang disetujui"], ["Data eksisting tidak memadai", "Model atau integrasi tidak akurat", "Audit data, pembersihan, dan validasi lapangan"], ["Ketergantungan vendor", "Migrasi dan pengembangan sulit", "Portabilitas, dokumentasi, hak data, exit plan"], ["Biaya berulang tidak terkendali", "TCO melampaui anggaran", "Analisis TCO, batas penggunaan, dan review berkala"], ["Integrasi gagal", "Sistem terpisah", "PoC, API test, dan tanggung jawab integrasi"], ["Keamanan lemah", "Kebocoran atau gangguan layanan", "Security by design, pengujian, monitoring"], ["Adopsi rendah", "Sistem tidak digunakan", "Keterlibatan pengguna, pelatihan, dan pengukuran"], ["SLA tidak tercapai", "Gangguan operasi", "Target terukur, eskalasi, remediasi kontraktual"], ["Keterlambatan atau kehilangan pengetahuan", "Manfaat tertunda dan ketergantungan personel", "Milestone, risk register, dokumentasi, transfer pengetahuan"]] },
+              "subbagian": [
+                { "judul": "Ritme pengawasan", "tabel": { "kolom": ["Aktivitas", "Frekuensi contoh", "Bukti"], "baris": [["Koordinasi proyek", "Mingguan", "Isu, tindakan, keputusan"], ["Review progres", "Mingguan atau dua mingguan", "Deliverables dibanding baseline"], ["Design review", "Setiap milestone", "Persetujuan arsitektur"], ["BIM/data QA-QC", "Setiap paket data", "Laporan kualitas"], ["Review integrasi dan risiko", "Berkala", "Hasil uji dan risk register"], ["Commercial review", "Bulanan", "Biaya aktual, komitmen, proyeksi"], ["Steering committee", "Bulanan atau milestone", "Keputusan dan eskalasi"], ["Acceptance review", "Setiap milestone", "Bukti penerimaan"]] }, "catatan": "Ukur progres melalui hasil yang dapat diverifikasi, bukan hanya persentase yang dilaporkan. Contoh bukti: model lolos QA/QC, data tervalidasi, integrasi lulus skenario, fitur memenuhi UAT, dan pelatihan selesai." }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "QA/QC, pengujian, dan penerimaan",
+              "paragraf": ["Quality Assurance (QA) memastikan proses dirancang untuk menghasilkan mutu; Quality Control (QC) memeriksa hasil terhadap persyaratan. Pengujian Digital Twin perlu membuktikan kebutuhan yang disepakati dan kesiapan sistem untuk digunakan dengan aman."],
+              "tabel": { "kolom": ["Jenis uji", "Tujuan"], "baris": [["Unit dan system testing", "Memastikan komponen dan fungsi berjalan"], ["Integration testing", "Memeriksa pertukaran data antarsistem"], ["Data dan BIM validation", "Memverifikasi informasi, identitas, model, dan sumber"], ["Performance testing", "Menguji respons dan kestabilan pada beban tertentu"], ["Security testing", "Menilai pengendalian dan kerentanan"], ["UAT", "Memastikan kebutuhan pengguna terpenuhi"], ["Recovery dan operational readiness", "Memverifikasi pemulihan serta kesiapan tim dan proses"]] },
+              "subbagian": [
+                { "judul": "Gate kualitas data aset", "poin": ["Aset kritikal memiliki Asset ID unik.", "Field wajib memenuhi aturan kualitas.", "Relasi Asset ID, BIM GUID, dan CMMS ID telah diuji.", "Lokasi cocok dengan bukti lapangan atau dokumen sah.", "Dokumen terhubung ke aset yang benar.", "Sumber, tanggal validasi, dan penanggung jawab tercatat."] },
+                { "judul": "Contoh skenario UAT", "langkah": ["Buka dan navigasikan model gedung.", "Cari AHU menggunakan Asset ID dan pilih objek yang benar.", "Buka informasi aset serta dokumen teknis.", "Tampilkan data BMS dengan satuan dan timestamp serta histori.", "Periksa work order dan status dari CMMS.", "Pastikan pengguna terbatas ditolak dari fungsi admin.", "Uji respons ketika koneksi data terputus.", "Ekspor data aset dan periksa formatnya.", "Periksa audit log sebagai administrator."] },
+                { "judul": "Kriteria penerimaan", "poin": ["Skenario kritikal lulus dan bukti terdokumentasi.", "Tidak ada temuan keamanan kritikal yang belum ditangani.", "Data kritikal memenuhi ambang yang disepakati.", "Integrasi memenuhi toleransi sinkronisasi.", "Dokumentasi, konfigurasi, backup, dan pemulihan diserahkan serta diuji.", "Administrator internal menerima pelatihan dan prosedur operasi."], "catatan": "Klasifikasikan temuan kritikal, mayor, dan minor. Tetapkan perbaikan dan penerimaan bersyarat hanya sesuai kontrak dan kewenangan." }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Serah terima dan kesiapan operasi",
+              "paragraf": ["Serah terima bukan hanya penyerahan akun dan aplikasi. Organisasi memerlukan informasi, hak, dan kemampuan untuk mengoperasikan solusi sendiri atau melalui penyedia layanan yang ditunjuk."],
+              "poin": ["Model BIM dan format pertukaran; Asset Master Register dan kamus data.", "Dokumentasi arsitektur, integrasi/API, konfigurasi, deployment, database, dan mapping.", "Source code dan hak penggunaan jika termasuk kontrak.", "Akun administrator dan prosedur akses aman; daftar lisensi dan perpanjangannya.", "Dokumentasi sensor, gateway, BMS/IoT, QA/QC, pengujian, keamanan, dan risiko residual.", "Backup, recovery, manual pengguna/admin, SOP, SLA, dukungan, dan eskalasi.", "Pelatihan, knowledge transfer, roadmap, exit plan, dan prosedur ekspor/migrasi/penghapusan data."],
+              "subbagian": [
+                { "judul": "Operational readiness", "poin": ["Pemilik sistem dan pengguna ditetapkan.", "SOP, eskalasi, dan penanganan insiden tersedia.", "Frekuensi pembaruan data dan pemeliharaan sensor direncanakan.", "Lisensi, anggaran operasi, dan dukungan vendor aktif.", "KPI, baseline manfaat, dan pengelolaan perubahan berjalan."] }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Studi kasus dan roadmap 12 bulan",
+              "paragraf": ["Skenario pembelajaran: sebuah rumah sakit memiliki BIM untuk sebagian area, BMS, dan CMMS, tetapi data aset tersebar. Use case awal dipilih pada AHU dan HVAC di satu zona. Ruang lingkup mencakup validasi model dan Asset Register, integrasi data BMS terpilih dan status CMMS, viewer, dashboard, serta notifikasi yang disetujui. Kendali otomatis peralatan tidak dimasukkan pada tahap awal."],
+              "alur": ["BIM/as-built menyediakan geometri dan identitas aset.", "BMS/IoT menyediakan data operasional terpilih.", "CMMS menyediakan work order dan histori.", "CDE menyimpan dokumen teknis yang disetujui.", "Lapisan integrasi memetakan Asset ID, memvalidasi data, dan mengendalikan akses.", "Aplikasi Digital Twin menyajikan model, dashboard, histori, dan workflow untuk tim fasilitas."],
+              "subbagian": [
+                { "judul": "Strategi dan kriteria pilot", "poin": ["Gunakan pendekatan hybrid: organisasi memegang kebutuhan dan tata kelola; pihak berkompeten membantu arsitektur, BIM/survei, integrasi, atau platform sesuai ruang lingkup.", "Tetapkan target simulasi seperti 100% aset pilot ber-Asset ID, minimal 95% terhubung dan memiliki atribut wajib, 98% integrasi teruji, seluruh UAT kritikal lulus, administrator terlatih, serta nol temuan keamanan kritikal terbuka.", "Target adalah contoh latihan dan harus disepakati berdasarkan baseline dan risiko."] },
+                { "judul": "Roadmap contoh", "alur": ["Bulan 1: strategi, business case, stakeholder, use case, dan baseline.", "Bulan 2: tata kelola, peran, standar, audit data, arsitektur awal, dan risiko.", "Bulan 3: KAK/TOR, URS, AIR, spesifikasi, BoQ, evaluasi, kontrak.", "Bulan 4: kualifikasi, evaluasi, demonstrasi, negosiasi, dan pemilihan penyedia.", "Bulan 5: kick-off, BEP, baseline proyek, rencana uji, dan persetujuan desain.", "Bulan 6–7: survei, validasi BIM, Asset Register, dan mapping data.", "Bulan 8–9: platform, integrasi, dashboard, dan workflow.", "Bulan 10: pengujian teknis, keamanan, data, dan UAT.", "Bulan 11: serah terima, pelatihan, SOP, SLA, dan operasi terbatas.", "Bulan 12: evaluasi KPI/manfaat, audit tata kelola, dan rencana tahap berikutnya."], "catatan": "Jadwal ilustratif. Gunakan stage gate untuk persetujuan business case, governance readiness, pengadaan, desain, kesiapan data, penerimaan teknis, operasi, dan evaluasi manfaat." }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Template Governance Charter dan kesiapan pengadaan",
+              "poin": ["Governance Charter dapat memuat organisasi, aset/proyek, tujuan Digital Twin, executive sponsor, program manager, data owner, ruang lingkup, KPI utama, standar, kebijakan, kewenangan, dan mekanisme review.", "Sebelum tender, pastikan masalah bisnis dan pemilik manfaat terdokumentasi; use case disetujui; BIM, data, BMS, CMMS, dan infrastruktur diaudit; kebutuhan informasi, kualitas, arsitektur, integrasi, keamanan, dan klasifikasi data ditetapkan.", "Pastikan make/buy/partner, paket kerja, KAK/TOR, URS, spesifikasi, BoQ, evaluasi vendor, draft kontrak, hak data, SLA, exit plan, TCO, anggaran, pengujian, penerimaan, pelatihan, dan operasi telah ditinjau."]
+            },
+            {
+              "type": "section",
+              "judul": "Kesalahan umum dan rencana workshop",
+              "tabel": { "kolom": ["Kesalahan", "Pencegahan"], "baris": [["Membeli platform sebelum memahami kebutuhan", "Mulai dari business case dan use case"], ["Menganggap BIM sama dengan Digital Twin", "Tentukan kemampuan operasi dan integrasi yang diperlukan"], ["Fokus pada 3D", "Tata data dan workflow operasional"], ["Tidak menetapkan data owner", "Tetapkan pemilik, steward, dan sumber resmi"], ["KAK terlalu umum", "Gunakan persyaratan terukur dan dapat diuji"], ["Menilai harga awal saja", "Bandingkan TCO dan biaya berulang"], ["Tidak mengatur hak data atau exit", "Atur kepemilikan, portabilitas, transisi sejak kontrak"], ["Integrasi tanpa standar", "Tetapkan Asset ID, skema, API, dan system of record"], ["Tidak melibatkan pengguna atau menetapkan KPI", "Libatkan operasi sejak awal dan ukur baseline/manfaat"]] },
+              "subbagian": [
+                { "judul": "Workshop lintas fungsi", "tabel": { "kolom": ["Sesi", "Output"], "baris": [["Strategi dan business case", "Tujuan dan manfaat"], ["Stakeholder dan governance", "Struktur peran dan RACI"], ["BIM, data aset, dan CDE", "Standar informasi dan data owner"], ["Arsitektur dan integrasi", "Konsep solusi dan interface"], ["Cybersecurity dan risiko", "Risk register dan kontrol"], ["Strategi pengadaan", "Model kontrak dan paket kerja"], ["TOR, spesifikasi, dan BoQ", "Draft dokumen pengadaan"], ["Evaluasi vendor dan kontrak", "Matriks evaluasi dan klausul"], ["Testing dan penerimaan", "Acceptance criteria dan UAT"], ["Operasi dan roadmap", "SOP, KPI, dan rencana pengembangan"]] }, "paragraf": ["Workshop dapat disusun satu hingga tiga hari sesuai kedalaman bahasan dan kesiapan peserta."] }
+              ]
+            },
+            {
+              "type": "section",
+              "judul": "Kuis pemahaman dan prinsip utama",
+              "poin": ["Apa tujuan tata kelola Digital Twin? Memastikan solusi dikelola sesuai tujuan, standar, risiko, dan manfaat.", "Siapa bertanggung jawab atas kebenaran data dalam domainnya? Data Owner yang ditetapkan.", "Apa fungsi CDE? Mengelola pertukaran, review, persetujuan, distribusi, dan penyimpanan informasi.", "Apa yang dinilai dalam pengadaan? Kesesuaian teknis, data, keamanan, biaya siklus hidup, dukungan, dan manfaat.", "Mengapa Asset ID penting? Menjadi kunci penghubung yang konsisten antar-sistem.", "Apa fungsi SLA? Menetapkan mutu layanan dan cara pengukurannya.", "Apa itu vendor lock-in? Ketergantungan yang menyulitkan perpindahan atau pengembangan dengan pihak lain.", "Apa fungsi UAT? Memverifikasi bahwa sistem memenuhi kebutuhan pengguna.", "Apa prasyarat AI prediktif? Kebutuhan, data, validasi, dan manfaat yang memadai.", "Apa yang direncanakan saat kontrak berakhir? Exit, ekspor dan migrasi, transisi, serta penghapusan data."],
+              "catatan": "Gunakan pertanyaan ini untuk evaluasi mandiri atau diskusi. Aplikasi saat ini menampilkannya sebagai bahan belajar, bukan kuis interaktif yang memeriksa jawaban."
+            },
+            {
+              "type": "section",
+              "judul": "Kesimpulan",
+              "paragraf": ["Tata kelola dan pengadaan adalah fondasi implementasi Digital Twin yang bernilai, aman, dan berkelanjutan. Organisasi perlu menetapkan bagaimana informasi dimiliki, dipelihara, diamankan, dipertukarkan, dan digunakan dalam keputusan. Keberhasilan bukan hanya memilih platform atau penyedia, melainkan membangun kemampuan yang sesuai kebutuhan dan dapat dibuktikan."],
+              "poin": ["Business first: kebutuhan bisnis menjadi dasar.", "Governance first: struktur, kebijakan, dan tanggung jawab jelas sejak awal.", "Data ownership: setiap domain mempunyai pemilik.", "Standards-based dan interoperable: gunakan standar yang relevan dan konsisten.", "Security by design: keamanan dipertimbangkan sejak perencanaan.", "Procure by outcomes: nilai hasil yang terukur, bukan jumlah fitur.", "Lifecycle costing: hitung biaya implementasi, operasi, perubahan, dan penghentian.", "Acceptance by evidence: terima hasil berdasarkan uji dan bukti.", "Continuous improvement: evaluasi manfaat dan tingkatkan sistem secara berkala."],
+              "kutipan": "Digital Twin yang dikelola dengan baik menjadi bagian dari sistem pengambilan keputusan organisasi, bukan hanya representasi digital aset.",
+              "catatan": "Sesuaikan semua contoh, standar, target, dan klausul dengan ruang lingkup, regulasi, kebijakan pengadaan, serta kewenangan organisasi."
+            }
+          ]
+        },
         { "judul": "Mengukur manfaat: KPI dan evaluasi dampak", "tingkat": "Kepemimpinan", "status": "rencana", "tautan": null, "ringkasan": "Menerjemahkan tujuan Digital Twin menjadi KPI, indikator manfaat, dan evaluasi dampak yang terukur.", "fokus": ["KPI", "Baseline", "Evaluasi dampak"], "hasil": "Mampu membuat rancangan pengukuran manfaat." }
       ]
     },

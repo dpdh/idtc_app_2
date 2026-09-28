@@ -21,7 +21,7 @@ export function shopPage() {
   return `<section class="section twini-shop">
     <section class="shop-welcome" data-shop-welcome aria-label="Selamat datang di Twini Merchant Shop">
       ${bubbleFieldMarkup(32, 0.65)}
-      <div class="shop-welcome-content"><img src="assets/img/dni/twini-shop-icon.png" alt="Maskot TwiniShop" /><p class="section-label">IDTC MERCHANDISE</p><h1>Selamat Berbelanja di Twini Merchant Shop</h1><p>Temukan koleksi dan merchandise komunitas Digital Twin Indonesia.</p><button class="button primary shop-welcome-button" type="button" data-shop-start>Mulai Belanja <span aria-hidden="true">→</span></button></div>
+      <div class="shop-welcome-content"><img src="assets/img/dni/twini-shop-icon.png" alt="Maskot TwiniShop" decoding="async" /><p class="section-label">IDTC MERCHANDISE</p><h1>Selamat Berbelanja di Twini Merchant Shop</h1><p>Temukan koleksi dan merchandise komunitas Digital Twin Indonesia.</p><button class="button primary shop-welcome-button" type="button" data-shop-start>Mulai Belanja <span aria-hidden="true">→</span></button></div>
     </section>
     <div class="shop-shopping-content" data-shop-content hidden>
     <button class="shop-back-welcome" type="button" data-shop-welcome-back>← Sambutan TwiniShop</button>
@@ -86,7 +86,7 @@ export function bindShop({ root, catalog, escapeHtml }) {
     const items = activeCategory === 'Semua' ? catalog.items : catalog.items.filter(item => item.category === activeCategory);
     productList.innerHTML = items.map(item => `<article class="shop-item">
       <div class="shop-product-visual shop-visual--${escapeHtml(item.visual)}">
-        ${item.image ? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" />` : `<span class="shop-product-mockup" aria-hidden="true"><img src="assets/img/emblem-white.png" alt="" /><small>IDTC</small></span>`}
+        ${item.image ? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" decoding="async" />` : `<span class="shop-product-mockup" aria-hidden="true"><img src="assets/img/emblem-white.png" alt="" /><small>IDTC</small></span>`}
         <span class="shop-product-type">${item.type === 'digital' ? 'DIGITAL' : 'MERCH'}</span>
       </div>
       <div class="shop-item-copy"><p class="shop-item-category">${escapeHtml(item.category)}</p><h2>${escapeHtml(item.name)}</h2><p>${escapeHtml(item.description)}</p><div class="shop-item-bottom"><strong>${MONEY.format(item.price)}</strong><button type="button" data-shop-add="${escapeHtml(item.id)}" aria-label="Tambah ${escapeHtml(item.name)} ke keranjang">Tambah</button></div></div>
