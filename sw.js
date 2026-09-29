@@ -1,11 +1,11 @@
-const CACHE_VERSION = 'v94';
+const CACHE_VERSION = 'v96';
 const SHELL_CACHE = `idtc-mobile-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `idtc-runtime-${CACHE_VERSION}`;
 const CORE = [
   './',
   './index.html',
   './styles.css?v=66',
-  './app.js?v=51',
+  './app.js?v=53',
   './image-zoom.js?v=2',
   './auth-security.js?v=1',
   './admin-cms.js?v=3',
@@ -24,6 +24,7 @@ const CORE = [
   './data/produk.json?v=22',
   './data/merch.json?v=22',
   './data/twini-ai.json?v=3',
+  './data/twini-ai-sensors.json?v=1',
 ];
 const MAX_RUNTIME_ENTRIES = 60;
 

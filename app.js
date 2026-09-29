@@ -485,8 +485,8 @@ function normalizeTwiniText(value) {
 function twiniTokens(value) {
   return normalizeTwiniText(value).split(/\s+/).filter(token => token.length > 1 && !TWINIAI_STOP_WORDS.has(token));
 }
-function expandTwiniKnowledge(knowledge) {
-  const entries = Array.isArray(knowledge?.entries) ? [...knowledge.entries] : [];
+function expandTwiniKnowledge(knowledge, additionalEntries = []) {
+  const entries = Array.isArray(knowledge?.entries) ? [...knowledge.entries, ...additionalEntries] : [...additionalEntries];
   const topics = (knowledge?.questionBanks?.topics || []).slice(0, 50);
   const intents = knowledge?.questionBanks?.intents || [];
   topics.forEach(topic => intents.forEach(intent => {
@@ -500,6 +500,15 @@ function expandTwiniKnowledge(knowledge) {
     });
   }));
   return { ...knowledge, entries };
+}
+function sensorFaqEntries(sensorFaq) {
+  return (sensorFaq?.categories || []).flatMap(category => category.items.map((item, index) => ({
+    id: `sensor-${category.id}-${index + 1}`,
+    category: `Sensor: ${category.name}`,
+    question: item.q,
+    keywords: [...(category.keywords || []), item.brands].filter(Boolean),
+    answer: `${item.a}${item.brands ? `\n\nContoh merek/produk sejenis: ${item.brands}.` : ''}`,
+  })));
 }
 function mergeLessonContent(curriculum, savedCurriculum) {
   if (!Array.isArray(savedCurriculum?.jalur)) return curriculum;
@@ -632,15 +641,16 @@ function initTwiniWidget() {
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && !panel.hidden) setOpen(false); });
 }
 async function load() {
-  const [anggota, materi, struktur, produk, merch, twini] = await Promise.all([
+  const [anggota, materi, struktur, produk, merch, twini, sensorFaq] = await Promise.all([
     ...['anggota', 'materi', 'struktur', 'produk'].map(name => fetch(`data/${name}.json?v=22`).then(response => response.json())),
     fetch('data/merch.json?v=22').then(response => response.json()),
     fetch('data/twini-ai.json?v=3').then(response => response.json()),
+    fetch('data/twini-ai-sensors.json?v=1').then(response => response.json()),
   ]);
   await migrateLegacyPasswords();
   let overrides = {};
   try { overrides = JSON.parse(localStorage.getItem('idtc-cms-content') || '{}') || {}; } catch { overrides = {}; }
-  data = { anggota, materi: mergeLessonContent(materi, overrides.materi), struktur, produk: overrides.produk || produk, twini: expandTwiniKnowledge(overrides.twini || twini), merch };
+  data = { anggota, materi: mergeLessonContent(materi, overrides.materi), struktur, produk: overrides.produk || produk, twini: expandTwiniKnowledge(overrides.twini || twini, sensorFaqEntries(sensorFaq)), merch };
   render();
 }
 function addHomeFeatures() { const actions = app.querySelector('.hero-actions'); if (!actions || app.querySelector('.feature-actions')) return; actions.insertAdjacentHTML('afterend', '<div class="feature-actions" aria-label="Fitur utama"><a href="#belajar" class="feature-button feature-literasi"><span>◫</span>Literasi</a><a href="#profile" class="feature-button feature-regulasi"><span>◇</span>Regulasi</a><a href="#pokja" class="feature-button feature-pilot"><span>◈</span>Pilot Project</a></div>'); }

@@ -1,0 +1,356 @@
+{
+  "version": 1,
+  "categories": [
+    {
+      "id": "fundamental",
+      "name": "Fundamental Sensor",
+      "keywords": ["sensor digital twin", "perangkat sensor", "sensor IoT"],
+      "items": [
+        {"q":"Apa yang dimaksud sensor dalam Digital Twin?","a":"Sensor menangkap kondisi fisik aset dan mengubahnya menjadi data digital untuk monitoring, analisis, dan simulasi.","brands":"Siemens, Schneider Electric, Honeywell, IFM"},
+        {"q":"Mengapa sensor penting dalam Digital Twin?","a":"Sensor menghubungkan kondisi aset fisik dengan model digital agar twin dapat merepresentasikan kondisi aktual sesuai frekuensi pembaruannya.","brands":"Siemens, Honeywell, Schneider Electric"},
+        {"q":"Apa perbedaan sensor dan actuator?","a":"Sensor membaca kondisi; actuator menerima perintah dan melakukan tindakan, misalnya membuka valve atau mengatur damper.","brands":"Siemens, Belimo, Schneider Electric"},
+        {"q":"Apa fungsi sensor terhadap BIM Model?","a":"Data sensor dapat dikaitkan dengan objek BIM seperti AHU, pompa, panel listrik, ruang, atau struktur menggunakan identitas aset yang konsisten.","brands":"Ekosistem Autodesk, Siemens, Schneider Electric"},
+        {"q":"Apa itu real-time sensor data?","a":"Data yang dikirim kontinu atau berkala dengan latensi tertentu sehingga kondisi aset dapat dipantau hampir langsung; kebutuhan real-time bergantung pada keputusan yang didukung.","brands":"Siemens, Honeywell"},
+        {"q":"Apa yang dimaksud sensor node?","a":"Sensor node adalah perangkat pengukuran yang dapat memiliki satu atau beberapa sensor serta kemampuan komunikasi.","brands":"Bosch, Schneider Electric, Siemens"},
+        {"q":"Apa itu smart sensor?","a":"Smart sensor memiliki kemampuan tambahan seperti pemrosesan, diagnosis, komunikasi, konfigurasi, atau pengolahan data lokal.","brands":"IFM, Siemens, Schneider Electric"},
+        {"q":"Apa fungsi sensor gateway?","a":"Gateway mengumpulkan data dari sensor dan meneruskannya ke BMS, platform IoT, cloud, atau platform Digital Twin; gateway juga dapat menjembatani protokol.","brands":"Siemens, Schneider Electric, Advantech"},
+        {"q":"Apa hubungan sensor dengan IoT?","a":"Sensor merupakan salah satu lapisan field device yang menghasilkan observasi untuk arsitektur IoT, melalui koneksi langsung atau gateway.","brands":"Bosch, Siemens, Schneider Electric"},
+        {"q":"Bagaimana menentukan jumlah sensor untuk Digital Twin?","a":"Tentukan dari tujuan monitoring, kritikalitas aset, akurasi, cakupan area, redundansi yang diperlukan, biaya, serta kemampuan merawat perangkat.","brands":"Berbagai vendor sensor"}
+      ]
+    },
+    {
+      "id": "temperature",
+      "name": "Temperature Sensor",
+      "keywords": ["temperature sensor", "sensor suhu", "temperatur", "RTD", "thermistor", "thermocouple"],
+      "items": [
+        {"q":"Apa itu temperature sensor?","a":"Sensor temperatur mengukur suhu udara, permukaan, peralatan, pipa, ruang, atau proses.","brands":"Siemens Temperature Sensors, Schneider SpaceLogic"},
+        {"q":"Apa jenis temperature sensor yang umum digunakan?","a":"Jenis umum meliputi thermistor, RTD, thermocouple, infrared, dan integrated temperature sensor; pemilihan mengikuti rentang dan kondisi pengukuran.","brands":"Siemens, Schneider Electric, WIKA"},
+        {"q":"Apa perbedaan RTD dan thermistor?","a":"RTD mengukur perubahan resistansi yang relatif linear dan stabil; thermistor memiliki sensitivitas tinggi pada rentang tertentu tetapi karakteristik lebih non-linear.","brands":"Siemens, Schneider Electric"},
+        {"q":"Kapan menggunakan thermocouple?","a":"Thermocouple cocok untuk temperatur tinggi atau lingkungan industri tertentu setelah rentang, akurasi, dan kompatibilitas pemasangan diperiksa.","brands":"WIKA, Omega, Siemens"},
+        {"q":"Di mana temperature sensor dipasang pada HVAC?","a":"Lokasi umum meliputi supply air, return air, ruang, duct, chilled water, hot water, AHU, FCU, dan equipment terkait.","brands":"Siemens, Schneider Electric, Honeywell"},
+        {"q":"Bagaimana temperature sensor membantu Digital Twin HVAC?","a":"Temperatur aktual dapat dibandingkan dengan kondisi desain atau baseline untuk memantau kenyamanan, beban, dan performa sistem HVAC.","brands":"Siemens, Schneider Electric"},
+        {"q":"Apa akibat sensor temperatur tidak terkalibrasi?","a":"Pembacaan yang menyimpang dapat membuat twin menampilkan kondisi keliru dan memengaruhi analisis performa atau keputusan kontrol.","brands":"WIKA, Fluke"},
+        {"q":"Apa parameter penting dalam memilih temperature sensor?","a":"Pertimbangkan range, akurasi, waktu respons, mounting, IP rating, output, protokol komunikasi, dan kebutuhan kalibrasi.","brands":"Siemens, WIKA"},
+        {"q":"Bagaimana mendeteksi sensor temperatur abnormal?","a":"Bandingkan dengan sensor lain, batas operasi, tren historis, kondisi proses, dan model prediktif; investigasi sebelum menganggap data sebagai kegagalan aset.","brands":"Siemens, Honeywell"},
+        {"q":"Bagaimana menghubungkan temperature sensor dengan BIM object?","a":"Beri sensor unique ID dan petakan ke Asset ID atau object ID BIM/Digital Twin, lalu simpan relasi serta metadata pengukuran.","brands":"Ekosistem Autodesk, Siemens"}
+      ]
+    },
+    {
+      "id": "humidity",
+      "name": "Humidity Sensor",
+      "keywords": ["humidity sensor", "sensor kelembapan", "RH", "relative humidity"],
+      "items": [
+        {"q":"Apa fungsi humidity sensor?","a":"Humidity sensor mengukur kelembapan udara, biasanya relative humidity (RH).","brands":"Schneider Electric, Siemens, Honeywell"},
+        {"q":"Apa itu Relative Humidity?","a":"Relative Humidity adalah persentase uap air aktual dibanding kapasitas maksimum udara pada temperatur tertentu.","brands":"Vaisala, Siemens"},
+        {"q":"Mengapa kelembapan penting dalam Digital Twin?","a":"Kelembapan berkaitan dengan kenyamanan, kondensasi, pertumbuhan jamur, material, equipment, dan kualitas udara.","brands":"Vaisala, Schneider Electric"},
+        {"q":"Di mana humidity sensor dipasang?","a":"Lokasi umum mencakup ruangan, duct HVAC, plant room, server room, cold storage, museum, dan area kritis.","brands":"Vaisala, Siemens"},
+        {"q":"Apa risiko RH terlalu tinggi?","a":"RH tinggi dapat meningkatkan risiko kondensasi, korosi, pertumbuhan jamur, dan kerusakan material tertentu.","brands":"Vaisala"},
+        {"q":"Apa risiko RH terlalu rendah?","a":"RH rendah dapat menimbulkan ketidaknyamanan dan kondisi lingkungan yang merugikan material tertentu.","brands":"Vaisala"},
+        {"q":"Bagaimana humidity sensor mendukung HVAC optimization?","a":"Data RH dapat menjadi input untuk mengatur dehumidification dan kondisi udara sesuai kebutuhan ruang.","brands":"Schneider Electric, Siemens"},
+        {"q":"Apa itu combined temperature-humidity sensor?","a":"Perangkat gabungan yang mengukur temperatur dan kelembapan pada satu unit.","brands":"Schneider SpaceLogic, Vaisala"},
+        {"q":"Bagaimana mendeteksi drift humidity sensor?","a":"Bandingkan pembacaan dengan reference sensor, cek tren historis, dan tinjau riwayat serta jadwal kalibrasi.","brands":"Vaisala, Fluke"},
+        {"q":"Bagaimana data humidity masuk Digital Twin?","a":"Sensor dapat mengirim data melalui analog, Modbus, BACnet, wireless, atau gateway menuju platform data.","brands":"Schneider Electric, Honeywell"}
+      ]
+    },
+    {
+      "id": "pressure",
+      "name": "Pressure Sensor",
+      "keywords": ["pressure sensor", "sensor tekanan", "differential pressure", "pressure transmitter"],
+      "items": [
+        {"q":"Apa itu pressure sensor?","a":"Pressure sensor mengukur tekanan gas atau cairan.","brands":"Emerson Rosemount, Siemens"},
+        {"q":"Apa perbedaan gauge, absolute, dan differential pressure?","a":"Gauge mengacu pada tekanan atmosfer, absolute pada vakum referensi, sedangkan differential mengukur selisih antara dua tekanan.","brands":"Emerson Rosemount 3051/2051"},
+        {"q":"Apa fungsi differential pressure sensor pada AHU?","a":"Sensor differential pressure mengukur selisih tekanan udara, misalnya sebelum dan sesudah filter atau coil.","brands":"Siemens, Schneider Electric"},
+        {"q":"Bagaimana sensor pressure membantu monitoring filter?","a":"Kenaikan differential pressure dapat menjadi indikasi filter semakin tersumbat; interpretasikan bersama airflow dan kondisi operasi.","brands":"Siemens, Schneider Electric"},
+        {"q":"Bagaimana pressure sensor digunakan pada chilled water?","a":"Sensor memantau tekanan supply-return dan kondisi sistem hydronic sesuai titik ukur yang dirancang.","brands":"Siemens, Emerson"},
+        {"q":"Bagaimana pressure sensor mendukung predictive maintenance?","a":"Perubahan pola tekanan dapat membantu mengindikasikan kebocoran, blockage, atau degradasi equipment jika dibandingkan dengan baseline dan konteks operasi.","brands":"Emerson"},
+        {"q":"Apa itu pressure transmitter?","a":"Pressure transmitter mengukur tekanan dan mengubahnya menjadi sinyal standar atau data digital untuk sistem pemantauan/kendali.","brands":"Rosemount, WIKA"},
+        {"q":"Apa itu WirelessHART pressure sensor?","a":"Pressure transmitter yang mengirim data melalui jaringan WirelessHART; kecocokan jaringan dan persyaratan instalasi perlu diperiksa.","brands":"Emerson Rosemount"},
+        {"q":"Bagaimana pressure sensor dihubungkan ke Digital Twin?","a":"Integrasi dapat memakai 4–20 mA, HART, Modbus, WirelessHART, gateway, atau protokol lain yang sesuai perangkat.","brands":"Emerson, Siemens"},
+        {"q":"Apa parameter pemilihan pressure sensor?","a":"Periksa range, akurasi, process connection, media, temperatur, hazardous-area rating, output, dan protokol komunikasi.","brands":"Emerson, WIKA"}
+      ]
+    },
+    {
+      "id": "iaq-co2",
+      "name": "CO2 dan Indoor Air Quality",
+      "keywords": ["CO2 sensor", "karbon dioksida", "IAQ", "indoor air quality", "VOC"],
+      "items": [
+        {"q":"Apa fungsi CO2 sensor?","a":"CO2 sensor mengukur konsentrasi karbon dioksida di udara.","brands":"Siemens, Schneider Electric, Honeywell"},
+        {"q":"Mengapa CO2 penting untuk Digital Twin gedung?","a":"CO2 dapat menjadi salah satu indikator kondisi ventilasi dan input demand-controlled ventilation, bukan ukuran tunggal kualitas udara atau okupansi.","brands":"Honeywell, Schneider Electric"},
+        {"q":"Apa itu NDIR CO2 sensor?","a":"NDIR mengukur CO2 berdasarkan penyerapan cahaya inframerah pada panjang gelombang tertentu.","brands":"Vaisala, Sensirion"},
+        {"q":"Di mana CO2 sensor sebaiknya ditempatkan?","a":"Tempatkan pada lokasi yang mewakili kondisi okupansi dan hindari posisi tepat di dekat supply air atau sumber gangguan lokal.","brands":"Schneider Electric, Honeywell"},
+        {"q":"Apa hubungan CO2 dan occupancy?","a":"Perubahan CO2 dapat menjadi salah satu indikator perubahan okupansi, tetapi sebaiknya ditafsirkan bersama sensor dan konteks lain.","brands":"Honeywell"},
+        {"q":"Apa itu IAQ sensor?","a":"IAQ sensor mengukur satu atau beberapa parameter kualitas udara dalam ruang.","brands":"Schneider SpaceLogic, Honeywell"},
+        {"q":"Apa parameter IAQ selain CO2?","a":"Parameter yang mungkin diukur meliputi VOC, PM1, PM2.5, PM10, temperatur, kelembapan, dan parameter lain sesuai perangkat.","brands":"Honeywell, Schneider Electric"},
+        {"q":"Bagaimana IAQ sensor digunakan dalam Digital Twin?","a":"Data IAQ dapat dibandingkan dengan target ruang dan digunakan untuk analisis HVAC, dengan memperhatikan kualitas serta lokasi data.","brands":"Honeywell, Schneider Electric"},
+        {"q":"Apa itu TVOC sensor?","a":"TVOC sensor memperkirakan konsentrasi total volatile organic compounds; hasilnya tidak selalu mengidentifikasi senyawa individual.","brands":"Honeywell, Sensirion"},
+        {"q":"Bagaimana sensor IAQ membantu efisiensi energi?","a":"Data kualitas udara dapat menjadi input pengaturan ventilasi berdasarkan kebutuhan aktual, dengan batas kenyamanan dan keselamatan tetap dijaga.","brands":"Honeywell, Schneider Electric"}
+      ]
+    },
+    {
+      "id": "particulate",
+      "name": "Particulate Matter dan PM Sensor",
+      "keywords": ["PM sensor", "PM1", "PM2.5", "PM10", "particulate matter", "partikulat"],
+      "items": [
+        {"q":"Apa itu PM sensor?","a":"PM sensor mendeteksi atau memperkirakan konsentrasi partikulat di udara.","brands":"Honeywell, Sensirion"},
+        {"q":"Apa perbedaan PM1, PM2.5 dan PM10?","a":"Nama tersebut membedakan fraksi partikulat berdasarkan ukuran aerodinamis yang menjadi parameter pengukuran; pastikan spesifikasi perangkat untuk definisi dan metode yang dipakai.","brands":"Honeywell"},
+        {"q":"Mengapa PM2.5 penting dalam Digital Twin?","a":"PM2.5 dapat dipakai untuk memantau kualitas udara indoor dan membantu analisis ventilasi atau filtrasi.","brands":"Honeywell, Schneider Electric"},
+        {"q":"Bagaimana PM sensor bekerja?","a":"Salah satu pendekatan umum memakai optical particle counting atau light scattering; hasil dipengaruhi karakteristik partikel dan kondisi lingkungan.","brands":"Sensirion"},
+        {"q":"Di mana PM sensor ditempatkan?","a":"PM sensor dapat ditempatkan di ruang, duct, area outdoor, cleanroom, atau lingkungan lain sesuai tujuan dan spesifikasi perangkat.","brands":"Honeywell, Sensirion"},
+        {"q":"Bagaimana PM sensor memonitor filter HVAC?","a":"Perbandingan partikulat upstream dan downstream dapat menjadi salah satu indikator performa filtrasi bila titik ukur dan kondisi operasi dikendalikan.","brands":"Honeywell"},
+        {"q":"Apa masalah utama PM sensor?","a":"Debu, kontaminasi, kelembapan tinggi, dan lingkungan di luar spesifikasi dapat memengaruhi pembacaan.","brands":"Sensirion"},
+        {"q":"Bagaimana kalibrasi PM sensor?","a":"Kalibrasi atau verifikasi dilakukan dengan reference instrument dan prosedur sesuai spesifikasi perangkat serta kondisi penggunaannya.","brands":"Sensirion"},
+        {"q":"Bagaimana PM sensor digunakan untuk predictive analytics?","a":"Tren PM dapat dianalisis untuk melihat perubahan kualitas udara atau performa filtrasi; periksa baseline dan faktor lingkungan lain.","brands":"Honeywell"},
+        {"q":"Bagaimana PM sensor dikaitkan ke Digital Twin ruang?","a":"Petakan Sensor ID ke Space ID atau Room ID agar data dapat divisualisasikan dan ditelusuri per ruang.","brands":"Siemens, Schneider Electric"}
+      ]
+    },
+    {
+      "id": "occupancy",
+      "name": "Occupancy dan Presence Sensor",
+      "keywords": ["occupancy sensor", "presence sensor", "sensor okupansi", "kehadiran ruang"],
+      "items": [
+        {"q":"Apa itu occupancy sensor?","a":"Occupancy sensor mendeteksi keberadaan atau penggunaan suatu ruang sesuai teknologi dan konfigurasi perangkat.","brands":"Schneider Electric, Honeywell"},
+        {"q":"Apa perbedaan occupancy dan presence sensor?","a":"Presence biasanya ditujukan untuk deteksi keberadaan yang lebih sensitif, sedangkan occupancy berkaitan dengan status penggunaan ruang; istilah berbeda antarvendor.","brands":"Schneider Electric"},
+        {"q":"Apa teknologi occupancy sensor?","a":"Teknologi yang umum meliputi PIR, microwave, radar, ultrasonic, camera-based, atau kombinasi; pilihan harus mempertimbangkan privasi dan kondisi ruang.","brands":"Schneider Electric, Siemens"},
+        {"q":"Bagaimana occupancy sensor menghemat energi?","a":"Status penggunaan ruang dapat membantu menyesuaikan HVAC dan lighting dengan kebutuhan aktual, sesuai strategi kontrol yang aman.","brands":"Schneider Electric, Siemens"},
+        {"q":"Bagaimana occupancy sensor digunakan pada Digital Twin?","a":"Data okupansi dapat menjadi input kondisi ruang untuk analisis penggunaan, simulasi, dan energy model.","brands":"Schneider EcoStruxure"},
+        {"q":"Apa kelemahan PIR sensor?","a":"PIR dapat kurang sensitif terhadap orang yang diam atau berada di area yang tidak tercakup bidang pandangnya.","brands":"Schneider Electric"},
+        {"q":"Apa kelebihan radar presence sensor?","a":"Pada konfigurasi tertentu, radar dapat mendeteksi gerakan kecil atau keberadaan yang sulit dideteksi teknologi lain; kinerja bergantung lingkungan dan perangkat.","brands":"IFM, Siemens"},
+        {"q":"Bagaimana occupancy dikombinasikan dengan CO2?","a":"Occupancy dan CO2 dapat ditafsirkan bersama untuk memperkirakan penggunaan ruang dan kebutuhan ventilasi, dengan memperhatikan latensi serta ventilasi aktual.","brands":"Honeywell"},
+        {"q":"Bagaimana occupancy sensor memengaruhi HVAC?","a":"Status occupancy dapat menjadi input demand control untuk jadwal atau setpoint HVAC setelah aturan operasi ditetapkan.","brands":"Siemens, Schneider Electric"},
+        {"q":"Bagaimana occupancy data disimpan di Digital Twin?","a":"Simpan sebagai time-series yang dikaitkan dengan Space ID, timestamp, kualitas data, retensi, dan aturan akses yang sesuai privasi.","brands":"Siemens, Schneider Electric"}
+      ]
+    },
+    {
+      "id": "light",
+      "name": "Light dan Illuminance Sensor",
+      "keywords": ["illuminance sensor", "lux sensor", "sensor cahaya", "daylight"],
+      "items": [
+        {"q":"Apa itu illuminance sensor?","a":"Illuminance sensor mengukur tingkat pencahayaan, umumnya dalam satuan lux.","brands":"Siemens, Schneider Electric"},
+        {"q":"Mengapa lux sensor penting dalam Digital Twin?","a":"Data pencahayaan membantu analisis kenyamanan dan efisiensi energi ruang.","brands":"Schneider Electric"},
+        {"q":"Bagaimana lux sensor mengontrol lighting?","a":"Nilai lux dapat menjadi input dimming atau switching lampu sesuai strategi kontrol dan target pencahayaan.","brands":"Siemens"},
+        {"q":"Apa hubungan lux sensor dengan daylight harvesting?","a":"Sensor membaca kontribusi cahaya alami sehingga artificial lighting dapat disesuaikan untuk memenuhi target pencahayaan.","brands":"Siemens, Schneider Electric"},
+        {"q":"Di mana sensor lux ditempatkan?","a":"Tempatkan pada bidang kerja representatif atau ceiling sesuai rancangan sistem kontrol dan area yang ingin diukur.","brands":"Siemens"},
+        {"q":"Apa itu daylight sensor?","a":"Daylight sensor mendeteksi intensitas cahaya alami untuk mendukung sistem kontrol lighting.","brands":"Schneider Electric"},
+        {"q":"Bagaimana sensor cahaya diintegrasikan ke BMS?","a":"Integrasi dapat memakai input analog atau digital, BACnet, KNX, atau sistem kontrol lain yang didukung perangkat.","brands":"Schneider Electric"},
+        {"q":"Apa masalah sensor lux?","a":"Posisi, bayangan, refleksi, dan kotoran dapat memengaruhi pembacaan lux.","brands":"Siemens"},
+        {"q":"Bagaimana data lux digunakan untuk energy analytics?","a":"Bandingkan pencahayaan aktual dengan kebutuhan ruang dan jadwal operasi untuk menganalisis peluang penghematan energi.","brands":"Siemens"},
+        {"q":"Bagaimana lux sensor ditautkan ke BIM?","a":"Tautkan sensor ke lighting zone atau room object menggunakan ID yang stabil dan metadata lokasi.","brands":"Ekosistem Autodesk"}
+      ]
+    },
+    {
+      "id": "noise",
+      "name": "Noise dan Acoustic Sensor",
+      "keywords": ["sound level", "noise sensor", "sensor suara", "acoustic", "kebisingan"],
+      "items": [
+        {"q":"Apa itu sound level sensor?","a":"Sound level sensor mengukur tingkat tekanan suara pada lokasi dan kondisi pengukuran tertentu.","brands":"Siemens, Bosch"},
+        {"q":"Mengapa noise monitoring penting?","a":"Monitoring kebisingan dapat mendukung evaluasi kenyamanan, keselamatan, lingkungan kerja, dan kondisi ruang.","brands":"Bosch, Bruel & Kjaer"},
+        {"q":"Apa satuan umum pengukuran suara?","a":"Tingkat suara lazim dinyatakan dalam decibel (dB); pembobotan dan waktu respons harus disebutkan saat membandingkan hasil.","brands":"Bruel & Kjaer"},
+        {"q":"Bagaimana sensor suara digunakan di Digital Twin?","a":"Data kebisingan dapat ditampilkan sebagai kondisi lingkungan ruang atau zona yang ditautkan ke lokasi sensor.","brands":"Bosch"},
+        {"q":"Bagaimana mendeteksi equipment yang terlalu bising?","a":"Bandingkan tren dan level suara dengan baseline equipment serta kondisi operasi dan lingkungan pengukuran.","brands":"Bruel & Kjaer"},
+        {"q":"Apa hubungan noise dengan predictive maintenance?","a":"Perubahan acoustic signature dapat menjadi salah satu indikator perubahan kondisi mesin tertentu, dan perlu divalidasi dengan data lain.","brands":"Fluke, Bruel & Kjaer"},
+        {"q":"Apa perbedaan microphone dan sound level meter?","a":"Microphone adalah transducer; sound level meter merupakan sistem pengukuran lengkap dengan pemrosesan sesuai standar dan spesifikasinya.","brands":"Bruel & Kjaer"},
+        {"q":"Bagaimana acoustic sensor ditempatkan?","a":"Pertimbangkan sumber suara, refleksi, jarak, orientasi, dan karakteristik ruangan saat menentukan lokasi.","brands":"Bruel & Kjaer"},
+        {"q":"Apa risiko data noise yang salah?","a":"Data yang keliru dapat menyebabkan analisis kenyamanan atau diagnosis equipment tidak akurat.","brands":"Fluke"},
+        {"q":"Bagaimana acoustic data dikaitkan dengan BIM?","a":"Kaitkan sensor dengan room, equipment, atau zone sumber suara menggunakan identitas lokasi dan aset yang konsisten.","brands":"Ekosistem Autodesk"}
+      ]
+    },
+    {
+      "id": "electrical",
+      "name": "Electrical, Current dan Voltage Sensor",
+      "keywords": ["current sensor", "sensor arus", "voltage sensor", "tegangan", "CT sensor", "power meter"],
+      "items": [
+        {"q":"Apa itu current sensor?","a":"Current sensor mengukur arus listrik pada konduktor atau rangkaian sesuai rentang dan metode perangkat.","brands":"Schneider Electric, Siemens, ABB"},
+        {"q":"Apa fungsi current sensor dalam Digital Twin?","a":"Current sensor memberi informasi beban listrik aktual suatu aset untuk monitoring dan analisis operasi.","brands":"Schneider Electric, Siemens"},
+        {"q":"Apa itu CT sensor?","a":"Current Transformer (CT) mengukur arus AC menggunakan prinsip transformasi elektromagnetik.","brands":"Schneider Electric, ABB"},
+        {"q":"Apa itu split-core CT?","a":"Split-core CT memiliki inti yang dapat dibuka sehingga pada aplikasi tertentu bisa dipasang tanpa memutus konduktor; instalasi tetap harus memenuhi keselamatan listrik.","brands":"Schneider Electric, Siemens"},
+        {"q":"Bagaimana sensor arus memonitor motor?","a":"Pola beban dan konsumsi arus motor dapat dianalisis bersama kondisi operasi untuk membantu monitoring.","brands":"Schneider Electric, Siemens"},
+        {"q":"Apa hubungan current sensor dengan predictive maintenance?","a":"Perubahan current signature dapat menjadi petunjuk perubahan kondisi motor atau equipment bila dibandingkan dengan baseline dan parameter lain.","brands":"Schneider Electric"},
+        {"q":"Apa itu voltage sensor?","a":"Voltage sensor atau transducer mengukur tegangan listrik dan menyajikannya sebagai sinyal atau data yang dapat dibaca sistem.","brands":"Siemens, ABB"},
+        {"q":"Apa itu power meter?","a":"Power meter menghitung parameter listrik seperti voltage, current, power, energy, dan power factor sesuai kemampuan perangkat.","brands":"Schneider PowerLogic, Siemens"},
+        {"q":"Bagaimana energy meter terhubung ke Digital Twin?","a":"Petakan data meter ke panel, lantai, tenant, equipment, atau energy zone dengan ID dan metadata yang stabil.","brands":"Schneider PowerLogic, Siemens"},
+        {"q":"Bagaimana Digital Twin digunakan untuk energy benchmarking?","a":"Bandingkan konsumsi aktual dengan baseline, luas area, jam operasi, atau target performa yang relevan dan terdokumentasi.","brands":"Schneider Electric, Siemens"}
+      ]
+    },
+    {
+      "id": "flow",
+      "name": "Flow Sensor dan Flow Meter",
+      "keywords": ["flow sensor", "flow meter", "sensor aliran", "debit", "chilled water"],
+      "items": [
+        {"q":"Apa itu flow sensor?","a":"Flow sensor mengukur laju aliran fluida atau gas.","brands":"Siemens, Endress+Hauser"},
+        {"q":"Apa jenis flow meter?","a":"Jenisnya meliputi electromagnetic, ultrasonic, vortex, Coriolis, turbine, differential pressure, dan teknologi lain.","brands":"Siemens, Endress+Hauser"},
+        {"q":"Kapan menggunakan electromagnetic flow meter?","a":"Electromagnetic flow meter umumnya digunakan untuk cairan konduktif dalam sistem perpipaan; cek spesifikasi media dan instalasi.","brands":"Siemens, Endress+Hauser"},
+        {"q":"Apa fungsi flow meter chilled water?","a":"Flow meter mengukur aliran air dingin sebagai salah satu input perhitungan dan evaluasi performa HVAC.","brands":"Siemens"},
+        {"q":"Bagaimana flow dan temperature menghasilkan thermal energy?","a":"Laju aliran dan perbedaan temperatur dapat dikombinasikan untuk menghitung energi termal dengan sifat fluida dan unit yang sesuai.","brands":"Siemens"},
+        {"q":"Bagaimana flow sensor mendukung Digital Twin pompa?","a":"Data flow dapat dibandingkan dengan tekanan, kurva pompa, dan kondisi operasi untuk menilai kinerja sistem.","brands":"Siemens, Grundfos"},
+        {"q":"Bagaimana mendeteksi flow anomaly?","a":"Bandingkan flow aktual dengan kondisi operasi, batas proses, dan baseline; periksa kualitas sensor sebelum menyimpulkan anomali aset.","brands":"Siemens"},
+        {"q":"Apa itu ultrasonic flow meter?","a":"Ultrasonic flow meter mengukur aliran dengan memanfaatkan propagasi gelombang ultrasonik.","brands":"Siemens, Endress+Hauser"},
+        {"q":"Apa kelebihan non-invasive ultrasonic flow meter?","a":"Tipe clamp-on tertentu dapat mengukur dari luar pipa tanpa memotongnya; kecocokan bergantung material, fluida, dan kondisi pemasangan.","brands":"Siemens, FLEXIM"},
+        {"q":"Bagaimana flow meter dikaitkan dengan BIM?","a":"Beri meter Asset ID dan kaitkan dengan pipe system atau equipment object dalam model.","brands":"Ekosistem Autodesk"}
+      ]
+    },
+    {
+      "id": "level",
+      "name": "Level Sensor",
+      "keywords": ["level sensor", "sensor level", "ketinggian", "tank", "reservoir"],
+      "items": [
+        {"q":"Apa itu level sensor?","a":"Level sensor mengukur ketinggian atau volume material dalam tank atau vessel.","brands":"Endress+Hauser, Siemens"},
+        {"q":"Apa teknologi level sensor?","a":"Teknologi meliputi radar, ultrasonic, hydrostatic, capacitance, guided wave radar, float, dan lainnya.","brands":"Endress+Hauser, Siemens"},
+        {"q":"Apa kelebihan radar level sensor?","a":"Pengukuran radar non-contact dapat digunakan pada banyak aplikasi proses, dengan kecocokan ditentukan oleh media dan kondisi instalasi.","brands":"Endress+Hauser, Emerson"},
+        {"q":"Apa itu ultrasonic level sensor?","a":"Ultrasonic level sensor menggunakan gelombang ultrasonik dan waktu pantul untuk memperkirakan level.","brands":"Siemens"},
+        {"q":"Bagaimana level sensor digunakan pada water tank?","a":"Level sensor memberi data ketinggian atau volume untuk monitoring dan kontrol pompa sesuai batas operasi.","brands":"Siemens"},
+        {"q":"Bagaimana Digital Twin memonitor reservoir?","a":"Gabungkan data level dengan geometri/kurva volume tank, flow masuk-keluar, timestamp, dan status operasi.","brands":"Siemens"},
+        {"q":"Bagaimana mendeteksi kebocoran tank?","a":"Analisis perubahan level bersama flow input/output dan kondisi operasi untuk menemukan ketidaksesuaian yang perlu diperiksa.","brands":"Siemens"},
+        {"q":"Apa itu hydrostatic level measurement?","a":"Hydrostatic level measurement memperkirakan level dari tekanan hidrostatik akibat kolom cairan.","brands":"Endress+Hauser"},
+        {"q":"Apa masalah level sensor?","a":"Foam, turbulence, material buildup, vapor, geometri vessel, dan kondisi proses dapat memengaruhi pembacaan.","brands":"Endress+Hauser"},
+        {"q":"Bagaimana level sensor diintegrasikan ke Digital Twin?","a":"Kaitkan data dengan tank atau reservoir object dan tampilkan sebagai parameter terkini beserta satuan, timestamp, dan status kualitas.","brands":"Siemens, Endress+Hauser"}
+      ]
+    },
+    {
+      "id": "vibration",
+      "name": "Vibration Sensor",
+      "keywords": ["vibration sensor", "sensor getaran", "accelerometer", "bearing", "condition monitoring"],
+      "items": [
+        {"q":"Apa itu vibration sensor?","a":"Vibration sensor mendeteksi getaran pada equipment atau struktur.","brands":"IFM, Siemens, SKF"},
+        {"q":"Mengapa vibration penting untuk Digital Twin?","a":"Getaran dapat menjadi indikator kondisi rotating equipment atau struktur tertentu ketika dipantau dan ditafsirkan sesuai konteks.","brands":"IFM, SKF"},
+        {"q":"Apa itu accelerometer?","a":"Accelerometer mengukur percepatan, termasuk percepatan akibat getaran.","brands":"IFM, SKF"},
+        {"q":"Equipment apa yang cocok dimonitor vibration?","a":"Contoh rotating equipment meliputi pump, fan, motor, compressor, dan gearbox.","brands":"IFM, SKF"},
+        {"q":"Bagaimana vibration sensor mendukung predictive maintenance?","a":"Bandingkan tren getaran dengan baseline dan batas yang ditetapkan untuk menemukan perubahan kondisi lebih awal.","brands":"IFM"},
+        {"q":"Apa parameter vibration?","a":"Parameter yang digunakan dapat mencakup acceleration, velocity, displacement, frequency, dan spectrum.","brands":"Fluke, SKF"},
+        {"q":"Apa itu vibration spectrum?","a":"Vibration spectrum merepresentasikan sinyal getaran pada domain frekuensi untuk membantu diagnosis kondisi mesin.","brands":"SKF, Fluke"},
+        {"q":"Bagaimana mendeteksi bearing problem?","a":"Analisis pola vibrasi pada frekuensi tertentu bersama parameter operasi dan metode diagnosis yang tervalidasi.","brands":"SKF, Fluke"},
+        {"q":"Bagaimana vibration dikaitkan dengan asset BIM?","a":"Tautkan Sensor ID ke equipment GUID atau Asset ID yang stabil.","brands":"IFM, ekosistem Autodesk"},
+        {"q":"Bagaimana Digital Twin menggunakan vibration trend?","a":"Tren getaran dapat mendukung condition monitoring, anomaly detection, dan perencanaan maintenance setelah hasil divalidasi.","brands":"IFM, Siemens"}
+      ]
+    },
+    {
+      "id": "position",
+      "name": "Position, Proximity dan Distance Sensor",
+      "keywords": ["proximity sensor", "position sensor", "distance sensor", "sensor posisi", "jarak"],
+      "items": [
+        {"q":"Apa itu proximity sensor?","a":"Proximity sensor mendeteksi keberadaan objek tanpa kontak langsung.","brands":"IFM, Omron, SICK"},
+        {"q":"Apa itu inductive sensor?","a":"Inductive sensor mendeteksi objek logam berdasarkan perubahan medan elektromagnetik.","brands":"IFM, Omron"},
+        {"q":"Apa itu capacitive sensor?","a":"Capacitive sensor mendeteksi perubahan kapasitansi akibat keberadaan objek atau material.","brands":"IFM, SICK"},
+        {"q":"Apa itu photoelectric sensor?","a":"Photoelectric sensor menggunakan cahaya untuk mendeteksi objek.","brands":"SICK, Keyence"},
+        {"q":"Apa itu ultrasonic distance sensor?","a":"Ultrasonic distance sensor mengukur jarak berdasarkan gelombang ultrasonik dan pantulannya.","brands":"SICK, IFM"},
+        {"q":"Apa itu radar sensor?","a":"Radar sensor menggunakan gelombang radio untuk mendeteksi objek, jarak, atau gerakan sesuai teknologi perangkat.","brands":"IFM, SICK"},
+        {"q":"Bagaimana position sensor digunakan pada valve?","a":"Position sensor memantau apakah valve berada pada posisi open, closed, atau posisi antara.","brands":"IFM"},
+        {"q":"Bagaimana sensor posisi digunakan pada elevator?","a":"Sensor posisi dapat menentukan posisi kabin untuk fungsi monitoring atau kontrol tertentu sesuai desain sistem elevator.","brands":"SICK, IFM"},
+        {"q":"Bagaimana position data masuk Digital Twin?","a":"Bandingkan posisi aktual dengan posisi atau status yang diharapkan dalam model serta catat waktu dan kualitas pembacaan.","brands":"Siemens, IFM"},
+        {"q":"Apa manfaat sensor distance pada Digital Twin?","a":"Data jarak dapat mendukung monitoring jarak, posisi, level, clearance, atau displacement sesuai use case.","brands":"SICK, Keyence"}
+      ]
+    },
+    {
+      "id": "structural-health",
+      "name": "Structural Health Monitoring",
+      "keywords": ["structural health monitoring", "SHM", "strain gauge", "sensor struktur", "inclinometer"],
+      "items": [
+        {"q":"Apa itu structural health monitoring sensor?","a":"Sensor SHM digunakan untuk memantau kondisi struktur secara berkala atau kontinu.","brands":"HBM, Geokon"},
+        {"q":"Apa itu strain gauge?","a":"Strain gauge mengukur perubahan regangan pada material atau struktur.","brands":"HBM, Vishay"},
+        {"q":"Apa fungsi strain sensor pada jembatan?","a":"Strain sensor mengukur perubahan regangan elemen struktur akibat beban dan kondisi lain untuk analisis kondisi.","brands":"HBM, Geokon"},
+        {"q":"Apa itu displacement sensor?","a":"Displacement sensor mengukur perpindahan suatu titik atau komponen.","brands":"Micro-Epsilon, SICK"},
+        {"q":"Apa itu tilt sensor atau inclinometer?","a":"Tilt sensor atau inclinometer mengukur kemiringan atau perubahan sudut.","brands":"Slope Indicator, Geokon"},
+        {"q":"Apa fungsi crack sensor?","a":"Crack sensor mengukur perubahan lebar atau perkembangan retak pada struktur.","brands":"Geokon"},
+        {"q":"Bagaimana accelerometer digunakan untuk struktur?","a":"Accelerometer mengukur respons dinamis struktur akibat getaran atau beban dinamis.","brands":"HBM, Kistler"},
+        {"q":"Bagaimana Digital Twin memonitor gedung tinggi?","a":"Twin dapat menggabungkan data displacement, acceleration, strain, tilt, dan lingkungan dengan konteks struktur serta baseline.","brands":"HBM, Geokon"},
+        {"q":"Apa itu structural baseline?","a":"Structural baseline adalah kondisi referensi struktur yang dipakai untuk membandingkan perubahan dari waktu ke waktu.","brands":"HBM"},
+        {"q":"Bagaimana SHM dikaitkan dengan BIM?","a":"Kaitkan sensor dengan elemen struktural seperti beam, column, slab, atau komponen bridge menggunakan ID yang konsisten.","brands":"Ekosistem Autodesk"}
+      ]
+    },
+    {
+      "id": "water-leak",
+      "name": "Water Leak dan Flood Sensor",
+      "keywords": ["water leak sensor", "leak detection", "sensor kebocoran", "flood sensor"],
+      "items": [
+        {"q":"Apa itu water leak sensor?","a":"Water leak sensor mendeteksi keberadaan air pada lokasi tertentu.","brands":"Honeywell, Schneider Electric"},
+        {"q":"Di mana leak sensor dipasang?","a":"Lokasi umum meliputi ruang pompa, toilet, AHU room, basement, server room, tank room, dan area kritis.","brands":"Honeywell"},
+        {"q":"Bagaimana leak sensor bekerja?","a":"Teknologi dapat menggunakan probe, sensing cable, konduktivitas, atau metode lain sesuai perangkat.","brands":"Honeywell"},
+        {"q":"Apa fungsi leak detection di data center?","a":"Leak detection memberi peringatan dini terhadap air yang berpotensi merusak equipment data center.","brands":"Honeywell, Schneider Electric"},
+        {"q":"Bagaimana Digital Twin menampilkan kebocoran?","a":"Alarm dapat ditampilkan pada lokasi sensor di floor plan atau model 3D untuk mendukung investigasi.","brands":"Schneider Electric"},
+        {"q":"Apa itu rope atau cable leak sensor?","a":"Rope/cable leak sensor menggunakan kabel sensing yang dapat mendeteksi air sepanjang area pemasangannya.","brands":"TTK, RLE"},
+        {"q":"Bagaimana membedakan false alarm dan kebocoran nyata?","a":"Tinjau konfirmasi sensor lain, tren, lokasi, kondisi sistem, dan inspeksi lapangan sebelum mengklasifikasikan kejadian.","brands":"TTK"},
+        {"q":"Bagaimana leak sensor terhubung dengan BMS?","a":"Integrasi dapat menggunakan dry contact, controller, Modbus, atau gateway yang didukung perangkat.","brands":"Schneider Electric"},
+        {"q":"Bagaimana sensor leak membantu predictive maintenance?","a":"Deteksi dini dapat memicu pemeriksaan sebelum kebocoran menimbulkan kerusakan yang lebih besar.","brands":"Honeywell"},
+        {"q":"Bagaimana data leak dikaitkan dengan BIM?","a":"Kaitkan sensor dengan room, pipe system, atau equipment yang berpotensi menjadi sumber kebocoran.","brands":"Ekosistem Autodesk"}
+      ]
+    },
+    {
+      "id": "fire-safety",
+      "name": "Fire dan Safety Sensor",
+      "keywords": ["fire sensor", "smoke detector", "heat detector", "flame detector", "fire alarm"],
+      "items": [
+        {"q":"Apa itu smoke detector?","a":"Smoke detector mendeteksi indikasi asap sesuai teknologi dan karakteristik perangkat yang digunakan.","brands":"Siemens, Honeywell"},
+        {"q":"Apa itu heat detector?","a":"Heat detector merespons temperatur atau karakteristik kenaikan temperatur sesuai tipe perangkat.","brands":"Siemens, Honeywell"},
+        {"q":"Apa itu flame detector?","a":"Flame detector mendeteksi karakteristik radiasi api tertentu sesuai teknologi dan aplikasi perangkat.","brands":"Honeywell, Siemens"},
+        {"q":"Apa fungsi fire sensor dalam Digital Twin?","a":"Fire sensor dapat menyediakan status keselamatan fasilitas pada model digital; fungsi twin tidak menggantikan fire alarm system yang tersertifikasi.","brands":"Siemens"},
+        {"q":"Bagaimana fire alarm dikaitkan dengan BIM?","a":"Tautkan Device ID ke room, fire zone, dan sistem fire protection dengan referensi as-built yang terpelihara.","brands":"Siemens"},
+        {"q":"Apa itu aspirating smoke detection?","a":"Sistem aspirating smoke detection mengambil sampel udara melalui jaringan pipa untuk dianalisis terhadap indikasi asap.","brands":"Xtralis/VESDA"},
+        {"q":"Bagaimana Digital Twin membantu fire monitoring?","a":"Twin dapat menampilkan alarm berdasarkan lokasi perangkat dan zona untuk membantu situational awareness.","brands":"Siemens"},
+        {"q":"Apa perbedaan fire sensor dan environmental sensor?","a":"Fire sensor ditujukan untuk fungsi keselamatan kebakaran; environmental sensor memantau kondisi lingkungan. Keduanya memiliki tujuan dan persyaratan berbeda.","brands":"Siemens"},
+        {"q":"Mengapa sensor fire harus memiliki integritas tinggi?","a":"Karena digunakan pada sistem keselamatan yang kegagalannya dapat menimbulkan konsekuensi serius; ikuti standar, sertifikasi, dan desain otoritas terkait.","brands":"Siemens, Honeywell"},
+        {"q":"Bagaimana status fire alarm ditampilkan pada Digital Twin?","a":"Status dapat mencakup normal, alarm, fault, isolation, atau state lain yang dikirim sistem, dengan arti yang dipetakan secara konsisten.","brands":"Siemens"}
+      ]
+    },
+    {
+      "id": "weather",
+      "name": "Environmental dan Weather Sensor",
+      "keywords": ["weather station", "sensor cuaca", "environmental sensor", "radiasi matahari", "wind sensor"],
+      "items": [
+        {"q":"Apa itu weather station?","a":"Weather station adalah sistem sensor untuk mengukur berbagai parameter cuaca.","brands":"Vaisala, Campbell Scientific"},
+        {"q":"Apa parameter weather station?","a":"Parameter dapat mencakup temperatur, RH, pressure, wind speed, wind direction, rainfall, dan solar radiation.","brands":"Vaisala"},
+        {"q":"Mengapa weather data penting untuk Digital Twin?","a":"Kondisi eksternal dapat memengaruhi HVAC, energi, struktur, dan operasi fasilitas.","brands":"Vaisala"},
+        {"q":"Bagaimana outdoor temperature memengaruhi HVAC model?","a":"Outdoor temperature dapat menjadi input analisis heating/cooling load dan operational performance.","brands":"Siemens"},
+        {"q":"Apa itu solar radiation sensor?","a":"Solar radiation sensor mengukur radiasi matahari untuk pemantauan dan analisis lingkungan atau energi.","brands":"Vaisala, Campbell Scientific"},
+        {"q":"Apa fungsi rain sensor?","a":"Rain sensor mendeteksi atau mengukur hujan untuk kebutuhan seperti drainase, landscaping, atau facility management.","brands":"Vaisala"},
+        {"q":"Apa fungsi wind sensor?","a":"Wind sensor mengukur kecepatan dan arah angin.","brands":"Vaisala"},
+        {"q":"Bagaimana weather station digunakan pada facade Digital Twin?","a":"Data cuaca dapat membantu analisis paparan lingkungan dan performa bangunan dengan konteks lokasi dan waktu.","brands":"Vaisala"},
+        {"q":"Bagaimana weather data dikombinasikan dengan energy meter?","a":"Analisis konsumsi energi terhadap cuaca aktual dapat membantu membedakan perubahan beban akibat cuaca dari faktor operasi lain.","brands":"Siemens"},
+        {"q":"Bagaimana weather station diintegrasikan ke Digital Twin?","a":"Kirim data melalui gateway, API, atau protokol ke time-series database dan platform twin, disertai metadata serta timestamp.","brands":"Vaisala, Siemens"}
+      ]
+    },
+    {
+      "id": "hvac-condition",
+      "name": "HVAC dan Equipment Condition Sensor",
+      "keywords": ["HVAC sensor", "AHU", "chiller", "pompa", "fan", "equipment condition"],
+      "items": [
+        {"q":"Sensor apa saja yang dibutuhkan untuk Digital Twin AHU?","a":"Sesuai use case, AHU dapat memakai temperature, RH, pressure, airflow, CO2/IAQ, filter differential pressure, valve/damper position, dan energy data.","brands":"Siemens, Schneider Electric, Honeywell"},
+        {"q":"Bagaimana memonitor kondisi fan AHU?","a":"Gabungkan vibration, current, speed, pressure, dan airflow untuk membaca kondisi fan dalam konteks operasi.","brands":"IFM, Siemens"},
+        {"q":"Bagaimana sensor memonitor pompa?","a":"Parameter yang dapat dipakai meliputi pressure, flow, temperature, vibration, current, dan status operasi.","brands":"IFM, Siemens, Grundfos"},
+        {"q":"Bagaimana sensor memonitor chiller?","a":"Monitoring dapat menggabungkan temperature, pressure, flow, konsumsi listrik, vibration, dan status controller.","brands":"Siemens, Schneider Electric"},
+        {"q":"Bagaimana sensor digunakan pada cooling tower?","a":"Parameter yang mungkin dipantau meliputi temperature, water level, flow, conductivity, vibration, fan status, dan data lingkungan.","brands":"Siemens, Endress+Hauser"},
+        {"q":"Bagaimana sensor membantu menganalisis COP?","a":"Evaluasi COP mengombinasikan thermal output dengan electrical input menggunakan pengukuran, batas sistem, dan satuan yang konsisten.","brands":"Siemens"},
+        {"q":"Bagaimana mendeteksi filter AHU kotor?","a":"Gunakan differential pressure bersama tren airflow dan kondisi operasi untuk menilai kemungkinan filter tersumbat.","brands":"Siemens, Schneider Electric"},
+        {"q":"Bagaimana mendeteksi fan degradation?","a":"Gabungkan tren vibration, current, speed, dan airflow serta bandingkan dengan baseline operasi.","brands":"IFM"},
+        {"q":"Bagaimana Digital Twin melakukan equipment health scoring?","a":"Health score dapat menggabungkan beberapa parameter sensor, baseline, threshold, kualitas data, dan konteks operasi; validasi sebelum dipakai untuk keputusan.","brands":"Siemens, Honeywell"},
+        {"q":"Bagaimana sensor equipment dikaitkan dengan BIM?","a":"Beri setiap sensor Asset ID atau Device ID dan kaitkan dengan equipment GUID serta data point yang tepat.","brands":"Ekosistem Autodesk, Siemens"}
+      ]
+    },
+    {
+      "id": "integration",
+      "name": "IoT, Communication, Data dan Digital Twin Integration",
+      "keywords": ["BACnet", "Modbus", "MQTT", "sensor data", "gateway", "protokol sensor"],
+      "items": [
+        {"q":"Apa itu BACnet?","a":"BACnet adalah protokol komunikasi yang banyak digunakan dalam building automation untuk pertukaran data antarperangkat dan sistem.","brands":"Siemens, Schneider Electric, Honeywell"},
+        {"q":"Apa itu Modbus?","a":"Modbus adalah protokol komunikasi industri yang umum digunakan untuk pertukaran data antara device, controller, dan gateway.","brands":"Schneider Electric, Siemens"},
+        {"q":"Apa itu MQTT?","a":"MQTT adalah protokol messaging ringan yang banyak digunakan pada arsitektur IoT; keamanan, broker, dan skema pesan tetap perlu dirancang.","brands":"Ekosistem Siemens, AWS IoT"},
+        {"q":"Apa fungsi sensor gateway?","a":"Gateway mengumpulkan data dari field device dengan beragam protokol dan meneruskannya ke platform tingkat lebih tinggi.","brands":"Siemens, Schneider Electric, Advantech"},
+        {"q":"Apa itu edge computing pada sensor?","a":"Edge computing memproses data dekat sumbernya sebelum diteruskan ke platform pusat, misalnya untuk mengurangi latensi atau beban jaringan.","brands":"Siemens, Schneider Electric"},
+        {"q":"Bagaimana sensor data masuk ke Digital Twin?","a":"Alur umum: sensor → controller/gateway → IoT platform → database/time series → Digital Twin; validasi identitas, waktu, satuan, dan kualitas di setiap tahap.","brands":"Siemens, Schneider Electric, Honeywell"},
+        {"q":"Bagaimana menentukan sampling rate sensor?","a":"Tentukan dari dinamika parameter, kebutuhan analisis, bandwidth, storage, battery life, risiko, dan kritikalitas aset.","brands":"Berbagai vendor"},
+        {"q":"Apa itu sensor data quality?","a":"Kualitas data sensor dinilai dari completeness, accuracy, timeliness, consistency, dan validity beserta sumber dan metode pengukuran.","brands":"Berbagai platform"},
+        {"q":"Bagaimana melakukan sensor anomaly detection?","a":"Metode dapat mencakup threshold, rule-based analytics, statistical analysis, machine learning, atau physics-based model; validasi terhadap data acuan.","brands":"Siemens, Honeywell"},
+        {"q":"Bagaimana membangun Digital Twin berbasis sensor secara lengkap?","a":"Rangkai Asset → BIM Object → Sensor → Device ID → Data Point → Gateway → Time Series → Analytics → Visualization → Alert → Maintenance Action, dengan identitas dan tata kelola yang konsisten.","brands":"Siemens, Schneider Electric, Honeywell"}
+      ]
+    },
+    {
+      "id": "sensor-implementation",
+      "name": "Perancangan Implementasi Sensor",
+      "keywords": ["database sensor", "sensor id", "arsitektur sensor", "AHU sensor", "pemilihan merek sensor"],
+      "items": [
+        {"q":"Field apa saja yang disarankan untuk database sensor Digital Twin?","a":"Simpan Question/Asset ID, kategori, sensor name/type, measurement dan unit, application, Digital Twin use, BIM object/GUID, data point, protocol, communication, sampling rate, accuracy, calibration, installation, IP rating, criticality, predictive maintenance, sensor ID, status, timestamp, data source, dan dashboard. Isi field sesuai kebutuhan serta kemampuan perangkat.","brands":"Tidak bergantung pada merek"},
+        {"q":"Bagaimana arsitektur Digital Twin sensor?","a":"Arsitektur dapat menghubungkan sensor → BMS/controller atau IoT node → BACnet/Modbus/MQTT → gateway/edge → IoT/data platform dan time-series database → API/analytics → Digital Twin berisi BIM, dashboard, alert, serta visualisasi. Tidak semua use case memerlukan semua lapisan.","brands":"Siemens, Schneider Electric, Honeywell"},
+        {"q":"Sensor apa yang dapat dipasang pada contoh AHU-01?","a":"Contoh titik ukur: supply air temperature, return air temperature, return air humidity, CO2, filter differential pressure, duct pressure, airflow, fan vibration, fan current, room lux, dan occupancy. Pilih berdasarkan tujuan monitoring, desain kontrol, dan kebutuhan keselamatan.","brands":"Siemens, Schneider Electric, Honeywell, IFM"},
+        {"q":"Bagaimana memilih merek dan produk sensor untuk Digital Twin?","a":"Contoh vendor bukan rekomendasi atau jaminan kompatibilitas. Pilih berdasarkan measurement range, accuracy, lingkungan pemasangan, output/protokol, sertifikasi, lifecycle, integrasi BMS/IoT, kalibrasi, dan kebutuhan use case; verifikasi datasheet serta status produk aktual.","brands":"Siemens, Schneider Electric, Honeywell, IFM, Emerson/Rosemount, Endress+Hauser, Vaisala, SICK, dan vendor lain"}
+      ]
+    }
+  ]
+}
