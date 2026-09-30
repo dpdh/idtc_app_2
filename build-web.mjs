@@ -3,7 +3,7 @@ import { relative, resolve, sep } from 'node:path';
 
 const output = resolve('www');
 const assets = resolve('assets');
-const entries = ['index.html', 'app.js', 'admin-cms.js', 'shop.js', 'image-zoom.js', 'auth-security.js', 'ambient-bubbles.js', 'styles.css', 'sw.js', 'manifest.webmanifest', 'assets', 'data'];
+const entries = ['index.html', 'app.js', 'twini-config.js', 'admin-cms.js', 'shop.js', 'image-zoom.js', 'auth-security.js', 'ambient-bubbles.js', 'styles.css', 'sw.js', 'manifest.webmanifest', 'assets', 'data'];
 const nativeOnlyAssets = new Set([
   'img/dni/IDTC_m copy.png',
   'img/dni/IDTC_m.png',

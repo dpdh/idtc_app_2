@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=66" />
+  <link rel="stylesheet" href="styles.css?v=70" />
   <title>IDTC Mobile</title>
 </head>
 <body>
@@ -50,6 +50,7 @@
       <header class="twini-header">
         <span class="twini-avatar" aria-hidden="true">T</span>
         <span class="twini-heading"><strong>TwiniAI</strong><small>Digital Twin · IDTC</small></span>
+        <label class="twini-provider-control"><span class="twini-sr-only">Pilih provider AI</span><select data-twini-provider aria-label="Pilih provider AI"><option value="local">Basis lokal</option></select><small data-twini-status role="status">Basis lokal</small></label>
         <button class="twini-close" type="button" data-twini-close aria-label="Tutup TwiniAI">×</button>
       </header>
       <div class="twini-topics" aria-label="Pertanyaan pilihan">
@@ -61,15 +62,16 @@
       <div class="twini-messages" data-twini-messages role="log" aria-live="polite" aria-relevant="additions text"></div>
       <form class="twini-form" data-twini-form>
         <label class="twini-sr-only" for="twiniQuestion">Pertanyaan untuk TwiniAI</label>
-        <textarea id="twiniQuestion" data-twini-input rows="1" maxlength="500" placeholder="Tulis pertanyaan..." required></textarea>
+        <textarea id="twiniQuestion" data-twini-input rows="1" maxlength="2000" placeholder="Tulis pertanyaan..." required></textarea>
         <button class="twini-send" type="submit" aria-label="Kirim pertanyaan"><span aria-hidden="true">↑</span></button>
       </form>
-      <p class="twini-disclaimer">Jawaban dari basis pengetahuan Digital Twin</p>
+      <p class="twini-disclaimer">Gunakan mode lokal atau provider AI yang disiapkan server.</p>
     </section>
     <button class="twini-fab" type="button" data-twini-toggle aria-label="Buka TwiniAI" aria-controls="twiniPanel" aria-expanded="false">
       <span class="fab-icon-stage twini-icon-stage" aria-hidden="true"><i class="fab-icon-glow"></i><i class="fab-icon-particle particle-one"></i><i class="fab-icon-particle particle-two"></i><i class="fab-icon-particle particle-three"></i><i class="fab-icon-particle particle-four"></i><img src="assets/img/dni/twini-ai-icon.png" alt="" /></span><span class="fab-label twini-fab-label">TwiniAI</span>
     </button>
   </aside>
-  <script src="app.js?v=53" type="module"></script>
+  <script src="twini-config.js?v=1"></script>
+  <script src="app.js?v=71" type="module"></script>
 </body>
 </html>

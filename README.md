@@ -8,6 +8,8 @@ Aplikasi web responsif dan PWA untuk **Indonesia Digital Twin Community (IDTC)**
 - [Teknologi](#teknologi)
 - [Prasyarat](#prasyarat)
 - [Menjalankan aplikasi web](#menjalankan-aplikasi-web)
+- [TwiniAI provider setup](TwiniAI.md)
+- [PostgreSQL User Management](TwiniAI.md#postgresql-user-management)
 - [Build Android](#build-android)
 - [Build iOS](#build-ios)
 - [Struktur proyek](#struktur-proyek)
@@ -20,8 +22,9 @@ Aplikasi web responsif dan PWA untuk **Indonesia Digital Twin Community (IDTC)**
 - Informasi pengurus, dewan pembina, sekretariat, dan tiga Pokja utama.
 - Materi belajar Digital Twin serta produk dan sumber daya komunitas.
 - Onboarding dengan ilustrasi IDTC dan TwiniShop.
-- Profil lokal, avatar, pengaturan tema, dan mode gelap.
-- TwiniAI dengan jawaban dari basis pengetahuan lokal.
+- Profil, avatar, pengaturan tema, dan mode gelap; akun dapat memakai localStorage atau PostgreSQL server-side.
+- CMS User Management dengan role Member/Admin/Super Admin, session server-side, serta audit log bila PostgreSQL dikonfigurasi.
+- TwiniAI dengan basis pengetahuan lokal dan opsi integrasi OpenAI, Gemini, serta provider OpenAI-compatible melalui backend.
 - TwiniShop dengan katalog, kategori, keranjang, dan formulir pesanan lokal.
 - Zoom gambar dengan gestur untuk melihat detail.
 - Tata letak responsif untuk ponsel kecil, ponsel besar, tablet, dan desktop.
@@ -32,6 +35,7 @@ Aplikasi web responsif dan PWA untuk **Indonesia Digital Twin Community (IDTC)**
 
 - JavaScript modules, HTML, dan CSS tanpa framework UI tambahan.
 - Capacitor 7 untuk menjalankan aplikasi sebagai Android WebView dan iOS WKWebView.
+- Node.js HTTP API dan driver `pg` untuk PostgreSQL User Management opsional.
 - Android Gradle Plugin 8.10.1, Gradle 8.11.1, dan target Android API 36.
 - Web Crypto API dengan PBKDF2-SHA-256 untuk hashing sandi akun lokal.
 
@@ -41,6 +45,7 @@ Aplikasi web responsif dan PWA untuk **Indonesia Digital Twin Community (IDTC)**
 
 - Node.js 20 atau lebih baru dan npm.
 - (Opsional) Python 3 untuk server web lokal.
+- (Opsional) PostgreSQL 13+ dan `DATABASE_URL` untuk akun/session CMS server-side.
 
 ### Android
 
@@ -61,13 +66,15 @@ Pasang dependency dari lockfile:
 npm ci
 ```
 
-Jalankan server statis dari root proyek (pilih salah satu):
+Jalankan server aplikasi dan API TwiniAI dari root proyek:
 
 ```bash
-python -m http.server 4173
+npm start
 ```
 
-Kemudian buka <http://localhost:4173/>. Alternatifnya, gunakan server statis lain yang menyajikan folder proyek melalui HTTP/HTTPS. Jangan membuka `index.html` langsung dengan skema `file://`; modul JavaScript, data, service worker, dan Web Crypto memerlukan konteks server yang sesuai.
+Kemudian buka <http://127.0.0.1:4174/>. Untuk integrasi provider AI, siapkan `.env` berdasarkan `.env.example`; tanpa API key TwiniAI tetap memakai basis pengetahuan lokal. Lihat [TwiniAI.md](TwiniAI.md) untuk konfigurasi provider, deployment, dan pengaturan Capacitor.
+
+Untuk mencoba web statis dalam mode FAQ lokal saja, jalankan `python -m http.server 4173` atau server statis lain. Jangan membuka `index.html` langsung dengan skema `file://`; modul JavaScript, data, service worker, dan Web Crypto memerlukan konteks server yang sesuai.
 
 Untuk membuat folder web yang akan disalin ke proyek native:
 

@@ -1,13 +1,22 @@
 const app = document.querySelector('#app');
 const nav = document.querySelector('.bottom-nav');
 const backButton = document.querySelector('[data-back]');
-import { adminPanel, bindAdmin } from './admin-cms.js?v=3';
+import { adminPanel, bindAdmin } from './admin-cms.js?v=6';
 import { shopPage, bindShop } from './shop.js?v=3';
 import { hashPassword, verifyPassword } from './auth-security.js?v=1';
 import { bindImageZoom } from './image-zoom.js?v=2';
 import { bubbleFieldMarkup } from './ambient-bubbles.js?v=1';
 bindImageZoom();
 let data;
+let databaseAuthMode = false;
+let databaseBootstrapRequired = false;
+let databaseRegistrationEnabled = false;
+let databaseSession = null;
+let registrationCompleted = false;
+const IDTC_API_BASE = String(window.IDTC_API_BASE_URL || '').trim().replace(/\/+$/, '');
+function userApi(path, options = {}) {
+  return fetch(`${IDTC_API_BASE}/api/${path}`, { credentials: 'include', ...options });
+}
 let completeAppLoad;
 const appReady = new Promise(resolve => { completeAppLoad = resolve; });
 function startLaunchExperience() {
@@ -18,13 +27,14 @@ function startLaunchExperience() {
     screen.classList.add('is-logo');
     screen.setAttribute('aria-label', 'Indonesia Digital Twin Community');
     resolve();
-  }, 1000));
+  }, 350));
   Promise.all([splashDelay, appReady]).then(() => setTimeout(() => {
     screen.classList.add('is-leaving');
     setTimeout(() => { screen.hidden = true; }, 550);
-  }, 1800));
+  }, 450));
 }
 function getCurrentSession() {
+  if (databaseAuthMode) return databaseSession;
   try { return JSON.parse(localStorage.getItem('idtc-session') || 'null'); } catch { return null; }
 }
 function getLocalUsers() {
@@ -138,26 +148,89 @@ function bindOnboarding() {
 }
 
 function auth() {
-  return `<section class="auth-page"><div class="auth-backdrop" aria-hidden="true"><span></span><span></span><span></span></div><div class="auth-card"><a class="auth-mark" href="#home" aria-label="Kembali ke Home"><img src="assets/img/emblem-white.png" alt="" /><span>IDTC</span></a><p class="auth-kicker">MEMBERS AREA</p><h1 data-auth-title>Selamat datang kembali</h1><p class="auth-intro" data-auth-intro>Masuk untuk melanjutkan perjalananmu di ekosistem Digital Twin Indonesia.</p><div class="auth-tabs"><button type="button" class="is-active" data-auth-mode="login">Masuk</button><button type="button" data-auth-mode="register">Daftar</button></div><form class="auth-form" data-auth-form><label class="auth-name-field" hidden>Nama lengkap<input name="name" type="text" placeholder="Nama lengkap" autocomplete="name" /></label><label>Email<input name="email" type="email" placeholder="nama@institusi.id" autocomplete="email" required /></label><label>Kata sandi<input name="password" type="password" placeholder="Minimal 6 karakter" autocomplete="current-password" minlength="6" required /></label><button class="button primary auth-submit" type="submit" data-auth-submit>Masuk ke IDTC <span>→</span></button></form><div class="auth-divider"><span>atau lanjutkan dengan</span></div><button class="google-button" type="button" data-google-auth><span class="google-g">G</span> Lanjutkan dengan Google</button><p class="auth-status" data-auth-status role="status"></p><p class="auth-legal">Dengan melanjutkan, kamu menyetujui ruang kolaborasi terbuka IDTC.</p></div>${idtcAppAboutMarkup()}</section>`;
+  return `<section class="auth-page"><div class="auth-backdrop" aria-hidden="true"><span></span><span></span><span></span></div><div class="auth-card"><a class="auth-mark" href="#home" aria-label="Kembali ke Home"><img src="assets/img/emblem-white.png" alt="" /><span>IDTC</span></a><p class="auth-kicker">INDONESIA DIGITAL TWIN COMMUNITY</p><h1 data-auth-title>Selamat datang kembali</h1><p class="auth-intro" data-auth-intro>Masuk untuk melanjutkan perjalananmu di ekosistem Digital Twin Indonesia.</p><div class="auth-tabs"><button type="button" class="is-active" data-auth-mode="login">Masuk</button><button type="button" data-auth-mode="register">Daftar Member</button></div><form class="auth-form" data-auth-form><label class="auth-name-field" hidden>Nama lengkap<input name="name" type="text" placeholder="Nama sesuai identitas" autocomplete="name" maxlength="120" /></label><label>Email<input name="email" type="email" placeholder="nama@institusi.id" autocomplete="email" required /></label><label>Kata sandi<input name="password" type="password" placeholder="Minimal 6 karakter" autocomplete="current-password" minlength="6" required /></label><label class="auth-password-confirm" hidden>Konfirmasi kata sandi<input name="passwordConfirm" type="password" placeholder="Ulangi kata sandi" autocomplete="new-password" /></label><div class="auth-registration-fields" data-auth-registration-fields hidden><label>Nomor WhatsApp<input name="phone" type="tel" placeholder="+62 812 3456 7890" autocomplete="tel" maxlength="24" required /></label><label>Institusi / organisasi<input name="organization" type="text" placeholder="Nama institusi atau komunitas" autocomplete="organization" maxlength="160" required /></label><label>Jabatan / profesi<input name="position" type="text" placeholder="Contoh: GIS Analyst" autocomplete="organization-title" maxlength="120" required /></label><label>Provinsi<input name="province" type="text" placeholder="Provinsi domisili" autocomplete="address-level1" maxlength="80" required /></label><label>Kota / kabupaten<input name="city" type="text" placeholder="Kota atau kabupaten" autocomplete="address-level2" maxlength="80" required /></label><label>Bidang minat<select name="interest" required><option value="">Pilih bidang minat</option><option>Standar & interoperabilitas</option><option>Infrastruktur & lingkungan</option><option>Data & teknologi</option><option>Pengembangan SDM</option><option>Kebijakan & tata kelola</option><option>Lainnya</option></select></label><label class="auth-profile-wide">LinkedIn <span>(opsional)</span><input name="linkedin" type="url" placeholder="https://linkedin.com/in/namamu" autocomplete="url" maxlength="240" /></label><label class="auth-profile-wide">Tentang kamu <span>(opsional)</span><textarea name="bio" placeholder="Ceritakan pengalaman atau minatmu pada Digital Twin" maxlength="500" rows="3"></textarea></label><div class="auth-photo-field auth-profile-wide"><label for="auth-profile-photo">Foto profil <span>(opsional)</span></label><div class="auth-photo-control"><div class="auth-photo-preview" data-photo-preview aria-hidden="true">ID</div><div><input id="auth-profile-photo" name="profilePhoto" type="file" accept="image/jpeg,image/png,image/webp" /><small>JPG, PNG, atau WebP. Ukuran maksimum 2 MB.</small></div></div></div></div><button class="button primary auth-submit" type="submit" data-auth-submit>Masuk ke IDTC <span>→</span></button></form><div class="auth-divider"><span>atau lanjutkan dengan</span></div><button class="google-button" type="button" data-google-auth><span class="google-g">G</span> Lanjutkan dengan Google</button><p class="auth-status" data-auth-status role="status"></p><p class="auth-legal">Dengan melanjutkan, kamu menyetujui ruang kolaborasi terbuka IDTC.</p></div>${idtcAppAboutMarkup()}</section>`;
+}
+
+function registrationSuccess() {
+  if (!registrationCompleted) {
+    location.hash = getCurrentSession() ? 'home' : 'auth';
+    return '';
+  }
+  document.body.classList.add('auth-mode');
+  const message = databaseAuthMode
+    ? 'Pendaftaran Anda berhasil. Data sudah tersimpan di database IDTC.'
+    : 'Pendaftaran berhasil, tetapi data tersimpan di perangkat ini dan belum masuk ke database IDTC.';
+  return `<section class="auth-page"><div class="auth-card"><a class="auth-mark" href="#home" aria-label="Kembali ke Home"><img src="assets/img/emblem-white.png" alt="" /><span>IDTC</span></a><p class="auth-kicker">PENDAFTARAN IDTC</p><h1>Pendaftaran berhasil</h1><p class="auth-intro">${message}</p><p class="auth-local-notice">${esc(getCurrentSession()?.name || 'Anggota IDTC')} · ${esc(getCurrentSession()?.email || '')}</p><a class="button primary" href="#home">Masuk ke IDTC <span>→</span></a></div></section>`;
 }
 
 function bindAuth() {
   const root = app.querySelector('.auth-page');
   if (!root) return;
+  root.querySelector('input[name="linkedin"]')?.closest('label')?.remove();
   let mode = 'login';
   const title = root.querySelector('[data-auth-title]');
   const intro = root.querySelector('[data-auth-intro]');
   const nameField = root.querySelector('.auth-name-field');
   const passwordField = root.querySelector('input[name="password"]');
+  const passwordConfirmField = root.querySelector('.auth-password-confirm');
+  const registrationFields = root.querySelector('[data-auth-registration-fields]');
+  const photoInput = root.querySelector('input[name="profilePhoto"]');
+  const photoPreview = root.querySelector('[data-photo-preview]');
   const submit = root.querySelector('[data-auth-submit]');
   const status = root.querySelector('[data-auth-status]');
+  const registerTab = root.querySelector('[data-auth-mode="register"]');
+  const bootstrapField = document.createElement('label');
+  bootstrapField.className = 'auth-bootstrap-field';
+  bootstrapField.hidden = true;
+  bootstrapField.append(document.createTextNode('Token bootstrap Super Admin'));
+  const bootstrapInput = document.createElement('input');
+  bootstrapInput.name = 'bootstrapToken';
+  bootstrapInput.type = 'password';
+  bootstrapInput.autocomplete = 'off';
+  bootstrapField.append(bootstrapInput);
+  nameField.after(bootstrapField);
+  registerTab.hidden = databaseAuthMode && !databaseRegistrationEnabled && !databaseBootstrapRequired;
   const localNotice = document.createElement('p');
   localNotice.className = 'auth-local-notice';
-  localNotice.textContent = 'Pendaftaran pertama pada perangkat ini menjadi Super Admin lokal. Akun dan CMS tersimpan di perangkat ini dan belum tersinkron ke server.';
+  localNotice.textContent = databaseAuthMode
+    ? 'Akun dikelola di server PostgreSQL. Pendaftaran baru menjadi Member; bootstrap token hanya diperlukan untuk Super Admin pertama.'
+    : 'Pendaftaran pertama pada perangkat ini menjadi Super Admin lokal. Akun dan CMS tersimpan di perangkat ini dan belum tersinkron ke server.';
   root.querySelector('.auth-legal').insertAdjacentElement('beforebegin', localNotice);
-  const updateMode = nextMode => { mode = nextMode; const register = mode === 'register'; title.textContent = register ? 'Buat ruang kontribusimu' : 'Selamat datang kembali'; intro.textContent = register ? 'Bergabung dengan komunitas yang membangun masa depan Digital Twin Indonesia.' : 'Masuk untuk melanjutkan perjalananmu di ekosistem Digital Twin Indonesia.'; nameField.hidden = !register; passwordField.minLength = register ? 12 : 0; passwordField.placeholder = register ? 'Minimal 12 karakter' : 'Kata sandi'; passwordField.autocomplete = register ? 'new-password' : 'current-password'; submit.innerHTML = register ? 'Buat akun IDTC <span>→</span>' : 'Masuk ke IDTC <span>→</span>'; root.querySelectorAll('[data-auth-mode]').forEach(tab => tab.classList.toggle('is-active', tab.dataset.authMode === mode)); status.textContent = ''; };
+  const updateMode = nextMode => { mode = nextMode; const register = mode === 'register'; title.textContent = register ? 'Daftar sebagai member' : 'Selamat datang kembali'; intro.textContent = register ? 'Lengkapi profil untuk bergabung dengan Indonesia Digital Twin Community.' : 'Masuk untuk melanjutkan perjalananmu di ekosistem Digital Twin Indonesia.'; nameField.hidden = !register; nameField.querySelector('input').required = register; registrationFields.hidden = !register; registrationFields.querySelectorAll('input:not([type="file"]), select').forEach(field => { field.required = register && !field.closest('label')?.querySelector('span'); }); passwordConfirmField.hidden = !register; passwordConfirmField.querySelector('input').required = register; root.classList.toggle('is-registering', register); bootstrapField.hidden = !register || !databaseAuthMode || !databaseBootstrapRequired; root.querySelector('[data-auth-form] button[data-auth-submit]').hidden = databaseAuthMode && register && !databaseRegistrationEnabled; passwordField.minLength = register ? 12 : 6; passwordField.placeholder = register ? 'Minimal 12 karakter' : 'Kata sandi'; passwordField.autocomplete = register ? 'new-password' : 'current-password'; submit.innerHTML = register ? 'Daftar sebagai member <span>→</span>' : 'Masuk ke IDTC <span>→</span>'; root.querySelectorAll('[data-auth-mode]').forEach(tab => tab.classList.toggle('is-active', tab.dataset.authMode === mode)); status.textContent = ''; };
   updateMode('login');
   root.querySelectorAll('[data-auth-mode]').forEach(tab => tab.addEventListener('click', () => updateMode(tab.dataset.authMode)));
+  const registrationDisclosure = document.createElement('details');
+  registrationDisclosure.className = 'auth-registration-disclosure';
+  registrationDisclosure.hidden = true;
+  const registrationSummary = document.createElement('summary');
+  registrationSummary.innerHTML = 'Info profil tambahan <span>Opsional</span>';
+  registrationFields.before(registrationDisclosure);
+  registrationDisclosure.append(registrationSummary, registrationFields);
+  root.querySelectorAll('[data-auth-mode]').forEach(tab => tab.addEventListener('click', () => {
+    const registering = tab.dataset.authMode === 'register';
+    registrationDisclosure.hidden = !registering;
+    registrationDisclosure.open = false;
+    registrationFields.hidden = false;
+    registrationFields.querySelectorAll('input:not([type="file"]), select').forEach(field => { field.required = false; });
+    passwordConfirmField.hidden = true;
+    passwordConfirmField.querySelector('input').required = false;
+    if (registering) intro.textContent = 'Daftar dengan nama, email, dan kata sandi. Info profil lainnya bisa dilewati.';
+  }));
+  photoInput.addEventListener('change', () => {
+    const photo = photoInput.files[0];
+    if (!photo) { photoPreview.replaceChildren(document.createTextNode('ID')); photoPreview.setAttribute('aria-hidden', 'true'); return; }
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(photo.type) || photo.size > 2 * 1024 * 1024) {
+      status.textContent = photo.size > 2 * 1024 * 1024 ? 'Ukuran foto melebihi batas 2 MB.' : 'Format foto harus JPG, PNG, atau WebP.';
+      photoInput.value = '';
+      return;
+    }
+    status.textContent = '';
+    const preview = document.createElement('img');
+    preview.alt = 'Pratinjau foto profil';
+    preview.src = URL.createObjectURL(photo);
+    photoPreview.replaceChildren(preview);
+    photoPreview.setAttribute('aria-hidden', 'false');
+  });
   root.querySelector('[data-auth-form]').addEventListener('submit', async event => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -165,18 +238,54 @@ function bindAuth() {
     const password = String(form.get('password'));
     const users = getLocalUsers();
     const submitButton = root.querySelector('[data-auth-submit]');
+    const profilePhotoFile = photoInput.files[0];
+    if (mode === 'register' && profilePhotoFile && profilePhotoFile.size > 2 * 1024 * 1024) { status.textContent = 'Ukuran foto melebihi batas 2 MB.'; return; }
+    const profile = mode === 'register' ? {
+      phone: String(form.get('phone')).trim(),
+      organization: String(form.get('organization')).trim(),
+      position: String(form.get('position')).trim(),
+      province: String(form.get('province')).trim(),
+      city: String(form.get('city')).trim(),
+      interest: String(form.get('interest')).trim(),
+      bio: String(form.get('bio')).trim(),
+    } : null;
     submitButton.disabled = true;
     status.textContent = '';
     try {
+      let profilePhoto = null;
+      if (profilePhotoFile) profilePhoto = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error('Foto tidak dapat dibaca.'));
+        reader.readAsDataURL(profilePhotoFile);
+      });
+      if (databaseAuthMode) {
+        const endpoint = mode === 'register' ? 'auth/register' : 'auth/login';
+        const response = await userApi(endpoint, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ name: form.get('name'), email, password, bootstrapToken: form.get('bootstrapToken'), profile, profilePhoto }),
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) { status.textContent = result.error || 'Permintaan akun gagal.'; return; }
+        databaseSession = result.user;
+        localStorage.removeItem('idtc-session');
+        if (mode === 'register') {
+          registrationCompleted = true;
+          location.hash = 'registration-success';
+        } else location.hash = 'home';
+        return;
+      }
       if (mode === 'register') {
         const name = String(form.get('name')).trim();
         if (users.some(user => user.email === email)) { status.textContent = 'Email ini sudah terdaftar. Silakan masuk.'; return; }
         const role = users.some(user => user.role === 'super_admin') ? 'member' : 'super_admin';
         const passwordRecord = await hashPassword(password);
-        users.push({ name, email, ...passwordRecord, role, createdAt: new Date().toISOString() });
+        users.push({ name, email, ...passwordRecord, role, profile, profilePhoto, createdAt: new Date().toISOString() });
         localStorage.setItem('idtc-users', JSON.stringify(users));
         localStorage.setItem('idtc-session', JSON.stringify({ name, email, role }));
-        location.hash = 'home';
+        registrationCompleted = true;
+        location.hash = 'registration-success';
         return;
       }
       const user = users.find(item => item.email === email);
@@ -191,7 +300,7 @@ function bindAuth() {
       localStorage.setItem('idtc-session', JSON.stringify({ name: user.name, email, role }));
       location.hash = 'home';
     } catch {
-      status.textContent = 'Penyimpanan sandi aman tidak tersedia di browser ini. Perbarui Android System WebView atau gunakan browser modern.';
+      status.textContent = mode === 'register' && profilePhotoFile ? 'Foto tidak dapat dibaca atau dikirim. Coba gunakan file gambar lain.' : databaseAuthMode ? 'Server akun tidak dapat dijangkau. Coba lagi saat koneksi tersedia.' : 'Penyimpanan sandi aman tidak tersedia di browser ini. Perbarui Android System WebView atau gunakan browser modern.';
     } finally {
       submitButton.disabled = false;
     }
@@ -268,6 +377,71 @@ function pokja() {
   }).join('');
   return `<section class="section">${sectionHead('Kelompok kerja','Tiga jalur dampak','Setiap Pokja mengubah gagasan menjadi kontribusi yang terukur.')} ${cards}</section>`;
 }
+
+function pilotProjectPage() {
+  const pilot = data.struktur.pokja.find(item => item.id === 'pokja2');
+  if (!pilot) return `<section class="section"><h1>Data pilot project belum tersedia</h1></section>`;
+  const program = pilot.arahProgram || {};
+  const stages = pilot.fokus || [];
+  const workstreams = program.bidangKerja || [];
+  const outputs = program.keluaran || pilot.output || [];
+  const distinction = program.pembeda || [];
+  return `<section class="section pilot-project-page">${sectionHead('POKJA 2 · IMPLEMENTASI','Pilot Project Digital Twin','Dari kebutuhan nyata menuju implementasi yang dapat diuji, diukur, dan direplikasi.')}<div class="pilot-project-intro"><p>${esc(program.ringkasan || pilot.slogan)}</p><p>Pilot dimulai dari masalah dan keputusan yang perlu didukung, bukan dari pemilihan platform atau pembuatan model 3D semata.</p></div><section class="pilot-project-block" aria-labelledby="pilot-stages-title"><p class="section-label">Siklus implementasi</p><h2 id="pilot-stages-title">Dari seleksi hingga replikasi</h2><ol class="pilot-stage-list">${stages.map((stage, index) => `<li><span class="pilot-stage-number">${String(index + 1).padStart(2, '0')}</span><strong>${esc(stage)}</strong></li>`).join('')}</ol></section><section class="pilot-project-block" aria-labelledby="pilot-workstreams-title"><p class="section-label">Ruang lingkup</p><h2 id="pilot-workstreams-title">Area kerja blueprint</h2><div class="pilot-workstream-list">${workstreams.map((item, index) => `<article class="pilot-workstream"><span>${String(index + 1).padStart(2, '0')}</span><div><h3>${esc(item.judul)}</h3><p>${esc(item.cakupan)}</p></div></article>`).join('')}</div></section><section class="pilot-project-block" aria-labelledby="pilot-output-title"><p class="section-label">Hasil yang dituju</p><h2 id="pilot-output-title">Keluaran pilot</h2><div class="pilot-output-list">${outputs.map((item, index) => `<article><span class="pilot-stage-number">${String(index + 1).padStart(2, '0')}</span><div><h3>${esc(item.judul || item)}</h3><p>${esc(item.cakupan || '')}</p></div></article>`).join('')}</div></section>${distinction.length ? `<section class="pilot-project-block pilot-distinction" aria-labelledby="pilot-distinction-title"><p class="section-label">Kriteria substansi</p><h2 id="pilot-distinction-title">Bukan hanya model 3D</h2><div class="pilot-output-list">${distinction.map(item => `<article><div><h3>${esc(item.judul)}</h3><p>${esc(item.cakupan)}</p></div></article>`).join('')}</div></section>` : ''}<a class="button ghost pilot-project-link" href="#pokja">Lihat struktur dan program POKJA 2 <span aria-hidden="true">↗</span></a></section>`;
+}
+
+function pilotProjectCategoriesMarkup() {
+  const categories = [
+    {
+      name: 'Kota & mobilitas',
+      projects: [
+        { title: 'Koridor lalu lintas terpadu', summary: 'Menguji skenario pengaturan koridor untuk mengurangi kemacetan dan mempercepat respons insiden.', data: 'Hitung lalu lintas, GPS, pengendali lampu, kondisi jalan, cuaca.', indicators: 'Waktu tempuh, panjang antrean, waktu respons insiden.' },
+        { title: 'Angkutan umum terhubung', summary: 'Menghubungkan operasi armada dan jaringan halte untuk memperbaiki keteraturan layanan.', data: 'GPS armada, jadwal, rute, jumlah penumpang, gangguan layanan.', indicators: 'Ketepatan waktu, headway, waktu tunggu, cakupan layanan.' },
+      ],
+    },
+    {
+      name: 'Infrastruktur & gedung',
+      projects: [
+        { title: 'Jembatan dan jaringan jalan', summary: 'Memprioritaskan inspeksi dan pemeliharaan aset berdasarkan kondisi serta tingkat risiko.', data: 'Inventaris GIS/BIM, riwayat inspeksi, lalu lintas, sensor bila tersedia.', indicators: 'Kondisi aset, prioritas perbaikan, waktu penanganan temuan.' },
+        { title: 'Operasi gedung hemat energi', summary: 'Membandingkan kondisi operasional gedung dengan baseline untuk menemukan peluang efisiensi.', data: 'BIM/as-built, BMS, meter energi, okupansi, cuaca.', indicators: 'Energi per luas, jam gangguan, kenyamanan ruang.' },
+      ],
+    },
+    {
+      name: 'Lingkungan & kebencanaan',
+      projects: [
+        { title: 'Kawasan rawan banjir', summary: 'Menguji skenario genangan dan alur respons berdasarkan kondisi hujan serta kapasitas drainase.', data: 'Curah hujan, tinggi muka air, drainase, elevasi, tutupan lahan.', indicators: 'Waktu peringatan, luas genangan, waktu respons.' },
+        { title: 'Pemantauan kualitas udara', summary: 'Memetakan tren kualitas udara dan membantu menentukan area yang perlu ditindaklanjuti.', data: 'Sensor kualitas udara, cuaca, lalu lintas, lokasi aktivitas.', indicators: 'Tren konsentrasi, cakupan sensor, ketersediaan data.' },
+      ],
+    },
+    {
+      name: 'Air & energi',
+      projects: [
+        { title: 'Jaringan distribusi air', summary: 'Membantu operator mengidentifikasi anomali tekanan dan menentukan prioritas pemeriksaan jaringan.', data: 'Jaringan pipa GIS, meter aliran/tekanan, pemakaian, pekerjaan perbaikan.', indicators: 'Anomali aliran, kehilangan air, waktu penanganan.' },
+        { title: 'Keandalan utilitas energi', summary: 'Menyatukan status aset dan gangguan untuk mendukung perencanaan pemeliharaan jaringan.', data: 'Inventaris aset, meter, status operasi, histori gangguan, cuaca.', indicators: 'Durasi/frekuensi gangguan, waktu pemulihan, kondisi aset.' },
+      ],
+    },
+    {
+      name: 'Pertanian',
+      projects: [
+        { title: 'Irigasi presisi', summary: 'Menguji penjadwalan irigasi yang mempertimbangkan kebutuhan tanaman dan kondisi lahan.', data: 'Kelembapan tanah, cuaca, fase tanaman, jaringan irigasi, citra lahan.', indicators: 'Pemakaian air, kecukupan irigasi, hasil panen per area.' },
+      ],
+    },
+    {
+      name: 'Industri & manufaktur',
+      projects: [
+        { title: 'Pemeliharaan prediktif lini produksi', summary: 'Menghubungkan kondisi mesin dan histori perawatan untuk menguji deteksi dini potensi gangguan.', data: 'Telemetri mesin, alarm, jadwal produksi, perawatan, kualitas produk.', indicators: 'Downtime, efektivitas peralatan, akurasi peringatan.' },
+      ],
+    },
+  ];
+  return `<section class="pilot-project-block pilot-catalog" aria-labelledby="pilot-catalog-title"><p class="section-label">Ide use case</p><h2 id="pilot-catalog-title">Contoh proyek berdasarkan kategori</h2><p class="pilot-catalog-note">Contoh berikut adalah opsi untuk dirumuskan menjadi pilot bersama mitra; bukan daftar proyek yang sudah berjalan.</p>${categories.map((category, categoryIndex) => `<section class="pilot-category" aria-labelledby="pilot-category-${categoryIndex}"><div class="pilot-category-heading"><span>${String(categoryIndex + 1).padStart(2, '0')}</span><h3 id="pilot-category-${categoryIndex}">${esc(category.name)}</h3></div><div class="pilot-project-type-grid">${category.projects.map(project => `<article class="pilot-project-type"><h4>${esc(project.title)}</h4><p>${esc(project.summary)}</p><dl><div><dt>Data awal</dt><dd>${esc(project.data)}</dd></div><div><dt>Indikator</dt><dd>${esc(project.indicators)}</dd></div></dl></article>`).join('')}</div></section>`).join('')}</section>`;
+}
+
+function pilotProjectPageWithCategories() {
+  const page = pilotProjectPage();
+  const marker = '<section class="pilot-project-block" aria-labelledby="pilot-stages-title">';
+  const insertAt = page.indexOf(marker);
+  return insertAt < 0 ? page : `${page.slice(0, insertAt)}${pilotProjectCategoriesMarkup()}${page.slice(insertAt)}`;
+}
+
 function pengurus() {
   const { dewanPembina, pengurus, pokja } = data.struktur;
   const leader = item => `<div class="list-item"><div class="person-avatar">${item.foto ? `<img src="${esc(photoSrc(item.foto))}" alt="Foto ${esc(item.nama || 'pengurus')}" onerror="this.hidden=true;this.parentElement.classList.add('photo-missing')" />` : esc((item.nama || '—').slice(0, 1))}</div><div><strong>${esc(item.nama || 'Belum diisi')}</strong><small>${esc(item.peran)}</small></div></div>`;
@@ -283,6 +457,22 @@ function profile() {
     ['Setara & konstruktif', 'Semua anggota memiliki ruang untuk berkontribusi dan berkembang.']
   ];
   return `<section class="section profile-page">${sectionHead('Profile IDTC','Akun, tentang, dan pengaturan','People · Data · Places · A Brighter Indonesia')}${profileAccountMarkup(getCurrentSession())}<div class="profile-principles">${principles.map(([title, description]) => `<div class="card"><h3>${title}</h3><p>${description}</p></div>`).join('')}</div><div class="card settings-card"><h3>Pengaturan tampilan</h3><p>Sesuaikan mode dan tema aplikasi.</p><div class="setting-row"><div><strong>Mode gelap</strong><small>Gunakan tampilan gelap yang lebih nyaman.</small></div><button type="button" class="setting-switch" data-setting-mode aria-pressed="false"><span></span></button></div><div class="setting-row"><div><strong>Tema biru futuristik</strong><small>Aktifkan aksen cyan dan navy pada aplikasi.</small></div><button type="button" class="setting-switch" data-setting-theme aria-pressed="false"><span></span></button></div></div><button class="button primary profile-onboarding" type="button" data-open-onboarding>↗ Lihat kembali Onboarding</button><a class="button profile-github" href="https://github.com/idtc-id" target="_blank" rel="noreferrer">Kunjungi GitHub IDTC ↗</a>${idtcAppAboutMarkup()}</section>`;
+}
+
+function regulationEntry(item) {
+  return `<article class="regulation-entry"><div class="regulation-entry-meta"><span>${item.type}</span><span>${item.year}</span></div><h3>${item.title}</h3><p>${item.description}</p><a href="${item.url}" target="_blank" rel="noopener noreferrer">Buka sumber resmi <span aria-hidden="true">↗</span></a></article>`;
+}
+
+function regulasi() {
+  const nationalRules = [
+    { type: 'UNDANG-UNDANG', year: '2022', title: 'UU No. 27 Tahun 2022 · Pelindungan Data Pribadi', description: 'Rujukan untuk tata kelola data pribadi yang mungkin diproses oleh platform, model, sensor, atau layanan Digital Twin.', url: 'https://peraturan.bpk.go.id/Details/229798' },
+    { type: 'PERATURAN PEMERINTAH', year: '2019', title: 'PP No. 71 Tahun 2019 · Penyelenggaraan Sistem dan Transaksi Elektronik', description: 'Konteks bagi penyelenggaraan sistem elektronik, termasuk keandalan dan keamanan layanan yang mendukung solusi Digital Twin.', url: 'https://peraturan.bpk.go.id/Details/122030' },
+    { type: 'PERATURAN PRESIDEN', year: '2018', title: 'Perpres No. 95 Tahun 2018 · Sistem Pemerintahan Berbasis Elektronik', description: 'Rujukan transformasi layanan pemerintahan digital ketika Digital Twin diterapkan pada sistem atau layanan sektor publik.', url: 'https://peraturan.bpk.go.id/Details/96913' },
+  ];
+  const technicalStandards = [
+    { type: 'STANDAR INTERNASIONAL', year: '2021', title: 'ISO 23247-1:2021 · Digital twin framework for manufacturing', description: 'Kerangka umum dan prinsip Digital Twin untuk manufaktur. Cakupannya spesifik manufaktur dan dokumennya merupakan standar teknis, bukan peraturan Indonesia.', url: 'https://www.iso.org/standard/75066.html' },
+  ];
+  return `<section class="section regulation-page">${sectionHead('Pusat regulasi','Regulasi & standar Digital Twin','Kumpulan rujukan lintas aspek untuk membantu memahami tata kelola Digital Twin.')}<p class="regulation-note">Digital Twin dapat bersinggungan dengan pengelolaan data, sistem elektronik, layanan publik, dan standar teknis. Sumber di bawah relevan pada aspek tersebut; halaman ini bukan daftar lengkap, nasihat hukum, atau klaim bahwa semua dokumen secara khusus mengatur Digital Twin.</p><section class="regulation-group" aria-labelledby="regulation-national-title"><div class="regulation-group-heading"><p class="section-label">Indonesia</p><h2 id="regulation-national-title">Regulasi terkait</h2></div><div class="regulation-grid">${nationalRules.map(regulationEntry).join('')}</div></section><section class="regulation-group" aria-labelledby="regulation-technical-title"><div class="regulation-group-heading"><p class="section-label">Referensi teknis</p><h2 id="regulation-technical-title">Standar Digital Twin</h2></div><div class="regulation-grid">${technicalStandards.map(regulationEntry).join('')}</div></section><p class="regulation-source-note">Periksa dokumen dan status terbarunya langsung di <a href="https://peraturan.bpk.go.id/" target="_blank" rel="noopener noreferrer">Database Peraturan BPK ↗</a> dan <a href="https://jdihn.go.id/" target="_blank" rel="noopener noreferrer">JDIHN ↗</a>.</p></section>`;
 }
 
 function bindProfile() {
@@ -399,7 +589,11 @@ function bindProfile() {
     updateAvatarDisplay(session);
     status.textContent = 'Profil berhasil diperbarui di perangkat ini.';
   });
-  root?.querySelector('[data-profile-logout]')?.addEventListener('click', () => {
+  root?.querySelector('[data-profile-logout]')?.addEventListener('click', async () => {
+    if (databaseAuthMode) {
+      await userApi('auth/logout', { method: 'POST' }).catch(() => {});
+      databaseSession = null;
+    }
     localStorage.removeItem('idtc-session');
     location.hash = 'auth';
   });
@@ -475,10 +669,12 @@ function profil() {
   return `<section class="section">${sectionHead('Profil anggota','Satu ekosistem, banyak perspektif','Gambaran anggota IDTC dari database pendaftaran.')}<div class="profile-intro"><strong>${anggota.namaUnik}</strong><p>nama unik dari ${anggota.respons} responden</p></div><div class="card"><h3>Komposisi ekosistem</h3>${bars}</div><div class="card"><h3>Sektor teratas</h3>${sectors}</div><div class="card"><h3>Institusi dengan anggota terbanyak</h3>${anggota.topInstitusi.slice(0,5).map((item,i) => `<div class="list-item"><span class="index">${i+1}</span><div><strong>${esc(item.nama)}</strong><small>${item.jumlah} anggota</small></div></div>`).join('')}</div></section>`;
 }
 function hasCmsAccess(session = getCurrentSession()) { return ['admin', 'super_admin'].includes(session?.role); }
-const views = { home, pengurus, profile, pokja, belajar, onboarding, auth, shop: () => shopPage(), admin: () => adminPanel(getCurrentSession(), esc) };
+const views = { home, pengurus, profile, regulasi, pokja, 'pilot-project': pilotProjectPageWithCategories, belajar, onboarding, auth, 'registration-success': registrationSuccess, shop: () => shopPage(), admin: () => adminPanel(getCurrentSession(), esc) };
 const TWINIAI_STOP_WORDS = new Set(['apa', 'apakah', 'bagaimana', 'mengapa', 'kenapa', 'siapa', 'kapan', 'dimana', 'di', 'ke', 'dari', 'dan', 'atau', 'yang', 'itu', 'ini', 'adalah', 'untuk', 'pada', 'dengan', 'tentang', 'saya', 'aku', 'tolong', 'bisa', 'dapat', 'kah', 'nya']);
 const TWINIAI_COMMON_WORDS = new Set(['digital', 'twin', 'data']);
 const TWINIAI_FALLBACK = 'Saya belum menemukan jawaban yang cukup cocok di basis pengetahuan TwiniAI. Coba tanyakan tentang konsep, data, standar, arsitektur, keamanan, penerapan, biaya, atau langkah pilot.';
+const TWINIAI_API_BASE = String(window.IDTC_API_BASE_URL || '').trim().replace(/\/+$/, '');
+const twiniApiUrl = path => `${TWINIAI_API_BASE}/api/${path}`;
 function normalizeTwiniText(value) {
   return String(value || '').toLocaleLowerCase('id-ID').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 }
@@ -510,6 +706,20 @@ function sensorFaqEntries(sensorFaq) {
     answer: `${item.a}${item.brands ? `\n\nContoh merek/produk sejenis: ${item.brands}.` : ''}`,
   })));
 }
+function bimFaqEntries(bimFaq) {
+  const references = bimFaq?.references || {};
+  return (bimFaq?.categories || []).flatMap(category => category.items.map((item, index) => {
+    const referenceIds = item.references || category.references || [];
+    const citedReferences = referenceIds.map(id => `[${id}] ${references[id] || id}`);
+    return {
+      id: `bim-${category.id}-${index + 1}`,
+      category: `BIM: ${category.name}`,
+      question: item.q,
+      keywords: [...(category.keywords || []), ...referenceIds],
+      answer: `${item.a}${citedReferences.length ? `\n\nReferensi pada materi: ${citedReferences.join('; ')}.` : ''}`,
+    };
+  }));
+}
 function mergeLessonContent(curriculum, savedCurriculum) {
   if (!Array.isArray(savedCurriculum?.jalur)) return curriculum;
   const savedPaths = new Map(savedCurriculum.jalur.map(path => [path.id, path]));
@@ -530,30 +740,36 @@ function mergeLessonContent(curriculum, savedCurriculum) {
 function matchTwiniQuestion(question) {
   const entries = data?.twini?.entries || [];
   const normalizedQuestion = normalizeTwiniText(question);
+  const exactMatch = entries.find(entry => [entry.question, ...(entry.keywords || [])].some(phrase => normalizeTwiniText(phrase) === normalizedQuestion));
+  if (exactMatch) return exactMatch;
   const queryTokens = twiniTokens(question);
   if (!entries.length) return null;
   if (!queryTokens.length) return entries.find(entry => entry.id === 'definisi') || null;
   const ranked = entries.map(entry => {
     const questionText = normalizeTwiniText(entry.question);
+    const questionTokens = new Set(twiniTokens(entry.question));
+    const keywordTokens = new Set([...(entry.keywords || []), entry.category || ''].flatMap(twiniTokens));
     const phrases = [entry.question, ...(entry.keywords || [])].map(normalizeTwiniText);
-    const entryTokens = new Set(phrases.flatMap(phrase => phrase.split(' ')));
     let matchedWeight = 0;
     let totalWeight = 0;
     let matchedCount = 0;
     queryTokens.forEach(token => {
       const weight = TWINIAI_COMMON_WORDS.has(token) ? 0.35 : 1;
       totalWeight += weight;
-      if (entryTokens.has(token)) {
+      if (questionTokens.has(token)) {
         matchedWeight += weight;
         matchedCount += 1;
-      } else if ([...entryTokens].some(candidate => candidate.length >= 6 && token.length >= 6 && candidate.slice(0, 5) === token.slice(0, 5))) {
-        matchedWeight += weight * 0.55;
+      } else if (keywordTokens.has(token)) {
+        matchedWeight += weight * 0.3;
+        matchedCount += 1;
+      } else if ([...questionTokens, ...keywordTokens].some(candidate => candidate.length >= 6 && token.length >= 6 && candidate.slice(0, 5) === token.slice(0, 5))) {
+        matchedWeight += weight * 0.3;
         matchedCount += 1;
       }
     });
     let score = totalWeight ? matchedWeight / totalWeight : 0;
     if (questionText === normalizedQuestion || phrases.some(phrase => phrase === normalizedQuestion)) score = 2;
-    else if (phrases.some(phrase => phrase.length > 5 && normalizedQuestion.includes(phrase))) score = Math.max(score, 1.1);
+    else if (questionText.length > 5 && normalizedQuestion.includes(questionText)) score = Math.max(score, 1.1);
     return { entry, score, matchedCount };
   }).sort((left, right) => right.score - left.score || right.matchedCount - left.matchedCount);
   const best = ranked[0];
@@ -565,10 +781,15 @@ function initTwiniWidget() {
   const messages = document.querySelector('[data-twini-messages]');
   const form = document.querySelector('[data-twini-form]');
   const input = document.querySelector('[data-twini-input]');
+  const providerSelect = document.querySelector('[data-twini-provider]');
+  const providerStatus = document.querySelector('[data-twini-status]');
   if (!panel || !toggle || !messages || !form || !input) return;
-  const appendMessage = (role, text) => {
+  const sendButton = form.querySelector('.twini-send');
+  const conversation = [];
+  let busy = false;
+  const appendMessage = (role, text, state = '') => {
     const message = document.createElement('div');
-    message.className = `twini-message${role === 'user' ? ' is-user' : ''}`;
+    message.className = `twini-message${role === 'user' ? ' is-user' : ''}${state ? ` ${state}` : ''}`;
     const label = document.createElement('span');
     label.className = 'twini-message-label';
     label.textContent = role === 'user' ? 'Anda' : 'TwiniAI';
@@ -578,13 +799,80 @@ function initTwiniWidget() {
     message.append(label, content);
     messages.append(message);
     messages.scrollTop = messages.scrollHeight;
+    return message;
   };
-  const submitQuestion = value => {
-    const question = String(value || '').trim().slice(0, 500);
-    if (!question) return;
+  const updateProviderStatus = () => {
+    if (!providerStatus || !providerSelect) return;
+    const option = providerSelect.selectedOptions[0];
+    providerStatus.textContent = providerSelect.value === 'local' ? 'Basis lokal' : `AI: ${option?.textContent || providerSelect.value}`;
+  };
+  const configureProviders = async () => {
+    if (!providerSelect) return;
+    try {
+      const response = await fetch(twiniApiUrl('providers'));
+      if (!response.ok) throw new Error('Provider list unavailable');
+      const result = await response.json();
+      providerSelect.replaceChildren(new Option('Basis lokal', 'local'));
+      (result.providers || []).forEach(provider => {
+        const option = new Option(`${provider.label}${provider.configured ? '' : ' (belum dikonfigurasi)'}`, provider.id);
+        option.disabled = !provider.configured;
+        providerSelect.add(option);
+      });
+      const saved = localStorage.getItem('idtc-twini-provider');
+      const preferred = [saved, result.defaultProvider].find(id => id && [...providerSelect.options].some(option => option.value === id && !option.disabled));
+      providerSelect.value = preferred || 'local';
+    } catch {
+      providerSelect.replaceChildren(new Option('Basis lokal', 'local'));
+      providerSelect.value = 'local';
+    }
+    updateProviderStatus();
+  };
+  providerSelect?.addEventListener('change', () => {
+    localStorage.setItem('idtc-twini-provider', providerSelect.value);
+    updateProviderStatus();
+  });
+  void configureProviders();
+  const submitQuestion = async value => {
+    const question = String(value || '').trim().slice(0, 3000);
+    if (!question || busy) return;
     appendMessage('user', question);
-    const entry = matchTwiniQuestion(question);
-    appendMessage('assistant', entry ? `${entry.answer}\n\nTopik: ${entry.category}` : TWINIAI_FALLBACK);
+    const requestMessages = [...conversation, { role: 'user', content: question }].slice(-12);
+    const provider = providerSelect?.value || 'local';
+    busy = true;
+    input.disabled = true;
+    if (sendButton) sendButton.disabled = true;
+    form.setAttribute('aria-busy', 'true');
+    const pending = appendMessage('assistant', 'TwiniAI sedang mencari informasi…', 'is-loading');
+    let answer;
+    try {
+      if (provider === 'local') {
+        const entry = matchTwiniQuestion(question);
+        answer = entry ? `${entry.answer}\n\nTopik: ${entry.category}` : TWINIAI_FALLBACK;
+      } else {
+        const response = await fetch(twiniApiUrl('chat'), {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ provider, messages: requestMessages }),
+          signal: AbortSignal.timeout(35_000),
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || 'Provider AI tidak tersedia.');
+        answer = String(result.answer || '').trim() || TWINIAI_FALLBACK;
+      }
+    } catch (error) {
+      const entry = matchTwiniQuestion(question);
+      const localAnswer = entry ? `${entry.answer}\n\nTopik: ${entry.category}` : TWINIAI_FALLBACK;
+      answer = `${localAnswer}\n\nProvider AI belum tersedia; jawaban ini berasal dari basis pengetahuan lokal.`;
+      if (providerStatus) providerStatus.textContent = 'Fallback: basis lokal';
+    }
+    pending.remove();
+    appendMessage('assistant', answer);
+    conversation.push({ role: 'user', content: question }, { role: 'assistant', content: answer });
+    while (conversation.length > 10) conversation.splice(0, 2);
+    busy = false;
+    input.disabled = false;
+    if (sendButton) sendButton.disabled = false;
+    form.removeAttribute('aria-busy');
     input.value = '';
     input.style.height = '';
     input.focus();
@@ -629,7 +917,7 @@ function initTwiniWidget() {
   updatePanelViewport();
   toggle.addEventListener('click', () => setOpen(panel.hidden));
   document.querySelector('[data-twini-close]')?.addEventListener('click', () => setOpen(false));
-  form.addEventListener('submit', event => { event.preventDefault(); submitQuestion(input.value); });
+  form.addEventListener('submit', event => { event.preventDefault(); void submitQuestion(input.value); });
   input.addEventListener('input', () => { input.style.height = 'auto'; input.style.height = `${Math.min(input.scrollHeight, 96)}px`; });
   input.addEventListener('keydown', event => {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -637,24 +925,40 @@ function initTwiniWidget() {
       form.requestSubmit();
     }
   });
-  document.querySelectorAll('[data-twini-prompt]').forEach(button => button.addEventListener('click', () => submitQuestion(button.dataset.twiniPrompt)));
+  document.querySelectorAll('[data-twini-prompt]').forEach(button => button.addEventListener('click', () => { void submitQuestion(button.dataset.twiniPrompt); }));
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && !panel.hidden) setOpen(false); });
 }
 async function load() {
-  const [anggota, materi, struktur, produk, merch, twini, sensorFaq] = await Promise.all([
+  const [anggota, materi, struktur, produk, merch, twini, sensorFaq, bimFaq, authStatus] = await Promise.all([
     ...['anggota', 'materi', 'struktur', 'produk'].map(name => fetch(`data/${name}.json?v=22`).then(response => response.json())),
     fetch('data/merch.json?v=22').then(response => response.json()),
     fetch('data/twini-ai.json?v=3').then(response => response.json()),
     fetch('data/twini-ai-sensors.json?v=1').then(response => response.json()),
+    fetch('data/twini-ai-bim.json?v=1').then(response => response.json()),
+    userApi('auth/status', { signal: AbortSignal.timeout(2500) }).then(response => response.ok ? response.json() : { database: false }).catch(() => ({ database: false })),
   ]);
-  await migrateLegacyPasswords();
+  databaseAuthMode = authStatus.database === true;
+  databaseBootstrapRequired = authStatus.bootstrapRequired === true;
+  databaseRegistrationEnabled = authStatus.registrationEnabled !== false;
+  if (databaseAuthMode) {
+    try {
+      const response = await userApi('auth/me', { signal: AbortSignal.timeout(2500) });
+      const result = response.ok ? await response.json() : { user: null };
+      databaseSession = result.user || null;
+    } catch { databaseSession = null; }
+    localStorage.removeItem('idtc-session');
+    if (databaseSession && (!location.hash || location.hash === '#auth')) location.hash = 'home';
+  } else {
+    databaseSession = null;
+    await migrateLegacyPasswords();
+  }
   let overrides = {};
   try { overrides = JSON.parse(localStorage.getItem('idtc-cms-content') || '{}') || {}; } catch { overrides = {}; }
-  data = { anggota, materi: mergeLessonContent(materi, overrides.materi), struktur, produk: overrides.produk || produk, twini: expandTwiniKnowledge(overrides.twini || twini, sensorFaqEntries(sensorFaq)), merch };
+  data = { anggota, materi: mergeLessonContent(materi, overrides.materi), struktur, produk: overrides.produk || produk, twini: expandTwiniKnowledge(overrides.twini || twini, [...sensorFaqEntries(sensorFaq), ...bimFaqEntries(bimFaq)]), merch };
   render();
 }
-function addHomeFeatures() { const actions = app.querySelector('.hero-actions'); if (!actions || app.querySelector('.feature-actions')) return; actions.insertAdjacentHTML('afterend', '<div class="feature-actions" aria-label="Fitur utama"><a href="#belajar" class="feature-button feature-literasi"><span>◫</span>Literasi</a><a href="#profile" class="feature-button feature-regulasi"><span>◇</span>Regulasi</a><a href="#pokja" class="feature-button feature-pilot"><span>◈</span>Pilot Project</a></div>'); }
-function render() { stopHomeCarousel(); const route = location.hash.slice(1) || initialRoute(); if (route === 'admin' && !hasCmsAccess()) { location.hash = getCurrentSession() ? 'profile' : 'auth'; return; } document.body.classList.toggle('home-mode', route === 'home'); document.body.classList.toggle('onboarding-mode', route === 'onboarding'); document.body.classList.toggle('auth-mode', route === 'auth'); document.body.classList.toggle('shop-mode', route === 'shop'); applyPreferences(); app.innerHTML = route.startsWith('pembelajaran/') ? halamanPembelajaran(route) : views[route]?.() || home(); app.querySelectorAll('img:not([loading])').forEach(image => { image.loading = 'lazy'; image.decoding = 'async'; }); nav.querySelectorAll('a').forEach(link => link.classList.toggle('active', link.dataset.route === route || (route.startsWith('pembelajaran/') && link.dataset.route === 'belajar'))); if (route === 'onboarding') bindOnboarding(); if (route === 'auth') bindAuth(); if (route === 'profile') bindProfile(); if (route.startsWith('pembelajaran/')) bindLearningChecklist(); if (route === 'admin') bindAdmin({ root: app.querySelector('.cms-page'), data, session: getCurrentSession(), getUsers: getLocalUsers, escapeHtml: esc }); if (route === 'shop') bindShop({ root: app.querySelector('.twini-shop'), catalog: data.merch, escapeHtml: esc }); if (route === 'home') { const heroImage = app.querySelector('.hero-art'); if (heroImage) heroImage.outerHTML = heroCarouselMarkup(); addHomeFeatures(); bindHomeCarousel(); } window.scrollTo(0,0); }
+function addHomeFeatures() { const actions = app.querySelector('.hero-actions'); if (!actions || app.querySelector('.feature-actions')) return; actions.insertAdjacentHTML('afterend', '<div class="feature-actions" aria-label="Fitur utama"><a href="#belajar" class="feature-button feature-literasi"><span>◫</span>Literasi</a><a href="#regulasi" class="feature-button feature-regulasi"><span>◇</span>Regulasi</a><a href="#pilot-project" class="feature-button feature-pilot"><span>◈</span>Pilot Project</a></div>'); }
+function render() { stopHomeCarousel(); const route = location.hash.slice(1) || initialRoute(); if (route === 'admin' && !hasCmsAccess()) { location.hash = getCurrentSession() ? 'profile' : 'auth'; return; } document.body.classList.toggle('home-mode', route === 'home'); document.body.classList.toggle('onboarding-mode', route === 'onboarding'); document.body.classList.toggle('auth-mode', route === 'auth'); document.body.classList.toggle('shop-mode', route === 'shop'); applyPreferences(); app.innerHTML = route.startsWith('pembelajaran/') ? halamanPembelajaran(route) : views[route]?.() || home(); app.querySelectorAll('img:not([loading])').forEach(image => { image.loading = 'lazy'; image.decoding = 'async'; }); nav.querySelectorAll('a').forEach(link => link.classList.toggle('active', link.dataset.route === route || (route.startsWith('pembelajaran/') && link.dataset.route === 'belajar'))); if (route === 'onboarding') bindOnboarding(); if (route === 'auth') bindAuth(); if (route === 'profile') bindProfile(); if (route.startsWith('pembelajaran/')) bindLearningChecklist(); if (route === 'admin') bindAdmin({ root: app.querySelector('.cms-page'), data, session: getCurrentSession(), getUsers: getLocalUsers, escapeHtml: esc, databaseMode: databaseAuthMode, apiRequest: userApi }); if (route === 'shop') bindShop({ root: app.querySelector('.twini-shop'), catalog: data.merch, escapeHtml: esc }); if (route === 'home') { const heroImage = app.querySelector('.hero-art'); if (heroImage) heroImage.outerHTML = heroCarouselMarkup(); addHomeFeatures(); bindHomeCarousel(); } window.scrollTo(0,0); }
 window.addEventListener('hashchange', () => { const route = location.hash.slice(1) || 'home'; if (routeHistory.length > 1 && routeHistory[routeHistory.length - 2] === route) routeHistory.pop(); else if (routeHistory[routeHistory.length - 1] !== route) routeHistory.push(route); render(); });
 backButton.addEventListener('click', () => { if (routeHistory.length > 1) history.back(); else if (location.hash.slice(1) !== 'home') location.hash = 'home'; });
 nav.addEventListener('click', event => { const link = event.target.closest('a[data-route]'); if (!link) return; link.classList.remove('nav-bounce'); void link.offsetWidth; link.classList.add('nav-bounce'); setTimeout(() => link.classList.remove('nav-bounce'), 750); });

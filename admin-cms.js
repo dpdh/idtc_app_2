@@ -6,14 +6,14 @@ const CONTENT_TYPES = {
   faq: { title: 'FAQ TwiniAI', singular: 'FAQ' },
 };
 
-export function adminPanel(session, esc) {
+export function adminPanel(session, esc, databaseMode = false) {
   if (!session || !['admin', 'super_admin'].includes(session.role)) {
     return '<section class="section"><h1>Akses CMS dibatasi</h1><p>Masuk dengan akun Admin atau Super Admin.</p></section>';
   }
   const isSuperAdmin = session.role === 'super_admin';
   return `<section class="section cms-page">
     <div class="cms-page-heading"><div><p class="section-label">CMS IDTC</p><h1>Panel administrasi</h1><p class="section-note">Kelola konten aplikasi pada perangkat ini.</p></div><span class="role-badge">${esc(isSuperAdmin ? 'Super Admin' : 'Admin')}</span></div>
-    <p class="cms-notice">Penyimpanan lokal: perubahan dan akun hanya tersimpan di perangkat/browser ini, belum tersinkron ke server. Ini bukan kontrol keamanan produksi.</p>
+    <p class="cms-notice">${databaseMode ? 'Akun dan role disimpan di PostgreSQL dan diperiksa server. Perubahan konten CMS tetap tersimpan lokal pada perangkat ini.' : 'Penyimpanan lokal: perubahan dan akun hanya tersimpan di perangkat/browser ini, belum tersinkron ke server. Ini bukan kontrol keamanan produksi.'}</p>
     <nav class="cms-tabs" aria-label="Bagian CMS">
       <button type="button" class="is-active" data-cms-tab="products" aria-selected="true">Produk</button>
       <button type="button" data-cms-tab="materials" aria-selected="false">Materi</button>
@@ -38,8 +38,8 @@ export function adminPanel(session, esc) {
       </form>
     </section>
     ${isSuperAdmin ? `<section class="cms-users" data-cms-users hidden>
-      <header class="cms-toolbar"><div><h2>Akun dan role</h2><small>Hanya untuk perangkat lokal ini.</small></div></header>
-      <form class="cms-user-form" data-cms-user-form><label>Nama<input name="name" required /></label><label>Email<input name="email" type="email" required /></label><label>Kata sandi awal<input name="password" type="password" minlength="6" required /></label><label>Role<select name="role"><option value="admin">Admin</option><option value="member">Member</option></select></label><button class="button primary" type="submit">Tambah akun</button><p class="cms-status" data-cms-user-status role="status"></p></form>
+      <header class="cms-toolbar"><div><h2>Akun dan role</h2><small>${databaseMode ? 'Dikelola pada PostgreSQL.' : 'Hanya untuk perangkat lokal ini.'}</small></div></header>
+      <form class="cms-user-form" data-cms-user-form><label>Nama<input name="name" autocomplete="name" required /></label><label>Email<input name="email" type="email" autocomplete="email" required /></label><label>Kata sandi awal<input name="password" type="password" autocomplete="new-password" minlength="12" required /></label><label>Role<select name="role"><option value="member">Member</option><option value="admin">Admin</option><option value="super_admin">Super Admin</option></select></label><button class="button primary" type="submit">Tambah akun</button><p class="cms-status" data-cms-user-status role="status"></p></form>
       <div class="cms-list" data-cms-user-list></div>
     </section>` : ''}
   </section>`;
@@ -66,7 +66,7 @@ function commaList(value) {
   return String(value || '').split(',').map(item => item.trim()).filter(Boolean);
 }
 
-export function bindAdmin({ root, data, session, getUsers, escapeHtml }) {
+export function bindAdmin({ root, data, session, getUsers, escapeHtml, databaseMode = false, apiRequest }) {
   if (!root || !session || !['admin', 'super_admin'].includes(session.role)) return;
   const isSuperAdmin = session.role === 'super_admin';
   const editor = root.querySelector('[data-cms-editor]');
@@ -167,37 +167,168 @@ export function bindAdmin({ root, data, session, getUsers, escapeHtml }) {
     if (!showUsers) { editor.hidden = true; visibleFields(activeType); renderList(); }
   }));
 
-  if (isSuperAdmin && usersPanel) bindUserManagement(usersPanel, session, getUsers, escapeHtml);
+  if (isSuperAdmin && usersPanel) bindUserManagement(usersPanel, session, getUsers, escapeHtml, databaseMode, apiRequest);
   visibleFields(activeType);
   renderList();
 }
 
-function bindUserManagement(panel, session, getUsers, escapeHtml) {
+function bindUserManagement(panel, session, getUsers, escapeHtml, databaseMode = false, apiRequest) {
+  if (databaseMode && apiRequest) { bindPostgresUserManagement(panel, session, apiRequest, escapeHtml); return; }
   const list = panel.querySelector('[data-cms-user-list]');
   const passwordInput = panel.querySelector('input[name="password"]');
   passwordInput.minLength = 12;
   passwordInput.placeholder = 'Minimal 12 karakter';
+  const status = panel.querySelector('[data-cms-user-status]');
+  const normalizedSessionEmail = String(session.email || '').trim().toLowerCase();
   const renderUsers = () => {
-    list.innerHTML = getUsers().map(user => `<article class="cms-entry"><div class="cms-entry-copy"><strong>${escapeHtml(user.name || 'Anggota')}</strong><small>${escapeHtml(user.email)}</small></div><div class="cms-entry-actions">${user.role === 'super_admin' ? '<span class="role-badge">Super Admin</span>' : `<select data-cms-user-role="${escapeHtml(user.email)}" aria-label="Role ${escapeHtml(user.email)}"><option value="member"${(user.role || 'member') === 'member' ? ' selected' : ''}>Member</option><option value="admin"${user.role === 'admin' ? ' selected' : ''}>Admin</option></select>`}<button type="button" class="cms-icon-button is-danger" data-cms-user-remove="${escapeHtml(user.email)}"${user.email === session.email || user.role === 'super_admin' ? ' disabled' : ''}>Hapus</button></div></article>`).join('');
-    list.querySelectorAll('[data-cms-user-role]').forEach(select => select.addEventListener('change', () => { const users = getUsers(); const target = users.find(user => user.email === select.dataset.cmsUserRole); if (target) { target.role = select.value; localStorage.setItem('idtc-users', JSON.stringify(users)); } }));
-    list.querySelectorAll('[data-cms-user-remove]').forEach(button => button.addEventListener('click', () => { if (!window.confirm('Hapus akun lokal ini?')) return; localStorage.setItem('idtc-users', JSON.stringify(getUsers().filter(user => user.email !== button.dataset.cmsUserRemove))); renderUsers(); }));
+    const users = getUsers();
+    const superAdminCount = users.filter(user => user.role === 'super_admin').length;
+    list.innerHTML = users.map(user => {
+      const email = String(user.email || '').trim().toLowerCase();
+      const isCurrentUser = email === normalizedSessionEmail;
+      const isLastSuperAdmin = user.role === 'super_admin' && superAdminCount <= 1;
+      const roleControl = isCurrentUser
+        ? '<span class="role-badge">Super Admin · Sesi ini</span>'
+        : `<select data-cms-user-role="${escapeHtml(email)}" aria-label="Role ${escapeHtml(email)}"><option value="member"${(user.role || 'member') === 'member' ? ' selected' : ''}>Member</option><option value="admin"${user.role === 'admin' ? ' selected' : ''}>Admin</option><option value="super_admin"${user.role === 'super_admin' ? ' selected' : ''}>Super Admin</option></select>`;
+      const removeTitle = isCurrentUser ? 'Akun yang sedang digunakan tidak dapat dihapus.' : isLastSuperAdmin ? 'Pertahankan minimal satu Super Admin.' : 'Hapus akun lokal';
+      return `<article class="cms-entry"><div class="cms-entry-copy"><strong>${escapeHtml(user.name || 'Anggota')}</strong><small>${escapeHtml(email)}</small></div><div class="cms-entry-actions">${roleControl}<button type="button" class="cms-icon-button is-danger" data-cms-user-remove="${escapeHtml(email)}" title="${removeTitle}"${isCurrentUser || isLastSuperAdmin ? ' disabled' : ''}>Hapus</button></div></article>`;
+    }).join('');
+    list.querySelectorAll('[data-cms-user-role]').forEach(select => select.addEventListener('change', () => {
+      const users = getUsers();
+      const target = users.find(user => String(user.email || '').trim().toLowerCase() === select.dataset.cmsUserRole);
+      if (!target || String(target.email || '').trim().toLowerCase() === normalizedSessionEmail || !['member', 'admin', 'super_admin'].includes(select.value)) { renderUsers(); return; }
+      const superAdminCount = users.filter(user => user.role === 'super_admin').length;
+      if (target.role === 'super_admin' && select.value !== 'super_admin' && superAdminCount <= 1) {
+        status.textContent = 'Pertahankan minimal satu Super Admin.';
+        renderUsers();
+        return;
+      }
+      if (select.value === 'super_admin' && target.role !== 'super_admin' && !window.confirm(`Jadikan ${target.email} sebagai Super Admin?`)) { renderUsers(); return; }
+      target.role = select.value;
+      localStorage.setItem('idtc-users', JSON.stringify(users));
+      status.textContent = 'Role akun berhasil diperbarui pada perangkat ini.';
+      renderUsers();
+    }));
+    list.querySelectorAll('[data-cms-user-remove]').forEach(button => button.addEventListener('click', () => {
+      const users = getUsers();
+      const target = users.find(user => String(user.email || '').trim().toLowerCase() === button.dataset.cmsUserRemove);
+      if (!target || String(target.email || '').trim().toLowerCase() === normalizedSessionEmail || (target.role === 'super_admin' && users.filter(user => user.role === 'super_admin').length <= 1)) return;
+      if (!window.confirm('Hapus akun lokal ini?')) return;
+      localStorage.setItem('idtc-users', JSON.stringify(users.filter(user => String(user.email || '').trim().toLowerCase() !== button.dataset.cmsUserRemove)));
+      status.textContent = 'Akun lokal berhasil dihapus.';
+      renderUsers();
+    }));
   };
   renderUsers();
   panel.querySelector('[data-cms-user-form]').addEventListener('submit', async event => {
     event.preventDefault();
-    const values = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const values = new FormData(form);
     const email = String(values.get('email')).trim().toLowerCase();
     const users = getUsers();
-    const status = panel.querySelector('[data-cms-user-status]');
+    const name = String(values.get('name') || '').trim();
+    const password = String(values.get('password') || '');
+    const role = String(values.get('role') || 'member');
     if (users.some(user => user.email === email)) { status.textContent = 'Email sudah terdaftar.'; return; }
+    if (!name || !email || password.length < 12) { status.textContent = 'Nama, email, dan kata sandi minimal 12 karakter wajib diisi.'; return; }
+    if (!['member', 'admin', 'super_admin'].includes(role)) { status.textContent = 'Role tidak valid.'; return; }
+    if (role === 'super_admin' && !window.confirm(`Buat ${email} sebagai Super Admin?`)) return;
     let passwordRecord;
-    try { passwordRecord = await hashPassword(String(values.get('password'))); }
+    try { passwordRecord = await hashPassword(password); }
     catch { status.textContent = 'Penyimpanan sandi aman tidak tersedia di browser ini.'; return; }
-    users.push({ name: String(values.get('name')).trim(), email, ...passwordRecord, role: String(values.get('role')), createdAt: new Date().toISOString() });
-    localStorage.setItem('idtc-users', JSON.stringify(users));
-    event.currentTarget.reset();
-    status.textContent = 'Akun lokal berhasil dibuat.';
+    users.push({ name, email, ...passwordRecord, role, createdAt: new Date().toISOString() });
+    try { localStorage.setItem('idtc-users', JSON.stringify(users)); }
+    catch { status.textContent = 'Akun gagal disimpan. Ruang penyimpanan lokal tidak tersedia.'; return; }
+    form.reset();
+    status.textContent = 'Akun lokal berhasil dibuat pada perangkat ini.';
     renderUsers();
   });
+}
+
+function bindPostgresUserManagement(panel, session, apiRequest, escapeHtml) {
+  const list = panel.querySelector('[data-cms-user-list]');
+  const form = panel.querySelector('[data-cms-user-form]');
+  const status = panel.querySelector('[data-cms-user-status]');
+  const passwordInput = form.querySelector('input[name="password"]');
+  passwordInput.minLength = 12;
+  passwordInput.placeholder = 'Minimal 12 karakter';
+  let users = [];
+
+  const request = async (path, options = {}) => {
+    const response = await apiRequest(path, options);
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.error || 'Permintaan user gagal.');
+    return result;
+  };
+
+  const renderUsers = () => {
+    const superAdminCount = users.filter(user => user.role === 'super_admin' && !user.disabled).length;
+    list.innerHTML = users.map(user => {
+      const isCurrentUser = user.id === session.id;
+      const isLastSuperAdmin = user.role === 'super_admin' && superAdminCount <= 1;
+      const roleControl = isCurrentUser
+        ? `<span class="role-badge">${escapeHtml(user.role === 'super_admin' ? 'Super Admin · Sesi ini' : user.role)}</span>`
+        : `<select data-pg-user-role="${escapeHtml(user.id)}" aria-label="Role ${escapeHtml(user.email)}"><option value="member"${user.role === 'member' ? ' selected' : ''}>Member</option><option value="admin"${user.role === 'admin' ? ' selected' : ''}>Admin</option><option value="super_admin"${user.role === 'super_admin' ? ' selected' : ''}>Super Admin</option></select>`;
+      const disabledNote = user.disabled ? ' · Dinonaktifkan' : '';
+      const removeTitle = isCurrentUser ? 'Akun yang sedang digunakan tidak dapat dihapus.' : isLastSuperAdmin ? 'Pertahankan minimal satu Super Admin.' : 'Hapus akun PostgreSQL';
+      return `<article class="cms-entry"><div class="cms-entry-copy"><strong>${escapeHtml(user.name || 'Anggota')}${disabledNote}</strong><small>${escapeHtml(user.email)}</small></div><div class="cms-entry-actions">${roleControl}<button type="button" class="cms-icon-button is-danger" data-pg-user-remove="${escapeHtml(user.id)}" title="${removeTitle}"${isCurrentUser || isLastSuperAdmin || user.disabled ? ' disabled' : ''}>Hapus</button></div></article>`;
+    }).join('');
+
+    list.querySelectorAll('[data-pg-user-role]').forEach(select => select.addEventListener('change', async () => {
+      const target = users.find(user => user.id === select.dataset.pgUserRole);
+      if (!target || target.id === session.id) { renderUsers(); return; }
+      if (target.role === 'super_admin' && select.value !== 'super_admin' && superAdminCount <= 1) {
+        status.textContent = 'Pertahankan minimal satu Super Admin.';
+        renderUsers();
+        return;
+      }
+      if (select.value === 'super_admin' && target.role !== 'super_admin' && !window.confirm(`Jadikan ${target.email} sebagai Super Admin?`)) { renderUsers(); return; }
+      try {
+        await request(`admin/users/${encodeURIComponent(target.id)}/role`, { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ role: select.value }) });
+        status.textContent = 'Role akun berhasil diperbarui di PostgreSQL.';
+        await refreshUsers();
+      } catch (error) { status.textContent = error.message; await refreshUsers(); }
+    }));
+
+    list.querySelectorAll('[data-pg-user-remove]').forEach(button => button.addEventListener('click', async () => {
+      const target = users.find(user => user.id === button.dataset.pgUserRemove);
+      if (!target || target.id === session.id || (target.role === 'super_admin' && superAdminCount <= 1)) return;
+      if (!window.confirm(`Hapus akun ${target.email} dan sesi-sesinya dari PostgreSQL?`)) return;
+      try {
+        await request(`admin/users/${encodeURIComponent(target.id)}`, { method: 'DELETE' });
+        status.textContent = 'Akun dan sesi berhasil dihapus.';
+        await refreshUsers();
+      } catch (error) { status.textContent = error.message; }
+    }));
+  };
+
+  async function refreshUsers() {
+    try {
+      const result = await request('admin/users');
+      users = result.users || [];
+      renderUsers();
+    } catch (error) { status.textContent = error.message; }
+  }
+
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    const values = new FormData(form);
+    const payload = {
+      name: String(values.get('name') || '').trim(),
+      email: String(values.get('email') || '').trim().toLowerCase(),
+      password: String(values.get('password') || ''),
+      role: String(values.get('role') || 'member'),
+    };
+    if (!payload.name || !payload.email || payload.password.length < 12) { status.textContent = 'Nama, email, dan kata sandi minimal 12 karakter wajib diisi.'; return; }
+    if (payload.role === 'super_admin' && !window.confirm(`Buat ${payload.email} sebagai Super Admin?`)) return;
+    try {
+      await request('admin/users', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+      form.reset();
+      status.textContent = 'Akun berhasil dibuat di PostgreSQL.';
+      await refreshUsers();
+    } catch (error) { status.textContent = error.message; }
+  });
+
+  void refreshUsers();
 }
 
