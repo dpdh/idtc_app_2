@@ -1,12 +1,12 @@
-const CACHE_VERSION = 'v114';
+const CACHE_VERSION = 'v125';
 const SHELL_CACHE = `idtc-mobile-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `idtc-runtime-${CACHE_VERSION}`;
 const CORE = [
   './',
   './index.html',
-  './styles.css?v=70',
+  './styles.css?v=81',
   './twini-config.js?v=1',
-  './app.js?v=71',
+  './app.js?v=81',
   './image-zoom.js?v=2',
   './auth-security.js?v=1',
   './admin-cms.js?v=6',

@@ -22,6 +22,9 @@ const appReady = new Promise(resolve => { completeAppLoad = resolve; });
 function startLaunchExperience() {
   const screen = document.querySelector('[data-launch-screen]');
   if (!screen) return;
+  const splashStartedAt = Date.now();
+  const splashDurationMs = 5000;
+  const fadeDurationMs = 550;
   screen.querySelector('[data-launch-bubbles]').innerHTML = bubbleFieldMarkup(16, 1);
   const splashDelay = new Promise(resolve => setTimeout(() => {
     screen.classList.add('is-logo');
@@ -30,8 +33,8 @@ function startLaunchExperience() {
   }, 350));
   Promise.all([splashDelay, appReady]).then(() => setTimeout(() => {
     screen.classList.add('is-leaving');
-    setTimeout(() => { screen.hidden = true; }, 550);
-  }, 450));
+    setTimeout(() => { screen.hidden = true; }, fadeDurationMs);
+  }, Math.max(0, splashDurationMs - (Date.now() - splashStartedAt) - fadeDurationMs)));
 }
 function getCurrentSession() {
   if (databaseAuthMode) return databaseSession;
@@ -389,6 +392,207 @@ function pilotProjectPage() {
   return `<section class="section pilot-project-page">${sectionHead('POKJA 2 · IMPLEMENTASI','Pilot Project Digital Twin','Dari kebutuhan nyata menuju implementasi yang dapat diuji, diukur, dan direplikasi.')}<div class="pilot-project-intro"><p>${esc(program.ringkasan || pilot.slogan)}</p><p>Pilot dimulai dari masalah dan keputusan yang perlu didukung, bukan dari pemilihan platform atau pembuatan model 3D semata.</p></div><section class="pilot-project-block" aria-labelledby="pilot-stages-title"><p class="section-label">Siklus implementasi</p><h2 id="pilot-stages-title">Dari seleksi hingga replikasi</h2><ol class="pilot-stage-list">${stages.map((stage, index) => `<li><span class="pilot-stage-number">${String(index + 1).padStart(2, '0')}</span><strong>${esc(stage)}</strong></li>`).join('')}</ol></section><section class="pilot-project-block" aria-labelledby="pilot-workstreams-title"><p class="section-label">Ruang lingkup</p><h2 id="pilot-workstreams-title">Area kerja blueprint</h2><div class="pilot-workstream-list">${workstreams.map((item, index) => `<article class="pilot-workstream"><span>${String(index + 1).padStart(2, '0')}</span><div><h3>${esc(item.judul)}</h3><p>${esc(item.cakupan)}</p></div></article>`).join('')}</div></section><section class="pilot-project-block" aria-labelledby="pilot-output-title"><p class="section-label">Hasil yang dituju</p><h2 id="pilot-output-title">Keluaran pilot</h2><div class="pilot-output-list">${outputs.map((item, index) => `<article><span class="pilot-stage-number">${String(index + 1).padStart(2, '0')}</span><div><h3>${esc(item.judul || item)}</h3><p>${esc(item.cakupan || '')}</p></div></article>`).join('')}</div></section>${distinction.length ? `<section class="pilot-project-block pilot-distinction" aria-labelledby="pilot-distinction-title"><p class="section-label">Kriteria substansi</p><h2 id="pilot-distinction-title">Bukan hanya model 3D</h2><div class="pilot-output-list">${distinction.map(item => `<article><div><h3>${esc(item.judul)}</h3><p>${esc(item.cakupan)}</p></div></article>`).join('')}</div></section>` : ''}<a class="button ghost pilot-project-link" href="#pokja">Lihat struktur dan program POKJA 2 <span aria-hidden="true">↗</span></a></section>`;
 }
 
+const ASSESSMENT_STAGES = {
+  design: {
+    label: 'Design Recognition',
+    description: 'Menilai kesiapan rancangan sebelum pilot diimplementasikan.',
+    threshold: 70,
+    criteria: [
+      { id: 'decision-use-case', title: 'Use case dan keputusan target', evidence: 'Tujuan, pengguna keputusan, aset/proses, dan batas masalah terdefinisi.', weight: 2 },
+      { id: 'system-boundary', title: 'Batas sistem dan pemangku kepentingan', evidence: 'Pemilik aset/data, operator, integrasi sistem, dan tanggung jawab dicatat.', weight: 1 },
+      { id: 'data-readiness', title: 'Kesiapan dan kualitas data', evidence: 'Sumber, pemilik, kualitas, frekuensi, akses, serta kesenjangan data telah dinilai.', weight: 2 },
+      { id: 'architecture-interoperability', title: 'Arsitektur dan interoperabilitas', evidence: 'Aliran data, identitas aset, API/format pertukaran, dan integrasi digambarkan.', weight: 2 },
+      { id: 'governance-security', title: 'Tata kelola dan keamanan', evidence: 'Klasifikasi data, hak akses, privasi, keamanan, retensi, dan risiko ditinjau.', weight: 2 },
+      { id: 'baseline-acceptance', title: 'Baseline KPI dan kriteria penerimaan', evidence: 'KPI awal, metode pengukuran, target pilot, dan bukti penerimaan ditetapkan.', weight: 2 },
+    ],
+  },
+  final: {
+    label: 'Final Assessment',
+    description: 'Menilai bukti implementasi, hasil operasional, dan manfaat pilot.',
+    threshold: 80,
+    criteria: [
+      { id: 'asset-data-link', title: 'Keterhubungan aset dan data aktual', evidence: 'Identitas aset/representasi terhubung dengan data historis atau operasional yang relevan.', weight: 2 },
+      { id: 'data-quality-freshness', title: 'Kualitas dan kemutakhiran data', evidence: 'Validasi kualitas, timestamp, kelengkapan, dan keterlambatan dibuktikan.', weight: 2 },
+      { id: 'workflow-use', title: 'Penggunaan dalam workflow', evidence: 'Pengguna sasaran memakai informasi untuk pemantauan atau keputusan yang ditentukan.', weight: 2 },
+      { id: 'kpi-evidence', title: 'Hasil KPI terhadap baseline', evidence: 'Hasil dibandingkan dengan baseline dan metode pengukuran dapat ditelusuri.', weight: 3 },
+      { id: 'security-operation', title: 'Keamanan dan operasi', evidence: 'Hak akses, audit, pemulihan, pemeliharaan, dan penanganan insiden diuji.', weight: 2 },
+      { id: 'replication', title: 'Dokumentasi dan replikasi', evidence: 'Arsitektur, asumsi, batasan, biaya/operasi, dan langkah replikasi didokumentasikan.', weight: 1 },
+    ],
+  },
+};
+
+const PILOT_CATEGORY_ASSESSMENTS = [
+  { id: 'kota-mobilitas', name: 'Kota & mobilitas', design: [
+    { id: 'mobility-scope', title: 'Cakupan jaringan dan layanan', evidence: 'Koridor, simpang, rute, wilayah, dan periode puncak yang dinilai dipetakan.', weight: 2 },
+    { id: 'mobility-baseline', title: 'Baseline mobilitas', evidence: 'Sumber data dan baseline waktu tempuh, antrean, headway, atau insiden direncanakan.', weight: 2 },
+  ], final: [
+    { id: 'mobility-coverage', title: 'Validasi cakupan operasional', evidence: 'Data lalu lintas/armada terhubung pada lokasi dan interval waktu yang ditetapkan.', weight: 2 },
+    { id: 'mobility-outcome', title: 'Hasil layanan dan respons', evidence: 'Perubahan KPI mobilitas dibanding baseline dibuktikan pada periode evaluasi.', weight: 3 },
+  ] },
+  { id: 'infrastruktur-gedung', name: 'Infrastruktur & gedung', design: [
+    { id: 'asset-register', title: 'Inventaris dan identitas aset', evidence: 'Aset BIM/GIS, identitas, kondisi, dan sistem pemeliharaan yang terlibat dipetakan.', weight: 2 },
+    { id: 'maintenance-baseline', title: 'Baseline pemeliharaan/energi', evidence: 'Riwayat inspeksi, gangguan, atau konsumsi energi dan metode pembanding tersedia.', weight: 2 },
+  ], final: [
+    { id: 'asset-state-validation', title: 'Validasi kondisi aset', evidence: 'Data inspeksi, BIM/GIS, BMS, atau sensor ditautkan dan diverifikasi pada aset.', weight: 2 },
+    { id: 'asset-outcome', title: 'Hasil pemeliharaan/energi', evidence: 'Prioritas perbaikan, downtime, atau energi per luas dibanding baseline.', weight: 3 },
+  ] },
+  { id: 'lingkungan-bencana', name: 'Lingkungan & kebencanaan', design: [
+    { id: 'hazard-coverage', title: 'Cakupan bahaya dan wilayah', evidence: 'Area risiko, elevasi/tutupan lahan, drainase atau lokasi sensor ditentukan.', weight: 2 },
+    { id: 'alert-design', title: 'Rancangan peringatan dan respons', evidence: 'Ambang, sumber data, latensi, penerima peringatan, dan prosedur respons dirancang.', weight: 2 },
+  ], final: [
+    { id: 'environment-data-quality', title: 'Kualitas dan cakupan observasi', evidence: 'Kalibrasi, lokasi, ketersediaan data, dan akurasi observasi diuji.', weight: 2 },
+    { id: 'environment-outcome', title: 'Kinerja peringatan/dampak', evidence: 'Waktu peringatan, respons, atau perubahan kondisi dibanding baseline dicatat.', weight: 3 },
+  ] },
+  { id: 'air-energi', name: 'Air & energi', design: [
+    { id: 'utility-network', title: 'Topologi dan aset jaringan', evidence: 'Jaringan pipa/kabel, zona layanan, meter, dan titik operasi memiliki identitas.', weight: 2 },
+    { id: 'utility-baseline', title: 'Baseline kehilangan/gangguan', evidence: 'Kehilangan air/energi, tekanan, gangguan, atau waktu pemulihan dapat diukur.', weight: 2 },
+  ], final: [
+    { id: 'utility-telemetry', title: 'Validasi telemetri jaringan', evidence: 'Data meter/tekanan/status cocok dengan aset dan rentang waktu operasional.', weight: 2 },
+    { id: 'utility-outcome', title: 'Hasil keandalan utilitas', evidence: 'Anomali, kehilangan, frekuensi gangguan, atau waktu pemulihan dibanding baseline.', weight: 3 },
+  ] },
+  { id: 'pertanian', name: 'Pertanian', design: [
+    { id: 'farm-context', title: 'Konteks lahan dan budidaya', evidence: 'Batas petak, komoditas, fase tanam, kalender, dan sumber cuaca ditentukan.', weight: 2 },
+    { id: 'farm-baseline', title: 'Baseline air dan hasil', evidence: 'Pemakaian air, metode irigasi, kondisi tanah, dan hasil per area tersedia.', weight: 2 },
+  ], final: [
+    { id: 'farm-observation', title: 'Validasi data lahan', evidence: 'Sensor/citra/cuaca diselaraskan dengan lokasi dan fase tanaman.', weight: 2 },
+    { id: 'farm-outcome', title: 'Hasil irigasi dan produktivitas', evidence: 'Kecukupan irigasi, penggunaan air, atau hasil panen dibanding baseline.', weight: 3 },
+  ] },
+  { id: 'industri-manufaktur', name: 'Industri & manufaktur', design: [
+    { id: 'factory-scope', title: 'Cakupan lini dan aset produksi', evidence: 'Mesin, lini, sensor, sistem produksi, dan perawatan yang terlibat dipetakan.', weight: 2 },
+    { id: 'factory-baseline', title: 'Baseline operasi dan kualitas', evidence: 'Downtime, alarm, OEE, jadwal produksi, atau kualitas produk dapat diukur.', weight: 2 },
+  ], final: [
+    { id: 'factory-telemetry', title: 'Validasi telemetry dan alarm', evidence: 'Data kondisi mesin, timestamp, kualitas, dan alarm diverifikasi terhadap operasi.', weight: 2 },
+    { id: 'factory-outcome', title: 'Hasil operasi dan perawatan', evidence: 'Downtime, OEE, kualitas, atau manfaat perawatan dibanding baseline.', weight: 3 },
+  ] },
+];
+
+const ASSESSMENT_SCORE_LABELS = [
+  'Belum tersedia',
+  'Konsep awal',
+  'Terdefinisi',
+  'Diterapkan/diuji',
+  'Terukur dan terbukti',
+];
+
+function pilotBenchmarkMarkup(categoryName) {
+  const category = PILOT_CATEGORY_ASSESSMENTS.find(item => item.name === categoryName);
+  if (!category) return '';
+  const renderStage = (stage, title) => `<section><h5>${title}</h5><ul>${category[stage].map(item => `<li><strong>${esc(item.title)}</strong><span>${esc(item.evidence)}</span></li>`).join('')}</ul></section>`;
+  return `<details class="pilot-category-benchmark"><summary>Tolok ukur kategori <span>Design Recognition · Final Assessment</span></summary><div class="pilot-benchmark-stages">${renderStage('design','Design Recognition')}${renderStage('final','Final Assessment')}</div></details>`;
+}
+
+function ratingTool() {
+  queueMicrotask(bindRatingTool);
+  return `<section class="section rating-tool-page">${sectionHead('PENILAIAN DIGITAL TWIN','Rating Tool DT','Ukur kesiapan rancangan dan bukti hasil pilot dengan tolok ukur internal per kategori.')}<p class="rating-tool-disclaimer">Skala ini adalah alat penilaian mandiri IDTC, bukan sertifikasi atau keputusan pengakuan resmi. Nilai perlu didukung bukti yang dapat diverifikasi.</p><div class="rating-tool-controls"><label>Pilih kategori<select data-rating-category>${PILOT_CATEGORY_ASSESSMENTS.map(category => `<option value="${esc(category.id)}">${esc(category.name)}</option>`).join('')}</select></label><div class="rating-stage-tabs" role="group" aria-label="Tahap assessment"><button type="button" data-rating-stage="design" aria-pressed="true">Design Recognition</button><button type="button" data-rating-stage="final" aria-pressed="false">Final Assessment</button></div></div><section class="rating-summary" data-rating-summary aria-live="polite"></section><div class="rating-criteria" data-rating-criteria></div><button class="button ghost rating-reset" type="button" data-rating-reset>Reset nilai tahap ini</button><p class="rating-storage-note">Nilai disimpan lokal per akun di perangkat ini; belum tersinkron ke database/server.</p></section>`;
+}
+
+function collaborationPage() {
+  const partners = [
+    { number: '01', sector: 'SEKTOR PUBLIK', name: 'Instansi Pemerintah', description: 'Dukungan kebijakan, tantangan kota, data publik yang layak dibagikan, dan penerapan solusi Digital Twin.', organizations: [
+      ['PU','Kementerian Pekerjaan Umum','pu.go.id'],['KIPK','Kemenko Infrastruktur & Pembangunan Kewilayahan','kemenkoinfra.go.id'],['PKP','Kementerian Perumahan & Kawasan Permukiman','pkp.go.id'],['HUB','Kementerian Perhubungan','dephub.go.id'],['ATR','Kementerian Agraria & Tata Ruang','atrbpn.go.id'],['KD','Kementerian Komunikasi & Digital','komdigi.go.id'],['BIG','Badan Informasi Geospasial','big.go.id'],
+    ], support: ['Kementerian dan lembaga terkait','Pemerintah daerah dan dinas teknis','Program transformasi digital dan kota cerdas'] },
+    { number: '02', sector: 'BUMN & BUMD', name: 'Perusahaan Milik Negara/Daerah', description: 'Kolaborasi studi kasus aset, infrastruktur, energi, transportasi, air, dan fasilitas publik.', organizations: [
+      ['ADHI','ADHI KARYA','adhi.co.id'],['PP','PT PP','ptpp.co.id'],['WK','WASKITA KARYA','www.waskita.co.id'],['WIKA','WIJAYA KARYA (WIKA)','wika.co.id'],['HK','HUTAMA KARYA','hutamakarya.com'],['BA','BRANTAS ABIPRAYA','brantas-abipraya.co.id'],
+    ], support: ['Tantangan industri berbasis aset','Mentoring dan kunjungan belajar','Hadiah apresiasi untuk pencapaian peserta'] },
+    { number: '03', sector: 'TEKNOLOGI & INDUSTRI', name: 'Perusahaan Terkait', description: 'Peluang dukungan perangkat lunak, lisensi edukasi, pelatihan, perangkat, dan keahlian teknis.', organizations: [
+      ['ESRI','Esri Indonesia','esri.com'],['AD','Autodesk','autodesk.com'],['TR','Trimble','trimble.com'],['LG','Leica Geosystems','leica-geosystems.com'],['AS','ASABA','asaba.co.id'],['AP','Aptella','aptella.com'],['GS','Graphisoft','graphisoft.com'],['SE','Schneider Electric','se.com'],['AU','PT Autonics Indonesia','autonics.com'],['KY','PT Keyence Indonesia','keyence.com'],['TDK','PT TDK Electronics Indonesia','tdk.com'],['SSD','PT Surya Sarana Dinamika'],['AFU','PT Alfa Fikrindo Utama'],['FM','FM Software'],['TSI','Toyo Sensing Indonesia'],
+    ], support: ['Dukungan perangkat lunak dan lisensi edukasi','Pelatihan, perangkat uji, dan keahlian teknis','Transfer pengetahuan dan mentoring implementasi'] },
+    { number: '04', sector: 'RISET & TALENTA', name: 'Kampus Pendukung', description: 'Kolaborasi pada kurikulum, riset, proyek mahasiswa, validasi materi, dan mentor.', organizations: [
+      ['ITB','ITB','itb.ac.id'],['UI','UI','ui.ac.id'],['UGM','UGM','ugm.ac.id'],['ITS','ITS','its.ac.id'],['IPB','IPB University','ipb.ac.id'],['ITN','ITENAS','itenas.ac.id'],['BINUS','BINUS University','binus.ac.id'],['UNJ','UNJANI','unjani.ac.id'],['TEL-U','Telkom University','telkomuniversity.ac.id'],
+    ], support: ['Riset terapan dan validasi materi','Proyek mahasiswa, mentor, dan pengembangan kurikulum','Evaluasi independen dan penguatan talenta Digital Twin'] },
+  ];
+  queueMicrotask(() => {
+    const logoDomains = new Map(partners.flatMap(partner => partner.organizations
+      .filter(([, , domain]) => domain)
+      .map(([, name, domain]) => [name, domain])));
+    const disclaimer = app.querySelector('.collaboration-partner-disclaimer');
+    if (disclaimer) disclaimer.textContent = 'Organisasi di bawah relevan untuk dijajaki, bukan mitra terkonfirmasi. Logo hanya untuk identifikasi dan tidak menyatakan dukungan atau afiliasi.';
+    app.querySelectorAll('.collaboration-category .partner-brand').forEach(card => {
+      const mark = card.querySelector('span');
+      const name = card.querySelector('strong')?.textContent;
+      const domain = logoDomains.get(name);
+      if (!domain) return;
+      const link = document.createElement('a');
+      link.className = card.className;
+      link.href = `https://${domain}`;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.setAttribute('aria-label', `${name} (situs resmi)`);
+      const image = document.createElement('img');
+      image.className = 'partner-brand__logo';
+      image.alt = '';
+      image.loading = 'lazy';
+      image.src = `assets/img/mitra/${domain.replace(/[^a-z0-9]+/gi, '-')}.png`;
+      image.addEventListener('load', () => { if (mark) mark.hidden = true; }, { once: true });
+      image.addEventListener('error', () => image.remove(), { once: true });
+      link.append(image, ...card.childNodes);
+      card.replaceWith(link);
+    });
+  });
+  const steps = ['Tentukan masalah dan keputusan yang ingin dibantu.', 'Pilih aset, data, pemilik, dan mitra yang dapat terlibat.', 'Sepakati ruang lingkup pilot, KPI, tata kelola, dan kriteria sukses.', 'Jalankan bersama, evaluasi bukti, lalu dokumentasikan peluang replikasi.'];
+  const supportOptions = ['Pendanaan program','Voucher data & belanja','Merchandise IDTC','Lisensi dan perangkat','Mentor & pelatihan','Studi kasus & data'];
+  return `<section class="section collaboration-page">${sectionHead('PARTNER EKOSISTEM','Kolaborasi & Dukungan','Ruang kerja sama Digital Twin lintas sektor, dari dukungan kebijakan hingga riset dan talenta.')}<p class="collaboration-intro">Kolaborasi dimulai dari kebutuhan nyata, pembagian peran yang jelas, dan penggunaan data sesuai izin. Dukungan dapat berupa keahlian, testbed, riset, perangkat, pendanaan, atau pengembangan talenta.</p><p class="collaboration-partner-disclaimer">Daftar organisasi di bawah adalah pihak yang relevan untuk dijajaki, bukan pernyataan bahwa mereka telah menjadi mitra atau menyetujui dukungan. Monogram hanya penanda teks; logo resmi belum tersedia pada asset aplikasi.</p><div class="collaboration-category-grid">${partners.map(partner => `<article class="collaboration-category"><p class="collaboration-sector">${esc(partner.sector)}</p><div class="collaboration-category-heading"><span>${partner.number}</span><div><h3>${esc(partner.name)}</h3><p>${esc(partner.description)}</p></div></div><div class="partner-brand-grid" aria-label="Organisasi yang relevan untuk dijajaki">${partner.organizations.map(([mark,name]) => `<div class="partner-brand"><span aria-hidden="true">${esc(mark)}</span><strong>${esc(name)}</strong></div>`).join('')}</div><h4>Bentuk dukungan</h4><ul>${partner.support.map(item => `<li>${esc(item)}</li>`).join('')}</ul></article>`).join('')}</div><section class="collaboration-support-options"><p class="section-label">BENTUK DUKUNGAN</p><h2>Kontribusi yang dapat dikolaborasikan</h2><div>${supportOptions.map((option,index) => `<span><b>${String(index + 1).padStart(2,'0')}</b>${esc(option)}</span>`).join('')}</div></section><section class="collaboration-steps"><p class="section-label">Langkah awal</p><h2>Dari kebutuhan ke pilot bersama</h2><ol>${steps.map((step, index) => `<li><span>${String(index + 1).padStart(2,'0')}</span><p>${esc(step)}</p></li>`).join('')}</ol></section><div class="collaboration-actions"><a class="button primary" href="#pokja">Lihat kelompok kerja <span aria-hidden="true">→</span></a><a class="button ghost" href="https://github.com/idtc-id" target="_blank" rel="noopener noreferrer">Kanal GitHub IDTC ↗</a></div><p class="collaboration-note">Rincian proposal, kontak resmi, dan mekanisme sponsorship perlu ditetapkan pengelola IDTC sebelum publikasi atau aktivasi program.</p></section>`;
+}
+
+function ratingStorageKey(category, stage, criterion) {
+  const session = getCurrentSession();
+  const account = String(session?.id || session?.email || 'guest').trim().toLowerCase();
+  return `idtc-rating:${encodeURIComponent(account)}:${category}:${stage}:${criterion}`;
+}
+
+function bindRatingTool() {
+  const root = app.querySelector('.rating-tool-page');
+  if (!root) return;
+  const categorySelect = root.querySelector('[data-rating-category]');
+  const stageButtons = [...root.querySelectorAll('[data-rating-stage]')];
+  const criteriaContainer = root.querySelector('[data-rating-criteria]');
+  const summary = root.querySelector('[data-rating-summary]');
+  let activeStage = 'design';
+
+  const selectedCategory = () => PILOT_CATEGORY_ASSESSMENTS.find(category => category.id === categorySelect.value) || PILOT_CATEGORY_ASSESSMENTS[0];
+  const currentCriteria = () => [...ASSESSMENT_STAGES[activeStage].criteria, ...selectedCategory()[activeStage]];
+  const savedScore = criterion => localStorage.getItem(ratingStorageKey(selectedCategory().id, activeStage, criterion.id));
+  const renderSummary = criteria => {
+    const totalWeight = criteria.reduce((total, item) => total + item.weight, 0);
+    const rated = criteria.filter(item => savedScore(item) !== null);
+    const ratedWeight = rated.reduce((total, item) => total + item.weight, 0);
+    const earned = rated.reduce((total, item) => total + Number(savedScore(item)) * item.weight, 0);
+    const score = ratedWeight ? Math.round(earned / (ratedWeight * 4) * 100) : null;
+    const coverage = totalWeight ? Math.round(ratedWeight / totalWeight * 100) : 0;
+    const threshold = ASSESSMENT_STAGES[activeStage].threshold;
+    const status = !rated.length ? 'Belum dinilai' : coverage < 100 ? 'Penilaian belum lengkap' : score >= threshold ? 'Ambang internal tercapai' : 'Perlu perbaikan';
+    summary.innerHTML = `<div><small>Nilai tertimbang</small><strong>${score === null ? '—' : `${score}%`}</strong></div><div><small>Cakupan kriteria</small><strong>${coverage}%</strong></div><span class="rating-status">${status}</span>`;
+  };
+  const renderCriteria = () => {
+    const criteria = currentCriteria();
+    criteriaContainer.innerHTML = criteria.map((item, index) => {
+      const key = ratingStorageKey(selectedCategory().id, activeStage, item.id);
+      const saved = localStorage.getItem(key);
+      return `<article class="rating-criterion"><div class="rating-criterion-copy"><div class="rating-criterion-heading"><span>${String(index + 1).padStart(2,'0')}</span><h3>${esc(item.title)}</h3><small>Bobot ${item.weight}</small></div><p>${esc(item.evidence)}</p></div><label class="rating-score-select">Nilai<select data-rating-score data-rating-key="${esc(key)}"><option value=""${saved === null ? ' selected' : ''}>Belum dinilai</option>${ASSESSMENT_SCORE_LABELS.map((label, score) => `<option value="${score}"${saved === String(score) ? ' selected' : ''}>${score} · ${label}</option>`).join('')}</select></label></article>`;
+    }).join('');
+    renderSummary(criteria);
+  };
+
+  categorySelect.addEventListener('change', renderCriteria);
+  stageButtons.forEach(button => button.addEventListener('click', () => {
+    activeStage = button.dataset.ratingStage;
+    stageButtons.forEach(tab => tab.setAttribute('aria-pressed', String(tab === button)));
+    renderCriteria();
+  }));
+  criteriaContainer.addEventListener('change', event => {
+    const select = event.target.closest('[data-rating-score]');
+    if (!select) return;
+    if (select.value === '') localStorage.removeItem(select.dataset.ratingKey);
+    else localStorage.setItem(select.dataset.ratingKey, select.value);
+    renderSummary(currentCriteria());
+  });
+  root.querySelector('[data-rating-reset]').addEventListener('click', () => {
+    currentCriteria().forEach(item => localStorage.removeItem(ratingStorageKey(selectedCategory().id, activeStage, item.id)));
+    renderCriteria();
+  });
+  renderCriteria();
+}
+
 function pilotProjectCategoriesMarkup() {
   const categories = [
     {
@@ -432,8 +636,25 @@ function pilotProjectCategoriesMarkup() {
       ],
     },
   ];
-  return `<section class="pilot-project-block pilot-catalog" aria-labelledby="pilot-catalog-title"><p class="section-label">Ide use case</p><h2 id="pilot-catalog-title">Contoh proyek berdasarkan kategori</h2><p class="pilot-catalog-note">Contoh berikut adalah opsi untuk dirumuskan menjadi pilot bersama mitra; bukan daftar proyek yang sudah berjalan.</p>${categories.map((category, categoryIndex) => `<section class="pilot-category" aria-labelledby="pilot-category-${categoryIndex}"><div class="pilot-category-heading"><span>${String(categoryIndex + 1).padStart(2, '0')}</span><h3 id="pilot-category-${categoryIndex}">${esc(category.name)}</h3></div><div class="pilot-project-type-grid">${category.projects.map(project => `<article class="pilot-project-type"><h4>${esc(project.title)}</h4><p>${esc(project.summary)}</p><dl><div><dt>Data awal</dt><dd>${esc(project.data)}</dd></div><div><dt>Indikator</dt><dd>${esc(project.indicators)}</dd></div></dl></article>`).join('')}</div></section>`).join('')}</section>`;
+  return `<details class="pilot-project-block pilot-catalog" data-pilot-catalog>
+    <summary class="pilot-catalog-ribbon"><span class="pilot-catalog-eyebrow">Ide use case</span><span class="pilot-catalog-ribbon-title">Proyek berdasarkan kategori</span><span class="pilot-catalog-count">${categories.length} kategori</span></summary>
+    <div class="pilot-catalog-content">
+      <p class="pilot-catalog-note">Contoh berikut adalah opsi untuk dirumuskan menjadi pilot bersama mitra; bukan daftar proyek yang sudah berjalan.</p>
+      <label class="pilot-category-select-label">Pilih kategori<select data-pilot-category-select>${categories.map((category, index) => `<option value="${index}">${esc(category.name)}</option>`).join('')}</select></label>
+      <div class="pilot-category-list">${categories.map((category, categoryIndex) => {
+        const benchmarks = pilotBenchmarkMarkup(category.name);
+        return `<section class="pilot-category" data-pilot-category="${categoryIndex}" aria-labelledby="pilot-category-${categoryIndex}"${categoryIndex ? ' hidden' : ''}><div class="pilot-category-heading"><span>${String(categoryIndex + 1).padStart(2, '0')}</span><h3 id="pilot-category-${categoryIndex}">${esc(category.name)}</h3></div><div class="pilot-project-type-grid">${category.projects.map(project => `<article class="pilot-project-type"><h4>${esc(project.title)}</h4><p>${esc(project.summary)}</p><dl><div><dt>Data awal</dt><dd>${esc(project.data)}</dd></div><div><dt>Indikator</dt><dd>${esc(project.indicators)}</dd></div></dl></article>`).join('')}</div>${benchmarks}</section>`;
+      }).join('')}</div>
+    </div>
+  </details>`;
 }
+
+document.addEventListener('change', event => {
+  const select = event.target.closest('[data-pilot-category-select]');
+  if (!select) return;
+  const catalog = select.closest('[data-pilot-catalog]');
+  catalog?.querySelectorAll('[data-pilot-category]').forEach(category => { category.hidden = category.dataset.pilotCategory !== select.value; });
+});
 
 function pilotProjectPageWithCategories() {
   const page = pilotProjectPage();
@@ -480,6 +701,8 @@ function bindProfile() {
   const mode = app.querySelector('[data-setting-mode]');
   const theme = app.querySelector('[data-setting-theme]');
   const session = getCurrentSession();
+  const accountCard = root?.querySelector('.account-card');
+  if (accountCard) accountCard.insertAdjacentHTML('afterend', learningAchievementMarkup(session));
   const editToggle = root?.querySelector('[data-profile-edit-toggle]');
   const editForm = root?.querySelector('[data-profile-edit-form]');
   const status = root?.querySelector('[data-profile-edit-status]');
@@ -606,26 +829,119 @@ function bindProfile() {
 
 function applyPreferences() { document.body.classList.toggle('mode-dark', localStorage.getItem('idtc-mode') === 'dark'); document.body.classList.toggle('theme-future', localStorage.getItem('idtc-theme') === 'future'); }
 function learningRoute(path, moduleIndex) { return `#pembelajaran/${path.id}/${moduleIndex}`; }
-function learningChecklistKey(path, module) { return `idtc-learning-checklist:${path.id}:${encodeURIComponent(module.judul)}`; }
-function checklistItems(module) { return ['Baca ringkasan dan tujuan pembelajaran', ...(module.fokus || []).map(item => `Pelajari: ${item}`)]; }
+function learningChecklistKey(path, module) {
+  const session = getCurrentSession();
+  const account = String(session?.id || session?.email || 'guest').trim().toLowerCase();
+  const moduleKey = encodeURIComponent(module.judul);
+  const key = `idtc-learning-checklist:${encodeURIComponent(account)}:${path.id}:${moduleKey}`;
+  if (session && !localStorage.getItem(key)) {
+    const legacyKey = `idtc-learning-checklist:${path.id}:${moduleKey}`;
+    const legacyProgress = localStorage.getItem(legacyKey);
+    if (legacyProgress !== null) {
+      try { localStorage.setItem(key, legacyProgress); localStorage.removeItem(legacyKey); } catch { /* Keep the legacy record if migration storage is unavailable. */ }
+    }
+  }
+  return key;
+}
+function lessonChecklistHeadings(module) {
+  const headings = [];
+  const visit = block => {
+    if (block.judul) headings.push(block.judul);
+    (block.subbagian || []).forEach(visit);
+  };
+  (module.konten || []).forEach(visit);
+  return headings;
+}
+function lessonChecklistParagraphs(module) {
+  const paragraphs = [];
+  const visit = (block, parentTitle = '') => {
+    const title = [parentTitle, block.judul].filter(Boolean).join(' · ') || 'Materi inti';
+    (block.paragraf || []).forEach((_, index) => paragraphs.push({ title, paragraphNumber: index + 1 }));
+    (block.subbagian || []).forEach(item => visit(item, title));
+  };
+  (module.konten || []).forEach(block => visit(block));
+  return paragraphs;
+}
+function checklistBaseItems(module) {
+  return [
+    'Baca ringkasan dan tujuan pembelajaran',
+    ...(module.fokus || []).map(item => `Pelajari: ${item}`),
+    ...lessonChecklistHeadings(module).map(title => `Selesaikan subbab: ${title}`),
+  ];
+}
+function checklistItems(module) {
+  return [...checklistBaseItems(module), ...lessonChecklistParagraphs(module).map(item => `Pahami paragraf ${item.paragraphNumber} · ${item.title}`)];
+}
+function checklistKum(module, index) {
+  if (index === 0) return 2;
+  const focusEnd = 1 + (module.fokus || []).length;
+  if (index < focusEnd) return 3;
+  const headingEnd = focusEnd + lessonChecklistHeadings(module).length;
+  return index < headingEnd ? 5 : 2;
+}
+function learningPathProgress(path) {
+  let earnedKum = 0;
+  let totalKum = 0;
+  let completedModules = 0;
+  path.modul.forEach(module => {
+    const items = checklistItems(module);
+    const checked = savedChecklist(learningChecklistKey(path, module));
+    const moduleTotal = items.reduce((total, _, index) => total + checklistKum(module, index), 0);
+    const moduleEarned = items.reduce((total, _, index) => total + (checked[index] ? checklistKum(module, index) : 0), 0);
+    totalKum += moduleTotal;
+    earnedKum += moduleEarned;
+    if (items.every((_, index) => checked[index])) completedModules += 1;
+  });
+  return { earnedKum, totalKum, completedModules, percent: totalKum ? Math.round(earnedKum / totalKum * 100) : 0 };
+}
+function learningOverallProgress() {
+  const paths = data.materi.jalur.map(learningPathProgress);
+  const earnedKum = paths.reduce((total, path) => total + path.earnedKum, 0);
+  const totalKum = paths.reduce((total, path) => total + path.totalKum, 0);
+  const completedModules = paths.reduce((total, path) => total + path.completedModules, 0);
+  const moduleCount = data.materi.jalur.reduce((total, path) => total + path.modul.length, 0);
+  return { earnedKum, totalKum, completedModules, moduleCount, percent: totalKum ? Math.round(earnedKum / totalKum * 100) : 0 };
+}
+function learningAchievementMarkup(session) {
+  if (!session) return `<section class="learning-achievement" aria-labelledby="learning-achievement-title"><div class="learning-achievement-heading"><div><p class="section-label">Belajar Digital Twin</p><h2 id="learning-achievement-title">Pencapaian pembelajaran</h2></div></div><p>Masuk ke akun untuk melihat level, KUM, dan progres belajarmu.</p><a class="button primary" href="#auth">Masuk / Daftar</a></section>`;
+  const progress = learningOverallProgress();
+  const levels = [
+    { minimum: 0, name: 'Penjelajah' },
+    { minimum: 50, name: 'Pembelajar' },
+    { minimum: 200, name: 'Praktisi' },
+    { minimum: 450, name: 'Mahir' },
+    { minimum: 750, name: 'Ahli Digital Twin' },
+  ];
+  const levelIndex = levels.reduce((current, level, index) => progress.earnedKum >= level.minimum ? index : current, -1);
+  const level = levels[Math.max(0, levelIndex)];
+  const nextLevel = levels[levelIndex + 1];
+  const levelProgress = nextLevel ? Math.round((progress.earnedKum - level.minimum) / (nextLevel.minimum - level.minimum) * 100) : 100;
+  return `<section class="learning-achievement" aria-labelledby="learning-achievement-title"><div class="learning-achievement-heading"><div><p class="section-label">Belajar Digital Twin</p><h2 id="learning-achievement-title">Pencapaian pembelajaran</h2></div><span class="learning-achievement-level">${esc(level.name)}</span></div><div class="learning-achievement-metrics"><div><small>Nilai KUM</small><strong>${progress.earnedKum}<span>/${progress.totalKum}</span></strong></div><div><small>Progres berbobot</small><strong>${progress.percent}%</strong></div><div><small>Modul selesai</small><strong>${progress.completedModules}<span>/${progress.moduleCount}</span></strong></div></div><div class="progress learning-achievement-progress" role="progressbar" aria-label="Progres belajar Digital Twin" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress.percent}"><i style="width:${progress.percent}%"></i></div><div class="learning-level-progress"><span>${nextLevel ? `${nextLevel.minimum - progress.earnedKum} KUM menuju ${esc(nextLevel.name)}` : 'Level tertinggi tercapai'}</span><small>${levelProgress}% menuju level berikutnya</small></div><p class="learning-achievement-note">Progres dihitung dari bobot checklist dan disimpan per akun di perangkat ini; belum tersinkron ke perangkat lain.</p></section>`;
+}
 function savedChecklist(key) {
   try { const saved = JSON.parse(localStorage.getItem(key) || '[]'); return Array.isArray(saved) ? saved : []; } catch { return []; }
 }
-function renderLessonBlock(block, depth = 0) {
+function renderLessonBlock(block, depth = 0, paragraphChecklist = null) {
   const heading = depth === 0 ? 'h3' : 'h4';
   const title = block.judul ? `<${heading}>${esc(block.judul)}</${heading}>` : '';
-  const paragraphs = (block.paragraf || []).map(paragraph => `<p>${esc(paragraph)}</p>`).join('');
+  const paragraphs = (block.paragraf || []).map(paragraph => {
+    if (!paragraphChecklist) return `<p>${esc(paragraph)}</p>`;
+    const index = paragraphChecklist.index++;
+    const points = checklistKum(paragraphChecklist.module, index);
+    const weight = paragraphChecklist.totalKum ? (points / paragraphChecklist.totalKum * 100).toFixed(1).replace(/\.0$/, '') : '0';
+    return `<label class="lesson-paragraph-check"><input type="checkbox" data-learning-check data-check-index="${index}" aria-label="Tandai paragraf selesai" ${paragraphChecklist.checked[index] ? 'checked' : ''}><span>${esc(paragraph)}</span><strong><span>+${points} KUM</span><small>${weight}% bobot</small></strong></label>`;
+  }).join('');
   const points = (block.poin || []).length ? `<ul>${block.poin.map(point => `<li>${esc(point)}</li>`).join('')}</ul>` : '';
   const steps = (block.langkah || []).length ? `<ol>${block.langkah.map(step => `<li>${esc(step)}</li>`).join('')}</ol>` : '';
   const flow = (block.alur || []).length ? `<ol class="lesson-flow">${block.alur.map(step => `<li>${esc(step)}</li>`).join('')}</ol>` : '';
   const quote = block.kutipan ? `<blockquote>${esc(block.kutipan)}</blockquote>` : '';
   const note = block.catatan ? `<aside class="lesson-note"><strong>Catatan</strong><p>${esc(block.catatan)}</p></aside>` : '';
   const table = block.tabel ? `<div class="lesson-table-wrap"><table><thead><tr>${block.tabel.kolom.map(cell => `<th scope="col">${esc(cell)}</th>`).join('')}</tr></thead><tbody>${block.tabel.baris.map(row => `<tr>${row.map(cell => `<td>${esc(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>` : '';
-  const subsections = (block.subbagian || []).map(item => renderLessonBlock(item, depth + 1)).join('');
+  const subsections = (block.subbagian || []).map(item => renderLessonBlock(item, depth + 1, paragraphChecklist)).join('');
   return `<section class="lesson-block ${depth ? 'lesson-subsection' : ''}">${title}${paragraphs}${points}${steps}${flow}${table}${quote}${note}${subsections}</section>`;
 }
 function belajar() {
-  const paths = data.materi.jalur.map(path => { const completed = path.modul.filter(module => checklistItems(module).every((_, index) => savedChecklist(learningChecklistKey(path, module))[index])).length; return `<article class="card"><div style="display:flex;justify-content:space-between;gap:12px"><div><p class="role ${colorClass(path.warna)}">JALUR ${path.kode}</p><h3>${esc(path.nama)}</h3><p>${esc(path.sasaran)}</p></div><strong style="font:700 22px 'Space Grotesk';color:var(--teal)">${completed}/${path.modul.length}</strong></div><div class="progress"><i style="width:${percent(completed,path.modul.length)}%"></i></div><div>${path.modul.map((m,i) => `<details class="module-detail"><summary><span class="index">${String(i+1).padStart(2,'0')}</span><span><strong>${esc(m.judul)}</strong><small>${esc(m.tingkat)} · ${esc(m.status)}</small></span><b>Lihat materi</b></summary><div class="module-content"><p>${esc(m.ringkasan || 'Materi pembelajaran akan segera tersedia.')}</p><div class="chips">${(m.fokus || []).map(tag => `<span class="chip ${colorClass(path.warna)}">${esc(tag)}</span>`).join('')}</div><p class="module-result"><strong>Hasil belajar:</strong> ${esc(m.hasil || 'Memahami topik modul dan kaitannya dengan Digital Twin.')}</p><a class="button primary module-start" href="${learningRoute(path, i)}">Mulai Belajar</a>${m.tautan ? `<a href="${esc(m.tautan)}" target="_blank" rel="noreferrer">Buka modul ↗</a>` : ''}</div></details>`).join('')}</div></article>`; }).join('');
+  const paths = data.materi.jalur.map(path => { const progress = learningPathProgress(path); return `<article class="card"><div style="display:flex;justify-content:space-between;gap:12px"><div><p class="role ${colorClass(path.warna)}">JALUR ${path.kode}</p><h3>${esc(path.nama)}</h3><p>${esc(path.sasaran)}</p></div><div class="learning-path-score"><strong>${progress.percent}%</strong><small>${progress.earnedKum}/${progress.totalKum} KUM</small></div></div><div class="progress" role="progressbar" aria-label="Progres jalur ${esc(path.nama)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress.percent}"><i style="width:${progress.percent}%"></i></div><p class="learning-path-modules">${progress.completedModules}/${path.modul.length} modul selesai</p><div>${path.modul.map((m,i) => `<details class="module-detail"><summary><span class="index">${String(i+1).padStart(2,'0')}</span><span><strong>${esc(m.judul)}</strong><small>${esc(m.tingkat)} · ${esc(m.status)}</small></span><b>Lihat materi</b></summary><div class="module-content"><p>${esc(m.ringkasan || 'Materi pembelajaran akan segera tersedia.')}</p><div class="chips">${(m.fokus || []).map(tag => `<span class="chip ${colorClass(path.warna)}">${esc(tag)}</span>`).join('')}</div><p class="module-result"><strong>Hasil belajar:</strong> ${esc(m.hasil || 'Memahami topik modul dan kaitannya dengan Digital Twin.')}</p><a class="button primary module-start" href="${learningRoute(path, i)}">Mulai Belajar</a>${m.tautan ? `<a href="${esc(m.tautan)}" target="_blank" rel="noreferrer">Buka modul ↗</a>` : ''}</div></details>`).join('')}</div></article>`; }).join('');
   const introPath = data.materi.jalur.find(path => path.kode === 'A') || data.materi.jalur[0];
   const introModuleIndex = introPath?.modul.findIndex(module => module.judul.startsWith('Pengantar Digital Twin')) ?? -1;
   const startLink = introModuleIndex >= 0 ? `<a class="button primary learning-start" href="${learningRoute(introPath, introModuleIndex)}">Mulai Belajar <span aria-hidden="true">→</span></a>` : '';
@@ -639,28 +955,45 @@ function halamanPembelajaran(route) {
   const module = path?.modul[moduleIndex];
   if (!path || !Number.isInteger(moduleIndex) || !module) return belajar();
   const checklist = checklistItems(module);
+  const baseChecklist = checklistBaseItems(module);
   const key = learningChecklistKey(path, module);
   const checked = savedChecklist(key);
   const completed = checklist.reduce((total, _, index) => total + (checked[index] ? 1 : 0), 0);
-  const progress = checklist.length ? Math.round(completed / checklist.length * 100) : 0;
+  const totalKum = checklist.reduce((total, _, index) => total + checklistKum(module, index), 0);
+  const earnedKum = checklist.reduce((total, _, index) => total + (checked[index] ? checklistKum(module, index) : 0), 0);
+  const progress = totalKum ? Math.round(earnedKum / totalKum * 100) : 0;
+  const paragraphChecklist = { module, index: baseChecklist.length, checked, totalKum };
+  const lessonContent = module.konten?.map(block => renderLessonBlock(block, 0, paragraphChecklist)).join('') || '';
   const previous = moduleIndex > 0 ? `<a class="button ghost" href="${learningRoute(path, moduleIndex - 1)}">← Sebelumnya</a>` : '<span></span>';
   const next = moduleIndex < path.modul.length - 1 ? `<a class="button primary" href="${learningRoute(path, moduleIndex + 1)}">Berikutnya →</a>` : '<a class="button primary" href="#belajar">Selesai</a>';
-  return `<section class="section learning-page"><a class="learning-back" href="#belajar">← Kembali ke semua jalur</a>${sectionHead(`JALUR ${path.kode} · MODUL ${String(moduleIndex + 1).padStart(2, '0')}`, esc(module.judul), `${esc(path.nama)} · ${esc(module.tingkat)}`)}<article class="card learning-card"><p class="section-label">Materi inti</p><p class="learning-summary">${esc(module.ringkasan || 'Materi pembelajaran akan segera tersedia.')}</p><div class="chips">${(module.fokus || []).map(item => `<span class="chip ${colorClass(path.warna)}">${esc(item)}</span>`).join('')}</div>${module.konten?.length ? `<div class="learning-content">${module.konten.map(block => renderLessonBlock(block)).join('')}</div>` : ''}<p class="learning-outcome"><strong>Hasil belajar</strong>${esc(module.hasil || 'Memahami topik modul dan kaitannya dengan Digital Twin.')}</p><section class="learning-checklist" data-checklist-key="${esc(key)}" aria-labelledby="learning-checklist-title"><div class="learning-checklist-heading"><h3 id="learning-checklist-title">Checklist pembelajaran</h3><span data-checklist-count aria-live="polite">${completed} dari ${checklist.length} selesai</span></div><div class="progress learning-checklist-progress" role="progressbar" aria-label="Progres checklist" aria-valuemin="0" aria-valuemax="${checklist.length}" aria-valuenow="${completed}"><i style="width:${progress}%"></i></div><div class="learning-checklist-items">${checklist.map((item, index) => `<label class="learning-check-item"><input type="checkbox" data-learning-check ${checked[index] ? 'checked' : ''}><span>${esc(item)}</span></label>`).join('')}</div></section></article><nav class="learning-pagination" aria-label="Navigasi pembelajaran">${previous}${next}</nav></section>`;
+  return `<section class="section learning-page"><a class="learning-back" href="#belajar">← Kembali ke semua jalur</a>${sectionHead(`JALUR ${path.kode} · MODUL ${String(moduleIndex + 1).padStart(2, '0')}`, esc(module.judul), `${esc(path.nama)} · ${esc(module.tingkat)}`)}<article class="card learning-card"><p class="section-label">Materi inti</p><p class="learning-summary">${esc(module.ringkasan || 'Materi pembelajaran akan segera tersedia.')}</p><div class="chips">${(module.fokus || []).map(item => `<span class="chip ${colorClass(path.warna)}">${esc(item)}</span>`).join('')}</div>${lessonContent ? `<div class="learning-content">${lessonContent}</div>` : ''}<p class="learning-outcome"><strong>Hasil belajar</strong>${esc(module.hasil || 'Memahami topik modul dan kaitannya dengan Digital Twin.')}</p><section class="learning-checklist" data-checklist-key="${esc(key)}" aria-labelledby="learning-checklist-title"><div class="learning-checklist-heading"><h3 id="learning-checklist-title">Checklist pembelajaran</h3><span data-checklist-count aria-live="polite">${completed}/${checklist.length} selesai · ${progress}% · ${earnedKum}/${totalKum} KUM</span></div><p class="learning-kum-note">KUM adalah bobot progres internal aplikasi, bukan nilai akademik resmi.</p><div class="progress learning-checklist-progress" role="progressbar" aria-label="Progres checklist berbobot KUM" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><i style="width:${progress}%"></i></div><div class="learning-checklist-items">${baseChecklist.map((item, index) => { const points = checklistKum(module, index); const weight = totalKum ? (points / totalKum * 100).toFixed(1).replace(/\.0$/, '') : '0'; return `<label class="learning-check-item"><input type="checkbox" data-learning-check data-check-index="${index}" ${checked[index] ? 'checked' : ''}><span>${esc(item)}</span><strong class="learning-check-points"><span>+${points} KUM</span><small>${weight}% bobot</small></strong></label>`; }).join('')}</div></section></article><nav class="learning-pagination" aria-label="Navigasi pembelajaran">${previous}${next}</nav></section>`;
 }
 function bindLearningChecklist() {
   const checklist = app.querySelector('[data-checklist-key]');
   if (!checklist) return;
   const key = checklist.dataset.checklistKey;
-  const checkboxes = [...checklist.querySelectorAll('[data-learning-check]')];
-  checkboxes.forEach(checkbox => checkbox.addEventListener('change', () => {
-    const completed = checkboxes.filter(item => item.checked).length;
-    const progress = checkboxes.length ? Math.round(completed / checkboxes.length * 100) : 0;
-    localStorage.setItem(key, JSON.stringify(checkboxes.map(item => item.checked)));
-    checklist.querySelector('[data-checklist-count]').textContent = `${completed} dari ${checkboxes.length} selesai`;
-    const progressBar = checklist.querySelector('[role="progressbar"]');
-    progressBar.setAttribute('aria-valuenow', String(completed));
+  const checkboxes = [...app.querySelectorAll('[data-learning-check]')];
+  const [, pathId, moduleValue] = location.hash.slice(1).split('/');
+  const path = data.materi.jalur.find(item => item.id === pathId);
+  const module = path?.modul[Number(moduleValue)];
+  if (!module) return;
+  const items = checklistItems(module);
+  const totalKum = items.reduce((total, _, index) => total + checklistKum(module, index), 0);
+  const progressBar = checklist.querySelector('[role="progressbar"]');
+  const updateProgress = () => {
+    const checked = Array(items.length).fill(false);
+    checkboxes.forEach(checkbox => { const index = Number(checkbox.dataset.checkIndex); if (index >= 0 && index < checked.length) checked[index] = checkbox.checked; });
+    const completed = checked.filter(Boolean).length;
+    const earnedKum = checked.reduce((total, isChecked, index) => total + (isChecked ? checklistKum(module, index) : 0), 0);
+    const progress = totalKum ? Math.round(earnedKum / totalKum * 100) : 0;
+    localStorage.setItem(key, JSON.stringify(checked));
+    checklist.querySelector('[data-checklist-count]').textContent = `${completed}/${items.length} selesai · ${progress}% · ${earnedKum}/${totalKum} KUM`;
+    progressBar.setAttribute('aria-valuemax', '100');
+    progressBar.setAttribute('aria-valuenow', String(progress));
     progressBar.querySelector('i').style.width = `${progress}%`;
-  }));
+  };
+  checkboxes.forEach(checkbox => checkbox.addEventListener('change', updateProgress));
+  updateProgress();
 }
 function profil() {
   const { anggota } = data; const max = anggota.ekosistem[0].jumlah;
@@ -669,7 +1002,7 @@ function profil() {
   return `<section class="section">${sectionHead('Profil anggota','Satu ekosistem, banyak perspektif','Gambaran anggota IDTC dari database pendaftaran.')}<div class="profile-intro"><strong>${anggota.namaUnik}</strong><p>nama unik dari ${anggota.respons} responden</p></div><div class="card"><h3>Komposisi ekosistem</h3>${bars}</div><div class="card"><h3>Sektor teratas</h3>${sectors}</div><div class="card"><h3>Institusi dengan anggota terbanyak</h3>${anggota.topInstitusi.slice(0,5).map((item,i) => `<div class="list-item"><span class="index">${i+1}</span><div><strong>${esc(item.nama)}</strong><small>${item.jumlah} anggota</small></div></div>`).join('')}</div></section>`;
 }
 function hasCmsAccess(session = getCurrentSession()) { return ['admin', 'super_admin'].includes(session?.role); }
-const views = { home, pengurus, profile, regulasi, pokja, 'pilot-project': pilotProjectPageWithCategories, belajar, onboarding, auth, 'registration-success': registrationSuccess, shop: () => shopPage(), admin: () => adminPanel(getCurrentSession(), esc) };
+const views = { home, pengurus, profile, regulasi, pokja, 'pilot-project': pilotProjectPageWithCategories, 'rating-tool': ratingTool, kolaborasi: collaborationPage, belajar, onboarding, auth, 'registration-success': registrationSuccess, shop: () => shopPage(), admin: () => adminPanel(getCurrentSession(), esc) };
 const TWINIAI_STOP_WORDS = new Set(['apa', 'apakah', 'bagaimana', 'mengapa', 'kenapa', 'siapa', 'kapan', 'dimana', 'di', 'ke', 'dari', 'dan', 'atau', 'yang', 'itu', 'ini', 'adalah', 'untuk', 'pada', 'dengan', 'tentang', 'saya', 'aku', 'tolong', 'bisa', 'dapat', 'kah', 'nya']);
 const TWINIAI_COMMON_WORDS = new Set(['digital', 'twin', 'data']);
 const TWINIAI_FALLBACK = 'Saya belum menemukan jawaban yang cukup cocok di basis pengetahuan TwiniAI. Coba tanyakan tentang konsep, data, standar, arsitektur, keamanan, penerapan, biaya, atau langkah pilot.';
@@ -957,7 +1290,7 @@ async function load() {
   data = { anggota, materi: mergeLessonContent(materi, overrides.materi), struktur, produk: overrides.produk || produk, twini: expandTwiniKnowledge(overrides.twini || twini, [...sensorFaqEntries(sensorFaq), ...bimFaqEntries(bimFaq)]), merch };
   render();
 }
-function addHomeFeatures() { const actions = app.querySelector('.hero-actions'); if (!actions || app.querySelector('.feature-actions')) return; actions.insertAdjacentHTML('afterend', '<div class="feature-actions" aria-label="Fitur utama"><a href="#belajar" class="feature-button feature-literasi"><span>◫</span>Literasi</a><a href="#regulasi" class="feature-button feature-regulasi"><span>◇</span>Regulasi</a><a href="#pilot-project" class="feature-button feature-pilot"><span>◈</span>Pilot Project</a></div>'); }
+function addHomeFeatures() { const actions = app.querySelector('.hero-actions'); if (!actions || app.querySelector('.feature-actions')) return; actions.insertAdjacentHTML('afterend', '<div class="feature-actions" aria-label="Fitur utama"><a href="#belajar" class="feature-button feature-literasi"><span>◫</span>Literasi</a><a href="#regulasi" class="feature-button feature-regulasi"><span>◇</span>Regulasi</a><a href="#pilot-project" class="feature-button feature-pilot"><span>◈</span>Pilot Project</a><a href="#rating-tool" class="feature-button feature-rating"><span>◉</span>Rating Tool DT</a><a href="#kolaborasi" class="feature-button feature-collaboration"><span>↔</span>Kolaborasi & Dukungan</a></div>'); }
 function render() { stopHomeCarousel(); const route = location.hash.slice(1) || initialRoute(); if (route === 'admin' && !hasCmsAccess()) { location.hash = getCurrentSession() ? 'profile' : 'auth'; return; } document.body.classList.toggle('home-mode', route === 'home'); document.body.classList.toggle('onboarding-mode', route === 'onboarding'); document.body.classList.toggle('auth-mode', route === 'auth'); document.body.classList.toggle('shop-mode', route === 'shop'); applyPreferences(); app.innerHTML = route.startsWith('pembelajaran/') ? halamanPembelajaran(route) : views[route]?.() || home(); app.querySelectorAll('img:not([loading])').forEach(image => { image.loading = 'lazy'; image.decoding = 'async'; }); nav.querySelectorAll('a').forEach(link => link.classList.toggle('active', link.dataset.route === route || (route.startsWith('pembelajaran/') && link.dataset.route === 'belajar'))); if (route === 'onboarding') bindOnboarding(); if (route === 'auth') bindAuth(); if (route === 'profile') bindProfile(); if (route.startsWith('pembelajaran/')) bindLearningChecklist(); if (route === 'admin') bindAdmin({ root: app.querySelector('.cms-page'), data, session: getCurrentSession(), getUsers: getLocalUsers, escapeHtml: esc, databaseMode: databaseAuthMode, apiRequest: userApi }); if (route === 'shop') bindShop({ root: app.querySelector('.twini-shop'), catalog: data.merch, escapeHtml: esc }); if (route === 'home') { const heroImage = app.querySelector('.hero-art'); if (heroImage) heroImage.outerHTML = heroCarouselMarkup(); addHomeFeatures(); bindHomeCarousel(); } window.scrollTo(0,0); }
 window.addEventListener('hashchange', () => { const route = location.hash.slice(1) || 'home'; if (routeHistory.length > 1 && routeHistory[routeHistory.length - 2] === route) routeHistory.pop(); else if (routeHistory[routeHistory.length - 1] !== route) routeHistory.push(route); render(); });
 backButton.addEventListener('click', () => { if (routeHistory.length > 1) history.back(); else if (location.hash.slice(1) !== 'home') location.hash = 'home'; });
