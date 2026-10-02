@@ -77,7 +77,39 @@
         "Harmonisasi lintas sektor",
         "Rekomendasi kebijakan"
       ],
-      "output": ["Standar", "Guideline", "Framework", "Policy brief"]
+      "output": ["Standar", "Guideline", "Framework", "Policy brief"],
+      "handbook": {
+        "ringkasan": "Pokja 1 membangun fondasi tata kelola Digital Twin di Indonesia melalui standar bersama, interoperabilitas data, dan rekomendasi kebijakan. Dokumen standar yang sudah matang diterbitkan terpisah di repositori Standar dan Panduan IDTC.",
+        "repoUrl": "https://github.com/idtc-id/pokja1-handbook",
+        "standarUrl": "https://github.com/idtc-id/standar-dan-panduan",
+        "target": [
+          "Standar dan guideline Digital Twin yang dipakai bersama lintas sektor.",
+          "Framework tata kelola dan interoperabilitas data.",
+          "Policy brief dan rekomendasi kebijakan untuk pembuat keputusan."
+        ],
+        "alur": [
+          { "judul": "Usulan topik", "keluaran": "Usulan yang disetujui masuk antrean kerja." },
+          { "judul": "Kajian awal", "keluaran": "Ringkasan standar yang sudah ada dan celah yang perlu diisi." },
+          { "judul": "Pembentukan kelompok", "keluaran": "Kelompok penyusun dan koordinator dokumen." },
+          { "judul": "Penyusunan draf", "keluaran": "Draf awal diajukan melalui pull request." },
+          { "judul": "Tinjauan internal", "keluaran": "Draf ditinjau dari unsur pemerintah, industri, dan akademisi." },
+          { "judul": "Tinjauan publik", "keluaran": "Masukan terbuka dihimpun minimal tiga minggu." },
+          { "judul": "Penetapan dan terbit", "keluaran": "Dokumen ditetapkan dan diterbitkan di repositori Standar dan Panduan." }
+        ],
+        "documents": [
+          { "id": "tentang-pokja1", "judul": "01 — Tentang Pokja 1", "ringkasan": "Tujuan, bidang kerja, struktur, peran, dan prinsip.", "url": "https://github.com/idtc-id/pokja1-handbook/blob/main/docs/01-tentang-pokja1.md" },
+          { "id": "alur-kerja", "judul": "02 — Alur kerja standar", "ringkasan": "Tahap penyusunan dokumen, gerbang persetujuan, dan ritme kerja.", "url": "https://github.com/idtc-id/pokja1-handbook/blob/main/docs/02-alur-kerja.md" },
+          { "id": "usulan-topik", "judul": "03 — Usulan topik standar", "ringkasan": "Cara mengusulkan topik, kriteria prioritas, dan peta kerja.", "url": "https://github.com/idtc-id/pokja1-handbook/blob/main/docs/03-usulan-topik.md" },
+          { "id": "kebijakan-dokumen", "judul": "04 — Kebijakan dokumen", "ringkasan": "Status, versi, lisensi, sitasi, dan adopsi dokumen.", "url": "https://github.com/idtc-id/pokja1-handbook/blob/main/docs/04-kebijakan-dokumen.md" },
+          { "id": "panduan-github-pemula", "judul": "05 — Panduan GitHub pemula", "ringkasan": "Panduan diskusi dan kontribusi melalui browser.", "url": "https://github.com/idtc-id/pokja1-handbook/blob/main/docs/05-panduan-github-pemula.md" },
+          { "id": "diskusi-rutin", "judul": "06 — Diskusi rutin", "ringkasan": "Format sesi, rangkuman, dan tindak lanjut diskusi.", "url": "https://github.com/idtc-id/pokja1-handbook/blob/main/docs/06-diskusi-rutin.md" }
+        ],
+        "kontribusi": [
+          { "judul": "Diskusi & ide", "url": "https://github.com/idtc-id/pokja1-handbook/discussions" },
+          { "judul": "Ambil pekerjaan", "url": "https://github.com/idtc-id/pokja1-handbook/issues?q=is%3Aissue+is%3Aopen+label%3Abutuh-bantuan" },
+          { "judul": "Usulkan topik", "url": "https://github.com/idtc-id/pokja1-handbook/blob/main/templates/usulan-topik.md" }
+        ]
+      }
     },
     {
       "id": "pokja2",
@@ -110,6 +142,31 @@
         "Pilot project Digital Twin yang nyata dan terukur",
         "Dokumentasi dan model replikasi"
       ],
+      "handbook": {
+        "judul": "Handbook Pokja 2",
+        "ringkasan": "Pokja 2 membuktikan manfaat Digital Twin melalui pilot nyata bersama mitra, mengukur dampaknya, dan mendokumentasikan cara mereplikasi hasilnya.",
+        "repoUrl": "https://github.com/idtc-id/pokja2-handbook",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/deed.id",
+        "targetTitle": "Target Pokja 2",
+        "target": [
+          "Pilot project Digital Twin yang nyata dan terukur.",
+          "Dokumentasi dan model replikasi yang bisa dipakai instansi atau lokasi lain."
+        ],
+        "documents": [
+          { "id": "tentang-pokja2", "judul": "01 — Tentang Pokja 2", "url": "https://github.com/idtc-id/pokja2-handbook/blob/main/docs/01-tentang-pokja2.md" },
+          { "id": "alur-kerja", "judul": "02 — Alur kerja pilot", "url": "https://github.com/idtc-id/pokja2-handbook/blob/main/docs/02-alur-kerja.md" },
+          { "id": "seleksi-pilot", "judul": "03 — Seleksi pilot", "url": "https://github.com/idtc-id/pokja2-handbook/blob/main/docs/03-seleksi-pilot.md" },
+          { "id": "kebijakan-data", "judul": "04 — Kebijakan data", "url": "https://github.com/idtc-id/pokja2-handbook/blob/main/docs/04-kebijakan-data.md" },
+          { "id": "panduan-github-pemula", "judul": "05 — Panduan GitHub pemula", "url": "https://github.com/idtc-id/pokja2-handbook/blob/main/docs/05-panduan-github-pemula.md" },
+          { "id": "diskusi-rutin", "judul": "06 — Diskusi rutin", "url": "https://github.com/idtc-id/pokja2-handbook/blob/main/docs/06-diskusi-rutin.md" }
+        ],
+        "kontribusi": [
+          { "judul": "Diskusi & ide", "url": "https://github.com/idtc-id/pokja2-handbook/discussions" },
+          { "judul": "Ambil pekerjaan", "url": "https://github.com/idtc-id/pokja2-handbook/issues?q=is%3Aissue+is%3Aopen+label%3Abutuh-bantuan" },
+          { "judul": "Formulir usulan pilot", "url": "https://github.com/idtc-id/pokja2-handbook/tree/main/formulir" }
+        ]
+      },
       "arahProgram": {
         "ringkasan": "Menyusun acuan bersama untuk merancang, membangun, dan menilai Digital Twin di Indonesia. Framework ini menghubungkan kebutuhan data spasial, platform, analitik, tata kelola, dan implementasi pilot.",
         "bidangKerja": [
@@ -165,7 +222,34 @@
         "Kolaborasi industri",
         "Pengembangan komunitas"
       ],
-      "output": ["SDM yang kompeten", "Knowledge & riset", "Ekosistem Digital Twin"]
+      "output": ["SDM yang kompeten", "Knowledge & riset", "Ekosistem Digital Twin"],
+      "handbook": {
+        "judul": "Handbook Pokja 3",
+        "ringkasan": "Pokja 3 membangun SDM, riset, dan ekosistem Digital Twin melalui pelatihan, sertifikasi, berbagi pengetahuan, serta kolaborasi kampus dan industri.",
+        "repoUrl": "https://github.com/idtc-id/pokja3-handbook",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/deed.id",
+        "targetTitle": "Target Pokja 3",
+        "target": [
+          "SDM yang kompeten melalui pelatihan, workshop, dan jalur sertifikasi.",
+          "Knowledge dan riset melalui expert session, kajian, dan kolaborasi kampus.",
+          "Ekosistem Digital Twin dengan jejaring pemerintah, kampus, industri, dan komunitas."
+        ],
+        "documents": [
+          { "id": "tentang-pokja3", "judul": "01 — Tentang Pokja 3", "url": "https://github.com/idtc-id/pokja3-handbook/blob/main/docs/01-tentang-pokja3.md" },
+          { "id": "alur-kerja", "judul": "02 — Alur kerja program", "url": "https://github.com/idtc-id/pokja3-handbook/blob/main/docs/02-alur-kerja.md" },
+          { "id": "program-pembelajaran", "judul": "03 — Program pembelajaran", "url": "https://github.com/idtc-id/pokja3-handbook/blob/main/docs/03-program-pembelajaran.md" },
+          { "id": "sertifikasi", "judul": "04 — Sertifikasi", "url": "https://github.com/idtc-id/pokja3-handbook/blob/main/docs/04-sertifikasi.md" },
+          { "id": "panduan-github-pemula", "judul": "05 — Panduan GitHub pemula", "url": "https://github.com/idtc-id/pokja3-handbook/blob/main/docs/05-panduan-github-pemula.md" },
+          { "id": "expert-session-riset", "judul": "06 — Expert session & riset", "url": "https://github.com/idtc-id/pokja3-handbook/blob/main/docs/06-expert-session-riset.md" }
+        ],
+        "kontribusi": [
+          { "judul": "Diskusi & ide", "url": "https://github.com/idtc-id/pokja3-handbook/discussions" },
+          { "judul": "Ambil pekerjaan", "url": "https://github.com/idtc-id/pokja3-handbook/issues?q=is%3Aissue+is%3Aopen+label%3Abutuh-bantuan" },
+          { "judul": "Usulkan pelatihan atau sesi", "url": "https://github.com/idtc-id/pokja3-handbook/blob/main/templates/usulan-pelatihan.md" },
+          { "judul": "Materi belajar IDTC", "url": "https://github.com/idtc-id/materi-belajar" }
+        ]
+      }
     }
   ],
   "unitPendukung": [
