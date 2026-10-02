@@ -14,6 +14,9 @@ let databaseRegistrationEnabled = false;
 let databaseSession = null;
 let registrationCompleted = false;
 const IDTC_API_BASE = String(window.IDTC_API_BASE_URL || '').trim().replace(/\/+$/, '');
+let ecosystemAdTimer = null;
+let ecosystemAdDismissed = false;
+let ecosystemAdBound = false;
 function userApi(path, options = {}) {
   return fetch(`${IDTC_API_BASE}/api/${path}`, { credentials: 'include', ...options });
 }
@@ -373,10 +376,133 @@ function bindHomeCarousel() {
   carousel.addEventListener('touchcancel', () => { touchStartX = null; startAuto(); }, { passive: true });
   startAuto();
 }
+function handbookInlineMarkup(text, sourceUrl) {
+  const inlineToken = /\[([^\]]+)\]\(([^)]+)\)|<((?:https?:\/\/)[^>]+)>|`([^`]+)`|\*\*([^*]+)\*\*|\*([^*]+)\*/g;
+  let html = '';
+  let lastIndex = 0;
+  for (const match of text.matchAll(inlineToken)) {
+    html += esc(text.slice(lastIndex, match.index));
+    if (match[1] !== undefined || match[3] !== undefined) {
+      const label = match[1] ?? match[3];
+      let href = match[2] ?? match[3];
+      try {
+        href = new URL(href, sourceUrl).href;
+      } catch {
+        html += esc(label);
+        lastIndex = match.index + match[0].length;
+        continue;
+      }
+      if (!/^https?:$/.test(new URL(href).protocol)) {
+        html += esc(label);
+      } else {
+        html += `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>`;
+      }
+    } else if (match[4] !== undefined) {
+      html += `<code>${esc(match[4])}</code>`;
+    } else if (match[5] !== undefined) {
+      html += `<strong>${esc(match[5])}</strong>`;
+    } else {
+      html += `<em>${esc(match[6])}</em>`;
+    }
+    lastIndex = match.index + match[0].length;
+  }
+  return html + esc(text.slice(lastIndex));
+}
+function handbookMarkdown(markdown, sourceUrl) {
+  const lines = markdown.split(/\r?\n/);
+  const blocks = [];
+  let paragraph = [];
+  const inline = text => handbookInlineMarkup(text, sourceUrl);
+  const flushParagraph = () => {
+    if (!paragraph.length) return;
+    blocks.push(`<p>${inline(paragraph.join(' '))}</p>`);
+    paragraph = [];
+  };
+  const isTableDivider = line => /^\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)+\|?$/.test(line);
+  const tableCells = line => line.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map(cell => cell.trim());
+
+  for (let index = 0; index < lines.length;) {
+    const line = lines[index].trim();
+    if (!line) {
+      flushParagraph();
+      index += 1;
+      continue;
+    }
+    if (line.startsWith('```')) {
+      flushParagraph();
+      index += 1;
+      const code = [];
+      while (index < lines.length && !lines[index].trim().startsWith('```')) code.push(lines[index++]);
+      if (index < lines.length) index += 1;
+      blocks.push(`<pre><code>${esc(code.join('\n'))}</code></pre>`);
+      continue;
+    }
+    const heading = line.match(/^(#{1,6})\s+(.+)$/);
+    if (heading) {
+      flushParagraph();
+      const level = Math.min(heading[1].length + 2, 6);
+      blocks.push(`<h${level}>${inline(heading[2])}</h${level}>`);
+      index += 1;
+      continue;
+    }
+    if (line.startsWith('> ')) {
+      flushParagraph();
+      const quote = [];
+      while (index < lines.length && lines[index].trim().startsWith('> ')) quote.push(lines[index++].trim().slice(2));
+      blocks.push(`<blockquote>${inline(quote.join(' '))}</blockquote>`);
+      continue;
+    }
+    if (/^(?:---+|___+|\*\*\*+)$/.test(line)) {
+      flushParagraph();
+      blocks.push('<hr />');
+      index += 1;
+      continue;
+    }
+    if (line.includes('|') && index + 1 < lines.length && isTableDivider(lines[index + 1].trim())) {
+      flushParagraph();
+      const headers = tableCells(line);
+      index += 2;
+      const rows = [];
+      while (index < lines.length && lines[index].trim().includes('|')) rows.push(tableCells(lines[index++].trim()));
+      blocks.push(`<div class="pokja-handbook-table-wrap"><table><thead><tr>${headers.map(cell => `<th>${inline(cell)}</th>`).join('')}</tr></thead><tbody>${rows.map(row => `<tr>${headers.map((_, cellIndex) => `<td>${inline(row[cellIndex] || '')}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`);
+      continue;
+    }
+    if (/^(?:[-*+]\s+|\d+\.\s+)/.test(line)) {
+      flushParagraph();
+      const ordered = /^\d+\.\s+/.test(line);
+      const items = [];
+      while (index < lines.length && /^(?:[-*+]\s+|\d+\.\s+)/.test(lines[index].trim())) {
+        items.push(lines[index++].trim().replace(/^(?:[-*+]\s+|\d+\.\s+)/, ''));
+      }
+      const tag = ordered ? 'ol' : 'ul';
+      blocks.push(`<${tag}>${items.map(item => `<li>${inline(item)}</li>`).join('')}</${tag}>`);
+      continue;
+    }
+    paragraph.push(line);
+    index += 1;
+  }
+  flushParagraph();
+  return blocks.join('');
+}
+function pokjaHandbookMarkup(handbook, chapters = [], pokjaNumber = 1) {
+  if (!handbook) return '';
+  const handbookTitle = handbook.judul || `Handbook Pokja ${pokjaNumber}`;
+  const targetTitle = handbook.targetTitle || `Target Pokja ${pokjaNumber}`;
+  const chaptersMarkup = handbook.documents.map((document, index) => {
+    const chapter = chapters[index];
+    if (!chapter) return '';
+    return `<details class="pokja-handbook-chapter"><summary><span>${esc(document.judul)}</span><span class="pokja-handbook-toggle" aria-hidden="true">+</span></summary><article class="pokja-handbook-article">${handbookMarkdown(chapter.content, chapter.url)}<p class="pokja-handbook-attribution">Sumber: <a href="${esc(chapter.url)}" target="_blank" rel="noopener noreferrer">${esc(handbookTitle)} — Bab ${String(index + 1).padStart(2, '0')}</a> · <a href="${esc(handbook.licenseUrl)}" target="_blank" rel="noopener noreferrer">${esc(handbook.license)}</a></p></article></details>`;
+  }).join('');
+  const targets = handbook.target?.length ? `<h5>${esc(targetTitle)}</h5><ul class="pokja-handbook-targets">${handbook.target.map(target => `<li>${esc(target)}</li>`).join('')}</ul>` : '';
+  const contributions = handbook.kontribusi?.length ? `<h5>Cara terlibat</h5><div class="pokja-handbook-actions">${handbook.kontribusi.map(item => `<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(item.judul)} <span aria-hidden="true">↗</span></a>`).join('')}</div>` : '';
+  const repositoryLinks = `<a class="button primary pokja-handbook-repo" href="${esc(handbook.repoUrl)}" target="_blank" rel="noopener noreferrer">Buka Handbook Pokja ${pokjaNumber} ↗</a>${handbook.standarUrl ? `<a class="button ghost pokja-handbook-repo" href="${esc(handbook.standarUrl)}" target="_blank" rel="noopener noreferrer">Lihat standar & panduan ↗</a>` : ''}`;
+  return `<details class="pokja-handbook"><summary><span><strong>${esc(handbookTitle)}</strong><small>${handbook.documents.length} bab · materi lengkap</small></span><span class="pokja-handbook-toggle" aria-hidden="true">+</span></summary><div class="pokja-handbook-content"><p>${esc(handbook.ringkasan)}</p>${targets}<h5>Materi per bab</h5><div class="pokja-handbook-chapters">${chaptersMarkup}</div>${contributions}${repositoryLinks}</div></details>`;
+}
 function pokja() {
   const cards = data.struktur.pokja.map(item => {
     const program = item.arahProgram ? `<section class="pokja-program" aria-label="Arahan program kerja POKJA ${item.nomor}"><div class="pokja-program-intro"><p class="section-label">Arahan program kerja</p><h4>Blueprint Digital Twin Indonesia</h4><p>${esc(item.arahProgram.ringkasan)}</p></div><h5>Bidang kerja</h5><ol class="pokja-program-workstreams">${item.arahProgram.bidangKerja.map((workstream, index) => `<li><span class="pokja-program-number">${String(index + 1).padStart(2, '0')}</span><div><strong>${esc(workstream.judul)}</strong><p>${esc(workstream.cakupan)}</p></div></li>`).join('')}</ol><section class="pokja-program-outputs"><h5>Keluaran konkret</h5>${item.arahProgram.keluaran.map(output => `<div><strong>${esc(output.judul)}</strong><p>${esc(output.cakupan)}</p></div>`).join('')}</section><section class="pokja-program-distinction"><h5>Pembeda model 3D dan Digital Twin</h5>${item.arahProgram.pembeda.map(point => `<div><strong>${esc(point.judul)}</strong><p>${esc(point.cakupan)}</p></div>`).join('')}</section></section>` : '';
-    return `<article class="card pokja-card"><div class="color-bar ${colorClass(item.warna)}"></div><img class="pokja-image" src="${esc(item.banner)}" alt="${esc(item.nama)}" onerror="this.style.display='none'" /><div class="card-body"><p class="role ${colorClass(item.warna)}">POKJA ${item.nomor}</p><h3>${esc(item.nama)}</h3><p>${esc(item.slogan)}</p><div class="chips">${item.fokus.slice(0,4).map(tag => `<span class="chip ${colorClass(item.warna)}">${esc(tag)}</span>`).join('')}</div><p style="margin-top:13px"><b>Ketua:</b> ${esc(item.ketua.nama)}</p>${program}</div></article>`;
+    const handbook = item.handbook ? pokjaHandbookMarkup(item.handbook, data.handbooks[item.id]?.chapters || [], item.nomor) : '';
+    return `<article class="card pokja-card"><div class="color-bar ${colorClass(item.warna)}"></div><img class="pokja-image" src="${esc(item.banner)}" alt="${esc(item.nama)}" onerror="this.style.display='none'" /><div class="card-body"><p class="role ${colorClass(item.warna)}">POKJA ${item.nomor}</p><h3>${esc(item.nama)}</h3><p>${esc(item.slogan)}</p><div class="chips">${item.fokus.slice(0,4).map(tag => `<span class="chip ${colorClass(item.warna)}">${esc(tag)}</span>`).join('')}</div><p style="margin-top:13px"><b>Ketua:</b> ${esc(item.ketua.nama)}</p>${handbook}${program}</div></article>`;
   }).join('');
   return `<section class="section">${sectionHead('Kelompok kerja','Tiga jalur dampak','Setiap Pokja mengubah gagasan menjadi kontribusi yang terukur.')} ${cards}</section>`;
 }
@@ -522,7 +648,8 @@ function collaborationPage() {
       image.className = 'partner-brand__logo';
       image.alt = '';
       image.loading = 'lazy';
-      image.src = `assets/img/mitra/${domain.replace(/[^a-z0-9]+/gi, '-')}.png`;
+      const logoFile = name === 'Aptella' ? 'Aptella.png' : `${domain.replace(/[^a-z0-9]+/gi, '-')}.png`;
+      image.src = `assets/img/mitra/${logoFile}`;
       image.addEventListener('load', () => { if (mark) mark.hidden = true; }, { once: true });
       image.addEventListener('error', () => image.remove(), { once: true });
       link.append(image, ...card.childNodes);
@@ -828,6 +955,98 @@ function bindProfile() {
 }
 
 function applyPreferences() { document.body.classList.toggle('mode-dark', localStorage.getItem('idtc-mode') === 'dark'); document.body.classList.toggle('theme-future', localStorage.getItem('idtc-theme') === 'future'); }
+function bindEcosystemAd(organizations) {
+  if (ecosystemAdBound) return;
+  const root = document.querySelector('[data-ecosystem-ad]');
+  const track = root?.querySelector('[data-ecosystem-ad-track]');
+  if (!root || !track || !Array.isArray(organizations) || !organizations.length) return;
+  const validOrganizations = organizations.filter(item => item?.nama && item.logo && /^[a-z0-9.-]+$/i.test(item.domain || '') && /^[a-z0-9.-]+\.png$/i.test(item.logo));
+  if (!validOrganizations.length) return;
+  ecosystemAdBound = true;
+  let previousIndex = -1;
+  const stop = () => {
+    if (ecosystemAdTimer !== null) clearTimeout(ecosystemAdTimer);
+    ecosystemAdTimer = null;
+    root.hidden = true;
+    root.classList.remove('is-flying');
+    track.replaceChildren();
+    root.querySelector('.ecosystem-ad-close')?.remove();
+  };
+  const chooseOrganization = () => {
+    const available = validOrganizations.map((_, index) => index).filter(index => index !== previousIndex);
+    const index = available[Math.floor(Math.random() * available.length)];
+    previousIndex = index;
+    return validOrganizations[index];
+  };
+  const schedule = delay => {
+    if (ecosystemAdTimer !== null) clearTimeout(ecosystemAdTimer);
+    if (ecosystemAdDismissed) return;
+    ecosystemAdTimer = setTimeout(show, delay);
+  };
+  const show = () => {
+    ecosystemAdTimer = null;
+    const route = location.hash.slice(1) || 'home';
+    if (document.hidden || ['auth', 'onboarding', 'registration-success', 'shop', 'admin'].includes(route) || route.startsWith('pembelajaran/')) {
+      schedule(8000);
+      return;
+    }
+    const organization = chooseOrganization();
+    const card = document.createElement('div');
+    card.className = 'ecosystem-ad-card';
+    card.style.setProperty('--ad-drift', `${Math.round(Math.random() * 104 - 52)}px`);
+    card.style.setProperty('--ad-duration', `${(6 + Math.random() * 2).toFixed(2)}s`);
+    const link = document.createElement('a');
+    link.className = 'ecosystem-ad-link';
+    link.href = `https://${organization.domain}`;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.setAttribute('aria-label', `Iklan: Kenali ${organization.nama}, organisasi yang relevan untuk dijajaki dalam ekosistem Digital Twin. Bukan mitra atau pendukung resmi IDTC.`);
+    const badge = document.createElement('span');
+    badge.className = 'ecosystem-ad-badge';
+    badge.textContent = 'IKLAN';
+    const image = document.createElement('img');
+    image.className = 'ecosystem-ad-logo';
+    image.src = `assets/img/mitra/${organization.logo}`;
+    image.alt = organization.nama;
+    image.decoding = 'async';
+    image.addEventListener('error', stop, { once: true });
+    const copy = document.createElement('span');
+    copy.className = 'ecosystem-ad-copy';
+    copy.innerHTML = `<strong></strong><small></small>`;
+    copy.querySelector('strong').textContent = organization.nama;
+    copy.querySelector('small').textContent = `${organization.sektor} · organisasi untuk dijajaki, bukan mitra terkonfirmasi`;
+    const close = document.createElement('button');
+    close.className = 'ecosystem-ad-close';
+    close.type = 'button';
+    close.setAttribute('aria-label', 'Tutup iklan');
+    close.textContent = '×';
+    close.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopPropagation();
+      ecosystemAdDismissed = true;
+      stop();
+    }, { once: true });
+    link.append(badge, image, copy);
+    card.append(link);
+    track.replaceChildren(card);
+    root.append(close);
+    root.hidden = false;
+    root.classList.remove('is-flying');
+    void card.offsetWidth;
+    root.classList.add('is-flying');
+    schedule(+(card.style.getPropertyValue('--ad-duration').replace('s', '')) * 1000 + 9000 + Math.random() * 9000);
+  };
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stop();
+    else if (!ecosystemAdDismissed) schedule(1200 + Math.random() * 2200);
+  });
+  window.addEventListener('hashchange', () => {
+    const route = location.hash.slice(1);
+    if (['auth', 'onboarding', 'registration-success', 'shop', 'admin'].includes(route) || route.startsWith('pembelajaran/')) stop();
+    else if (!ecosystemAdDismissed) schedule(900 + Math.random() * 1900);
+  });
+  schedule(2500 + Math.random() * 2500);
+}
 function learningRoute(path, moduleIndex) { return `#pembelajaran/${path.id}/${moduleIndex}`; }
 function learningChecklistKey(path, module) {
   const session = getCurrentSession();
@@ -1262,13 +1481,17 @@ function initTwiniWidget() {
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && !panel.hidden) setOpen(false); });
 }
 async function load() {
-  const [anggota, materi, struktur, produk, merch, twini, sensorFaq, bimFaq, authStatus] = await Promise.all([
-    ...['anggota', 'materi', 'struktur', 'produk'].map(name => fetch(`data/${name}.json?v=22`).then(response => response.json())),
+  const [anggota, materi, struktur, produk, merch, twini, sensorFaq, bimFaq, authStatus, pokja1Handbook, pokja2Handbook, pokja3Handbook, ecosystemOrganizations] = await Promise.all([
+    ...['anggota', 'materi', 'struktur', 'produk'].map(name => fetch(`data/${name}.json?v=${name === 'struktur' ? 27 : 22}`).then(response => response.json())),
     fetch('data/merch.json?v=22').then(response => response.json()),
     fetch('data/twini-ai.json?v=3').then(response => response.json()),
     fetch('data/twini-ai-sensors.json?v=1').then(response => response.json()),
     fetch('data/twini-ai-bim.json?v=1').then(response => response.json()),
     userApi('auth/status', { signal: AbortSignal.timeout(2500) }).then(response => response.ok ? response.json() : { database: false }).catch(() => ({ database: false })),
+    fetch('data/pokja1-handbook.json?v=1').then(response => response.json()),
+    fetch('data/pokja2-handbook.json?v=1').then(response => response.json()),
+    fetch('data/pokja3-handbook.json?v=1').then(response => response.json()),
+    fetch('data/iklan-ekosistem.json?v=1').then(response => response.json()),
   ]);
   databaseAuthMode = authStatus.database === true;
   databaseBootstrapRequired = authStatus.bootstrapRequired === true;
@@ -1287,7 +1510,8 @@ async function load() {
   }
   let overrides = {};
   try { overrides = JSON.parse(localStorage.getItem('idtc-cms-content') || '{}') || {}; } catch { overrides = {}; }
-  data = { anggota, materi: mergeLessonContent(materi, overrides.materi), struktur, produk: overrides.produk || produk, twini: expandTwiniKnowledge(overrides.twini || twini, [...sensorFaqEntries(sensorFaq), ...bimFaqEntries(bimFaq)]), merch };
+  data = { anggota, materi: mergeLessonContent(materi, overrides.materi), struktur, handbooks: { pokja1: pokja1Handbook, pokja2: pokja2Handbook, pokja3: pokja3Handbook }, produk: overrides.produk || produk, twini: expandTwiniKnowledge(overrides.twini || twini, [...sensorFaqEntries(sensorFaq), ...bimFaqEntries(bimFaq)]), merch };
+  bindEcosystemAd(ecosystemOrganizations);
   render();
 }
 function addHomeFeatures() { const actions = app.querySelector('.hero-actions'); if (!actions || app.querySelector('.feature-actions')) return; actions.insertAdjacentHTML('afterend', '<div class="feature-actions" aria-label="Fitur utama"><a href="#belajar" class="feature-button feature-literasi"><span>◫</span>Literasi</a><a href="#regulasi" class="feature-button feature-regulasi"><span>◇</span>Regulasi</a><a href="#pilot-project" class="feature-button feature-pilot"><span>◈</span>Pilot Project</a><a href="#rating-tool" class="feature-button feature-rating"><span>◉</span>Rating Tool DT</a><a href="#kolaborasi" class="feature-button feature-collaboration"><span>↔</span>Kolaborasi & Dukungan</a></div>'); }

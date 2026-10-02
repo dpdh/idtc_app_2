@@ -1,12 +1,12 @@
-const CACHE_VERSION = 'v125';
+const CACHE_VERSION = 'v137';
 const SHELL_CACHE = `idtc-mobile-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `idtc-runtime-${CACHE_VERSION}`;
 const CORE = [
   './',
   './index.html',
-  './styles.css?v=81',
+  './styles.css?v=85',
   './twini-config.js?v=1',
-  './app.js?v=81',
+  './app.js?v=90',
   './image-zoom.js?v=2',
   './auth-security.js?v=1',
   './admin-cms.js?v=6',
@@ -21,7 +21,11 @@ const CORE = [
   './assets/img/dni/twini-shop-icon.png',
   './data/anggota.json?v=22',
   './data/materi.json?v=22',
-  './data/struktur.json?v=22',
+  './data/struktur.json?v=27',
+  './data/pokja1-handbook.json?v=1',
+  './data/pokja2-handbook.json?v=1',
+  './data/pokja3-handbook.json?v=1',
+  './data/iklan-ekosistem.json?v=1',
   './data/produk.json?v=22',
   './data/merch.json?v=22',
   './data/twini-ai.json?v=3',
