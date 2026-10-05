@@ -17,6 +17,16 @@ const IDTC_API_BASE = String(window.IDTC_API_BASE_URL || '').trim().replace(/\/+
 let ecosystemAdTimer = null;
 let ecosystemAdDismissed = false;
 let ecosystemAdBound = false;
+let pokjaRibbonController = null;
+let pokjaRibbonTimer = null;
+let pokjaRibbonScrollTimer = null;
+let pokjaRibbonObserver = null;
+let pilotCitySimulationCleanup = null;
+let pilotInfrastructureSimulationCleanup = null;
+let pilotDomainSimulationCleanup = null;
+let pilotRibbonController = null;
+let pilotRibbonTimer = null;
+let pilotRibbonScrollTimer = null;
 function userApi(path, options = {}) {
   return fetch(`${IDTC_API_BASE}/api/${path}`, { credentials: 'include', ...options });
 }
@@ -502,9 +512,117 @@ function pokja() {
   const cards = data.struktur.pokja.map(item => {
     const program = item.arahProgram ? `<section class="pokja-program" aria-label="Arahan program kerja POKJA ${item.nomor}"><div class="pokja-program-intro"><p class="section-label">Arahan program kerja</p><h4>Blueprint Digital Twin Indonesia</h4><p>${esc(item.arahProgram.ringkasan)}</p></div><h5>Bidang kerja</h5><ol class="pokja-program-workstreams">${item.arahProgram.bidangKerja.map((workstream, index) => `<li><span class="pokja-program-number">${String(index + 1).padStart(2, '0')}</span><div><strong>${esc(workstream.judul)}</strong><p>${esc(workstream.cakupan)}</p></div></li>`).join('')}</ol><section class="pokja-program-outputs"><h5>Keluaran konkret</h5>${item.arahProgram.keluaran.map(output => `<div><strong>${esc(output.judul)}</strong><p>${esc(output.cakupan)}</p></div>`).join('')}</section><section class="pokja-program-distinction"><h5>Pembeda model 3D dan Digital Twin</h5>${item.arahProgram.pembeda.map(point => `<div><strong>${esc(point.judul)}</strong><p>${esc(point.cakupan)}</p></div>`).join('')}</section></section>` : '';
     const handbook = item.handbook ? pokjaHandbookMarkup(item.handbook, data.handbooks[item.id]?.chapters || [], item.nomor) : '';
-    return `<article class="card pokja-card"><div class="color-bar ${colorClass(item.warna)}"></div><img class="pokja-image" src="${esc(item.banner)}" alt="${esc(item.nama)}" onerror="this.style.display='none'" /><div class="card-body"><p class="role ${colorClass(item.warna)}">POKJA ${item.nomor}</p><h3>${esc(item.nama)}</h3><p>${esc(item.slogan)}</p><div class="chips">${item.fokus.slice(0,4).map(tag => `<span class="chip ${colorClass(item.warna)}">${esc(tag)}</span>`).join('')}</div><p style="margin-top:13px"><b>Ketua:</b> ${esc(item.ketua.nama)}</p>${handbook}${program}</div></article>`;
+    return `<article class="card pokja-card" id="pokja-${item.nomor}" tabindex="-1"><div class="color-bar ${colorClass(item.warna)}"></div><img class="pokja-image" src="${esc(item.banner)}" alt="${esc(item.nama)}" onerror="this.style.display='none'" /><div class="card-body"><p class="role ${colorClass(item.warna)}">POKJA ${item.nomor}</p><h3>${esc(item.nama)}</h3><p>${esc(item.slogan)}</p><div class="chips">${item.fokus.slice(0,4).map(tag => `<span class="chip ${colorClass(item.warna)}">${esc(tag)}</span>`).join('')}</div><p style="margin-top:13px"><b>Ketua:</b> ${esc(item.ketua.nama)}</p>${handbook}${program}</div></article>`;
   }).join('');
-  return `<section class="section">${sectionHead('Kelompok kerja','Tiga jalur dampak','Setiap Pokja mengubah gagasan menjadi kontribusi yang terukur.')} ${cards}</section>`;
+  const ribbonItems = data.struktur.pokja.map(item => `<button class="pokja-ribbon-link ${colorClass(item.warna)}" type="button" data-pokja-target="pokja-${item.nomor}" aria-label="Ke Pokja ${item.nomor}: ${esc(item.nama)}"><span>Pokja ${item.nomor}</span><small>${esc(item.nama)}</small></button>`).join('');
+  return `<section class="section pokja-page">${sectionHead('Kelompok kerja','Tiga jalur dampak','Setiap Pokja mengubah gagasan menjadi kontribusi yang terukur.')} ${cards}<aside class="pokja-ribbon is-visible" data-pokja-ribbon aria-label="Navigasi kelompok kerja"><button class="pokja-ribbon-toggle" type="button" data-pokja-ribbon-toggle aria-expanded="true" aria-label="Sembunyikan navigasi Pokja"><span aria-hidden="true">›</span></button><nav class="pokja-ribbon-links" aria-label="Pilih Pokja">${ribbonItems}</nav></aside></section>`;
+}
+function bindPokjaRibbon() {
+  pokjaRibbonController?.abort();
+  if (pokjaRibbonTimer !== null) clearTimeout(pokjaRibbonTimer);
+  if (pokjaRibbonScrollTimer !== null) clearTimeout(pokjaRibbonScrollTimer);
+  pokjaRibbonObserver?.disconnect();
+  document.querySelector('body > [data-pokja-ribbon]')?.remove();
+  const ribbon = app.querySelector('[data-pokja-ribbon]');
+  if (!ribbon) return;
+  document.body.append(ribbon);
+  const controller = new AbortController();
+  pokjaRibbonController = controller;
+  const { signal } = controller;
+  const toggle = ribbon.querySelector('[data-pokja-ribbon-toggle]');
+  const links = [...ribbon.querySelectorAll('[data-pokja-target]')];
+  let expandedByUser = false;
+  let isScrolling = false;
+  const setExpanded = expanded => {
+    ribbon.classList.toggle('is-visible', expanded);
+    toggle.setAttribute('aria-expanded', String(expanded));
+    toggle.setAttribute('aria-label', expanded ? 'Sembunyikan navigasi Pokja' : 'Tampilkan navigasi Pokja');
+    ribbon.querySelector('.pokja-ribbon-links')?.setAttribute('aria-hidden', String(!expanded));
+    links.forEach(link => { link.tabIndex = expanded ? 0 : -1; });
+  };
+  const scheduleCollapse = delay => {
+    if (pokjaRibbonTimer !== null) clearTimeout(pokjaRibbonTimer);
+    if (expandedByUser) return;
+    pokjaRibbonTimer = setTimeout(() => {
+      if (!ribbon.matches(':focus-within') && !ribbon.matches(':hover')) setExpanded(false);
+    }, delay);
+  };
+  const reveal = () => {
+    if (isScrolling) return;
+    setExpanded(true);
+    scheduleCollapse(1800);
+  };
+  const hideWhileReading = event => {
+    if (event.target instanceof Node && ribbon.contains(event.target)) return;
+    isScrolling = true;
+    if (pokjaRibbonScrollTimer !== null) clearTimeout(pokjaRibbonScrollTimer);
+    pokjaRibbonScrollTimer = setTimeout(() => { isScrolling = false; }, 850);
+    expandedByUser = false;
+    if (pokjaRibbonTimer !== null) clearTimeout(pokjaRibbonTimer);
+    setExpanded(false);
+  };
+  toggle.addEventListener('click', () => {
+    isScrolling = false;
+    if (pokjaRibbonScrollTimer !== null) clearTimeout(pokjaRibbonScrollTimer);
+    expandedByUser = !expandedByUser;
+    setExpanded(expandedByUser);
+    if (!expandedByUser) scheduleCollapse(1800);
+  }, { signal });
+  links.forEach(link => link.addEventListener('click', () => {
+    const target = document.getElementById(link.dataset.pokjaTarget);
+    if (!target) return;
+    const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    target.scrollIntoView({ behavior, block: 'start' });
+    target.focus({ preventScroll: true });
+    links.forEach(item => {
+      const active = item === link;
+      item.classList.toggle('is-active', active);
+      if (active) item.setAttribute('aria-current', 'location');
+      else item.removeAttribute('aria-current');
+    });
+    expandedByUser = false;
+  }, { signal }));
+  ['scroll', 'wheel', 'touchstart'].forEach(eventName => {
+    window.addEventListener(eventName, hideWhileReading, { passive: true, signal });
+  });
+  window.addEventListener('pointermove', event => {
+    if (!isScrolling && event.clientX >= window.innerWidth - 44) reveal();
+  }, { passive: true, signal });
+  ribbon.addEventListener('pointerenter', () => {
+    if (isScrolling) return;
+    if (pokjaRibbonTimer !== null) clearTimeout(pokjaRibbonTimer);
+    setExpanded(true);
+  }, { signal });
+  ribbon.addEventListener('pointerleave', () => scheduleCollapse(450), { signal });
+  ribbon.addEventListener('focusin', () => {
+    if (isScrolling) return;
+    if (pokjaRibbonTimer !== null) clearTimeout(pokjaRibbonTimer);
+    setExpanded(true);
+  }, { signal });
+  ribbon.addEventListener('focusout', event => {
+    if (!ribbon.contains(event.relatedTarget)) {
+      expandedByUser = false;
+      scheduleCollapse(1200);
+    }
+  }, { signal });
+  if ('IntersectionObserver' in window) {
+    pokjaRibbonObserver = new IntersectionObserver(entries => {
+      const current = entries.filter(entry => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (!current) return;
+      links.forEach(link => {
+        const active = link.dataset.pokjaTarget === current.target.id;
+        link.classList.toggle('is-active', active);
+        if (active) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      });
+    }, { rootMargin: '-20% 0px -65% 0px', threshold: [0, 0.25, 0.5] });
+    links.forEach(link => {
+      const target = document.getElementById(link.dataset.pokjaTarget);
+      if (target) pokjaRibbonObserver.observe(target);
+    });
+  }
+  setExpanded(false);
+  scheduleCollapse(2400);
 }
 
 function pilotProjectPage() {
@@ -515,7 +633,123 @@ function pilotProjectPage() {
   const workstreams = program.bidangKerja || [];
   const outputs = program.keluaran || pilot.output || [];
   const distinction = program.pembeda || [];
-  return `<section class="section pilot-project-page">${sectionHead('POKJA 2 · IMPLEMENTASI','Pilot Project Digital Twin','Dari kebutuhan nyata menuju implementasi yang dapat diuji, diukur, dan direplikasi.')}<div class="pilot-project-intro"><p>${esc(program.ringkasan || pilot.slogan)}</p><p>Pilot dimulai dari masalah dan keputusan yang perlu didukung, bukan dari pemilihan platform atau pembuatan model 3D semata.</p></div><section class="pilot-project-block" aria-labelledby="pilot-stages-title"><p class="section-label">Siklus implementasi</p><h2 id="pilot-stages-title">Dari seleksi hingga replikasi</h2><ol class="pilot-stage-list">${stages.map((stage, index) => `<li><span class="pilot-stage-number">${String(index + 1).padStart(2, '0')}</span><strong>${esc(stage)}</strong></li>`).join('')}</ol></section><section class="pilot-project-block" aria-labelledby="pilot-workstreams-title"><p class="section-label">Ruang lingkup</p><h2 id="pilot-workstreams-title">Area kerja blueprint</h2><div class="pilot-workstream-list">${workstreams.map((item, index) => `<article class="pilot-workstream"><span>${String(index + 1).padStart(2, '0')}</span><div><h3>${esc(item.judul)}</h3><p>${esc(item.cakupan)}</p></div></article>`).join('')}</div></section><section class="pilot-project-block" aria-labelledby="pilot-output-title"><p class="section-label">Hasil yang dituju</p><h2 id="pilot-output-title">Keluaran pilot</h2><div class="pilot-output-list">${outputs.map((item, index) => `<article><span class="pilot-stage-number">${String(index + 1).padStart(2, '0')}</span><div><h3>${esc(item.judul || item)}</h3><p>${esc(item.cakupan || '')}</p></div></article>`).join('')}</div></section>${distinction.length ? `<section class="pilot-project-block pilot-distinction" aria-labelledby="pilot-distinction-title"><p class="section-label">Kriteria substansi</p><h2 id="pilot-distinction-title">Bukan hanya model 3D</h2><div class="pilot-output-list">${distinction.map(item => `<article><div><h3>${esc(item.judul)}</h3><p>${esc(item.cakupan)}</p></div></article>`).join('')}</div></section>` : ''}<a class="button ghost pilot-project-link" href="#pokja">Lihat struktur dan program POKJA 2 <span aria-hidden="true">↗</span></a></section>`;
+  return `<section class="section pilot-project-page">${sectionHead('POKJA 2 · IMPLEMENTASI','Pilot Project Digital Twin','Dari kebutuhan nyata menuju implementasi yang dapat diuji, diukur, dan direplikasi.')}<div class="pilot-project-intro"><p>${esc(program.ringkasan || pilot.slogan)}</p><p>Pilot dimulai dari masalah dan keputusan yang perlu didukung, bukan dari pemilihan platform atau pembuatan model 3D semata.</p></div>${pilotCitySimulationMarkup()}<section class="pilot-project-block" aria-labelledby="pilot-stages-title"><p class="section-label">Siklus implementasi</p><h2 id="pilot-stages-title">Dari seleksi hingga replikasi</h2><ol class="pilot-stage-list">${stages.map((stage, index) => `<li><span class="pilot-stage-number">${String(index + 1).padStart(2, '0')}</span><strong>${esc(stage)}</strong></li>`).join('')}</ol></section><section class="pilot-project-block" aria-labelledby="pilot-workstreams-title"><p class="section-label">Ruang lingkup</p><h2 id="pilot-workstreams-title">Area kerja blueprint</h2><div class="pilot-workstream-list">${workstreams.map((item, index) => `<article class="pilot-workstream"><span>${String(index + 1).padStart(2, '0')}</span><div><h3>${esc(item.judul)}</h3><p>${esc(item.cakupan)}</p></div></article>`).join('')}</div></section><section class="pilot-project-block" aria-labelledby="pilot-output-title"><p class="section-label">Hasil yang dituju</p><h2 id="pilot-output-title">Keluaran pilot</h2><div class="pilot-output-list">${outputs.map((item, index) => `<article><span class="pilot-stage-number">${String(index + 1).padStart(2, '0')}</span><div><h3>${esc(item.judul || item)}</h3><p>${esc(item.cakupan || '')}</p></div></article>`).join('')}</div></section>${distinction.length ? `<section class="pilot-project-block pilot-distinction" aria-labelledby="pilot-distinction-title"><p class="section-label">Kriteria substansi</p><h2 id="pilot-distinction-title">Bukan hanya model 3D</h2><div class="pilot-output-list">${distinction.map(item => `<article><div><h3>${esc(item.judul)}</h3><p>${esc(item.cakupan)}</p></div></article>`).join('')}</div></section>` : ''}<a class="button ghost pilot-project-link" href="#pokja">Lihat struktur dan program POKJA 2 <span aria-hidden="true">↗</span></a></section>`;
+}
+
+function pilotCitySimulationMarkup() {
+  return `<section class="pilot-city-simulation" aria-labelledby="pilot-city-title">
+    <header class="pilot-city-heading"><div><p class="section-label">Digital Twin · visualisasi 3D</p><h2 id="pilot-city-title">Kota & mobilitas</h2><p>Eksplorasi koridor perkotaan, arus kendaraan, dan titik sensor dalam satu model ruang.</p></div><span class="pilot-city-badge"><i></i> DEMO · DATA SINTETIS</span></header>
+    <div class="pilot-city-viewport" data-pilot-city-scene>
+      <div class="pilot-city-scene-status" data-pilot-city-status role="status">Menyiapkan simulasi 3D…</div>
+      <div class="pilot-city-overlay pilot-city-overlay-top"><span>KAWASAN KOTA · KORIDOR CERDAS</span><span data-pilot-city-clock>08:30 WIB</span></div>
+      <div class="pilot-city-compass" aria-hidden="true">N<span>▲</span></div>
+      <div class="pilot-city-legend" aria-label="Legenda peta"><span><i class="legend-traffic"></i>Arus lalu lintas</span><span><i class="legend-sensor"></i>Sensor jalan</span><span><i class="legend-green"></i>Ruang hijau</span></div>
+      <div class="pilot-city-overlay pilot-city-overlay-bottom"><span>Seret untuk memutar · cubit/scroll untuk zoom</span><span>MODEL KONSEPTUAL</span></div>
+    </div>
+    <div class="pilot-city-controls"><div class="pilot-city-scenarios" role="group" aria-label="Pilih skenario lalu lintas">
+      <button type="button" data-city-scenario="normal" aria-pressed="true"><i></i>Normal</button><button type="button" data-city-scenario="padat" aria-pressed="false"><i></i>Jam padat</button><button type="button" data-city-scenario="optimasi" aria-pressed="false"><i></i>Optimasi</button>
+    </div><div class="pilot-city-layers" role="group" aria-label="Lapisan visualisasi"><button type="button" data-city-layer="buildings" aria-pressed="true">Bangunan</button><button type="button" data-city-layer="traffic" aria-pressed="true">Arus</button><button type="button" data-city-layer="sensors" aria-pressed="true">Sensor</button></div></div>
+    <div class="pilot-city-metrics" aria-live="polite"><div><span>Kecepatan koridor</span><strong data-city-speed>28 <small>km/jam</small></strong></div><div><span>Indeks kepadatan</span><strong data-city-density>42<small>/100</small></strong></div><div><span>Status jaringan</span><strong data-city-status-label>Stabil</strong></div></div>
+    <section class="pilot-city-information" aria-label="Informasi kawasan simulasi">
+      <div class="pilot-city-info-heading"><div><p class="section-label">City intelligence</p><h3>Informasi kawasan</h3></div><span>DATA SINTETIS</span></div>
+      <div class="pilot-city-info-tabs" role="tablist" aria-label="Kategori informasi kota">
+        <button type="button" role="tab" id="city-tab-overview" aria-controls="city-panel-overview" aria-selected="true" data-city-info-tab="overview">Ringkasan</button>
+        <button type="button" role="tab" id="city-tab-mobility" aria-controls="city-panel-mobility" aria-selected="false" data-city-info-tab="mobility" tabindex="-1">Mobilitas</button>
+        <button type="button" role="tab" id="city-tab-buildings" aria-controls="city-panel-buildings" aria-selected="false" data-city-info-tab="buildings" tabindex="-1">Bangunan</button>
+        <button type="button" role="tab" id="city-tab-environment" aria-controls="city-panel-environment" aria-selected="false" data-city-info-tab="environment" tabindex="-1">Lingkungan</button>
+        <button type="button" role="tab" id="city-tab-services" aria-controls="city-panel-services" aria-selected="false" data-city-info-tab="services" tabindex="-1">Layanan</button>
+      </div>
+      <div class="pilot-city-info-panel" id="city-panel-overview" role="tabpanel" aria-labelledby="city-tab-overview" data-city-info-panel="overview">
+        <div class="pilot-city-info-grid">
+          <article><span>Luas kawasan model</span><strong>4,2 <small>km²</small></strong><p>Batas studi ilustratif</p></article>
+          <article><span>Estimasi populasi</span><strong>28.400</strong><p>Asumsi skenario demo</p></article>
+          <article><span>Massa bangunan 3D</span><strong data-city-building-count>36</strong><p>Objek pada model</p></article>
+          <article><span>Persimpangan utama</span><strong>9</strong><p>Titik analisis koridor</p></article>
+        </div>
+        <p class="pilot-city-info-note">Model konseptual kawasan perkotaan padat dengan fungsi hunian, komersial, ruang terbuka, dan koridor angkutan.</p>
+      </div>
+      <div class="pilot-city-info-panel" id="city-panel-mobility" role="tabpanel" aria-labelledby="city-tab-mobility" data-city-info-panel="mobility" hidden>
+        <div class="pilot-city-info-grid">
+          <article><span>Arus kendaraan</span><strong data-city-volume>6.240 <small>kendaraan/jam</small></strong><p>Volume model pada koridor</p></article>
+          <article><span>Waktu tempuh koridor</span><strong data-city-travel-time>18 <small>menit</small></strong><p>Segmen studi 8,4 km</p></article>
+          <article><span>Headway bus</span><strong>8 <small>menit</small></strong><p>Interval layanan simulasi</p></article>
+          <article><span>Persimpangan terpantau</span><strong>9 <small>titik</small></strong><p>Sensor lalu lintas konseptual</p></article>
+        </div>
+        <p class="pilot-city-info-note" data-city-mobility-note>Skenario normal: arus bergerak stabil; indikator berubah saat skenario lalu lintas diganti.</p>
+      </div>
+      <div class="pilot-city-info-panel" id="city-panel-buildings" role="tabpanel" aria-labelledby="city-tab-buildings" data-city-info-panel="buildings" hidden>
+        <div class="pilot-city-info-grid">
+          <article><span>Fungsi dominan</span><strong>Campuran</strong><p>Hunian, kantor, dan komersial</p></article>
+          <article><span>Rentang tinggi model</span><strong>4–15 <small>lantai</small></strong><p>Estimasi geometri 3D</p></article>
+          <article><span>Identitas objek</span><strong>BLD-###</strong><p>Pilih bangunan pada model</p></article>
+          <article><span>Data aset</span><strong>GIS · BIM</strong><p>Contoh skema integrasi</p></article>
+        </div>
+        <p class="pilot-city-info-note">Pilih gedung pada model 3D untuk melihat fungsi, jumlah lantai, luas perkiraan, dan profil operasional sintetisnya.</p>
+      </div>
+      <div class="pilot-city-info-panel" id="city-panel-environment" role="tabpanel" aria-labelledby="city-tab-environment" data-city-info-panel="environment" hidden>
+        <div class="pilot-city-info-grid">
+          <article><span>Ruang terbuka hijau</span><strong>18 <small>%</small></strong><p>Asumsi tutupan kawasan</p></article>
+          <article><span>Indeks kualitas udara</span><strong>74 <small>/100</small></strong><p>Nilai demo, bukan pengukuran</p></article>
+          <article><span>Area resapan model</span><strong>0,76 <small>km²</small></strong><p>Estimasi dari tata guna lahan</p></article>
+          <article><span>Sensor lingkungan</span><strong>6 <small>titik</small></strong><p>Udara, cuaca, dan genangan</p></article>
+        </div>
+        <p class="pilot-city-info-note">Lapisan hijau dan badan air pada model menunjukkan contoh konteks lingkungan, bukan delineasi geospasial resmi.</p>
+      </div>
+      <div class="pilot-city-info-panel" id="city-panel-services" role="tabpanel" aria-labelledby="city-tab-services" data-city-info-panel="services" hidden>
+        <div class="pilot-city-info-grid">
+          <article><span>Angkutan umum</span><strong>3 <small>rute</small></strong><p>Koridor bus dan simpul transit</p></article>
+          <article><span>Fasilitas kesehatan</span><strong>4 <small>lokasi</small></strong><p>Objek layanan pada skenario</p></article>
+          <article><span>Fasilitas pendidikan</span><strong>12 <small>lokasi</small></strong><p>Objek layanan pada skenario</p></article>
+          <article><span>Respons insiden</span><strong>9 <small>menit</small></strong><p>Target waktu demo</p></article>
+        </div>
+        <p class="pilot-city-info-note">Katalog layanan adalah contoh layer yang dapat dihubungkan dengan data pemda, operator, dan pemilik aset.</p>
+      </div>
+      <article class="pilot-city-object-info" data-city-object-info aria-live="polite">
+        <span>DETAIL OBJEK · SIMULASI</span><h4 data-city-object-title>Jelajahi bangunan dan sensor</h4><p data-city-object-description>Pilih gedung atau titik sensor pada model 3D untuk melihat profil objek.</p><dl data-city-object-details hidden></dl>
+      </article>
+    </section>
+    <p class="pilot-city-disclaimer">Ilustrasi konseptual untuk eksplorasi use case; bukan peta operasional atau data lalu lintas waktu nyata. Geser model untuk melihat kawasan dari sudut berbeda.</p>
+  </section>`;
+}
+
+function pilotInfrastructureSimulationMarkup() {
+  return `<section class="pilot-infra-simulation" aria-labelledby="pilot-infra-title">
+    <header class="pilot-infra-heading"><div><p class="section-label">Digital Twin · operasi aset</p><h4 id="pilot-infra-title">Kawasan gedung terhubung</h4><p>Model 3D, telemetri sensor, dan kontrol operasional dalam satu twin kawasan.</p></div><span class="pilot-infra-demo-badge"><i></i> LIVE DEMO · DATA SINTETIS</span></header>
+    <div class="pilot-infra-scene-wrap">
+      <div class="pilot-city-viewport pilot-infra-viewport" data-pilot-infrastructure-scene>
+        <div class="pilot-city-scene-status" data-infra-scene-status role="status">Menyiapkan digital twin kawasan…</div>
+        <div class="pilot-city-overlay pilot-city-overlay-top"><span>KAWASAN TERPADU · GEDUNG & UTILITAS</span><span data-infra-clock>14:20:00</span></div>
+        <div class="pilot-infra-scene-tools"><button type="button" data-infra-view="district" aria-pressed="true">Kawasan</button><button type="button" data-infra-view="building" aria-pressed="false">Gedung</button></div>
+        <div class="pilot-city-overlay pilot-city-overlay-bottom"><span>Seret untuk orbit · scroll/cubit untuk zoom · klik objek untuk detail</span><span>BIM · GIS · BMS</span></div>
+        <div class="pilot-infra-scene-legend"><span><i class="infra-legend-air"></i>IAQ / suhu</span><span><i class="infra-legend-energy"></i>Energi</span><span><i class="infra-legend-water"></i>Air</span><span><i class="infra-legend-alert"></i>Alarm</span></div>
+      </div>
+      <aside class="pilot-infra-selected" data-infra-selected aria-live="polite"><span>OBJEK TERPILIH</span><strong data-infra-selected-name>Kawasan Digital Twin</strong><p data-infra-selected-detail>Pilih gedung, sensor, atau utilitas pada model untuk melihat identitas dan statusnya.</p><div class="pilot-infra-selected-meta" data-infra-selected-meta>DT-KAWASAN-01 · BMS TERHUBUNG · 12 GEDUNG</div></aside>
+    </div>
+    <section class="pilot-infra-monitor" aria-label="Monitoring sensor kawasan">
+      <div class="pilot-infra-section-heading"><div><p class="section-label">01 · Telemetri</p><h5>Monitoring kawasan</h5></div><span class="pilot-infra-connection"><i></i><b data-infra-connection>12/12 node terhubung</b></span></div>
+      <div class="pilot-infra-kpis">
+        <article class="pilot-infra-kpi"><span><i class="infra-dot infra-dot-temp"></i>Suhu ruang</span><strong data-infra-reading="temperature">23,8 <small>°C</small></strong><div class="pilot-infra-spark spark-temp"><i></i></div><small class="infra-reading-source">BMS · zona kantor</small></article>
+        <article class="pilot-infra-kpi"><span><i class="infra-dot infra-dot-air"></i>Kualitas udara</span><strong data-infra-reading="air">642 <small>ppm CO₂</small></strong><div class="pilot-infra-spark spark-air"><i></i></div><small class="infra-reading-source">IAQ · lantai tipikal</small></article>
+        <article class="pilot-infra-kpi"><span><i class="infra-dot infra-dot-energy"></i>Daya kawasan</span><strong data-infra-reading="power">486 <small>kW</small></strong><div class="pilot-infra-spark spark-energy"><i></i></div><small class="infra-reading-source">Meter utama · 15 detik</small></article>
+        <article class="pilot-infra-kpi"><span><i class="infra-dot infra-dot-water"></i>Aliran air</span><strong data-infra-reading="water">12,8 <small>L/s</small></strong><div class="pilot-infra-spark spark-water"><i></i></div><small class="infra-reading-source">Pompa · loop utama</small></article>
+        <article class="pilot-infra-kpi"><span><i class="infra-dot infra-dot-vibration"></i>Getaran struktur</span><strong data-infra-reading="vibration">1,8 <small>mm/s</small></strong><div class="pilot-infra-spark spark-vibration"><i></i></div><small class="infra-reading-source">SHM · menara A</small></article>
+        <article class="pilot-infra-kpi infra-alert-kpi"><span><i class="infra-dot infra-dot-alert"></i>Alarm aktif</span><strong data-infra-reading="alarms">2 <small>perlu ditinjau</small></strong><div class="pilot-infra-alarm-caption"><span class="infra-alarm-pulse"></span><span data-infra-alarm-summary>1 kenyamanan · 1 pemeliharaan</span></div><small class="infra-reading-source">Event gateway kawasan</small></article>
+      </div>
+      <div class="pilot-infra-alerts" data-infra-alerts><div><span class="infra-alert-severity severity-warning">PERHATIAN</span><p><strong>AHU-L08 ·</strong> filter udara mendekati jadwal servis.</p><small>Gedung A · 4 menit lalu</small></div><div><span class="infra-alert-severity severity-info">INFO</span><p><strong>PMP-B02 ·</strong> tekanan loop air turun 4% dari set point.</p><small>Utilitas basement · 11 menit lalu</small></div><div class="pilot-infra-fire-alert" data-infra-fire-alert hidden><span class="infra-alert-severity severity-critical">UJI ALARM</span><p><strong>FACP-01 ·</strong> notifikasi uji detektor di Zona A-08.</p><small>Mode uji lokal · tidak menghubungi sistem keselamatan</small></div></div>
+    </section>
+    <section class="pilot-infra-controls" aria-label="Simulasi kontrol operasional">
+      <div class="pilot-infra-section-heading"><div><p class="section-label">02 · Supervisory control</p><h5>Kontrol operasional</h5></div><span class="pilot-infra-local-only">SIMULASI LOKAL · TANPA AKSI KE PERANGKAT</span></div>
+      <div class="pilot-infra-control-grid">
+        <article class="pilot-infra-control-card"><div class="pilot-control-title"><span class="infra-control-icon icon-hvac">❄</span><div><strong>HVAC · AHU-01</strong><small data-infra-hvac-state>Mode otomatis · aktif</small></div><span class="infra-equipment-state state-on" data-infra-equipment="hvac">AKTIF</span></div><label class="pilot-control-field">Set point suhu <output data-infra-setpoint-label>23,0 °C</output><input type="range" min="20" max="27" step="0.5" value="23" data-infra-setpoint aria-label="Atur set point suhu simulasi"></label><div class="pilot-control-button-row" role="group" aria-label="Mode simulasi HVAC"><button type="button" data-infra-hvac="auto" aria-pressed="true">Auto</button><button type="button" data-infra-hvac="eco" aria-pressed="false">Eco</button><button type="button" data-infra-hvac="off" aria-pressed="false">Off</button></div></article>
+        <article class="pilot-infra-control-card"><div class="pilot-control-title"><span class="infra-control-icon icon-light">☼</span><div><strong>Pencahayaan · ZONA-03</strong><small data-infra-light-state>Jadwal okupansi aktif</small></div><span class="infra-equipment-state state-on" data-infra-equipment="lighting">AKTIF</span></div><label class="pilot-control-field">Intensitas lampu <output data-infra-light-label>72%</output><input type="range" min="0" max="100" step="1" value="72" data-infra-lighting aria-label="Atur intensitas lampu simulasi"></label><div class="pilot-control-button-row"><button type="button" data-infra-light-preset="occupied">Okupansi</button><button type="button" data-infra-light-preset="saving">Hemat energi</button></div></article>
+        <article class="pilot-infra-control-card"><div class="pilot-control-title"><span class="infra-control-icon icon-water">≈</span><div><strong>Pompa air · PMP-B02</strong><small data-infra-pump-state>Tekanan loop normal</small></div><span class="infra-equipment-state state-on" data-infra-equipment="pump">AKTIF</span></div><div class="pilot-control-readout"><span>Tekanan</span><strong data-infra-pressure>3,2 bar</strong><span>Debit</span><strong data-infra-flow>12,8 L/s</strong></div><button class="pilot-infra-action" type="button" data-infra-pump-toggle aria-pressed="true">Matikan pompa simulasi</button></article>
+        <article class="pilot-infra-control-card"><div class="pilot-control-title"><span class="infra-control-icon icon-lift">↕</span><div><strong>Lift · CORE-02</strong><small data-infra-lift-state>Beroperasi · arah naik</small></div><span class="infra-equipment-state state-on" data-infra-equipment="lift">AKTIF</span></div><div class="pilot-control-readout"><span>Lantai</span><strong data-infra-lift-floor>08 / 18</strong><span>Waktu tunggu</span><strong data-infra-lift-wait>24 dtk</strong></div><button class="pilot-infra-action" type="button" data-infra-lift-call>Simulasikan panggilan lift</button></article>
+        <article class="pilot-infra-control-card pilot-infra-control-wide"><div class="pilot-control-title"><span class="infra-control-icon icon-air">◉</span><div><strong>Ventilasi & kualitas udara · AHU-02</strong><small data-infra-vent-state>Pasokan udara segar · normal</small></div><span class="infra-equipment-state state-on" data-infra-equipment="ventilation">AUTO</span></div><div class="pilot-infra-vent-control"><div class="pilot-control-readout"><span>Udara segar</span><strong data-infra-fresh-air>68%</strong><span>CO₂ ruang</span><strong data-infra-co2>642 ppm</strong></div><div class="pilot-control-button-row" role="group" aria-label="Mode ventilasi simulasi"><button type="button" data-infra-vent="normal" aria-pressed="true">Normal</button><button type="button" data-infra-vent="boost" aria-pressed="false">Boost IAQ</button></div></div></article>
+        <article class="pilot-infra-control-card pilot-infra-control-wide pilot-infra-fire-card"><div class="pilot-control-title"><span class="infra-control-icon icon-fire">!</span><div><strong>Keselamatan kebakaran · FACP-01</strong><small data-infra-fire-state>Sistem siaga · seluruh zona normal</small></div><span class="infra-equipment-state state-on" data-infra-equipment="fire">SIAGA</span></div><div class="pilot-infra-fire-control"><div class="pilot-control-readout"><span>Detektor online</span><strong>48 / 48</strong><span>Zona alarm</span><strong data-infra-fire-zone>0</strong></div><button class="pilot-infra-action pilot-infra-fire-action" type="button" data-infra-fire-test>Uji alarm simulasi</button></div></article>
+      </div>
+    </section>
+    <footer class="pilot-infra-disclaimer"><span>SIMULASI DIGITAL TWIN</span><p>Semua angka sensor, alarm, perangkat, dan aksi kontrol adalah data sintetis untuk demonstrasi. Tombol tidak terhubung ke BMS, HVAC, pompa, lift, atau sistem keselamatan nyata.</p></footer>
+  </section>`;
 }
 
 const ASSESSMENT_STAGES = {
@@ -720,6 +954,67 @@ function bindRatingTool() {
   renderCriteria();
 }
 
+function pilotDomainSimulationMarkup(key) {
+  const scenarios = {
+    environment: {
+      title: 'Kawasan tangguh iklim',
+      kind: 'LINGKUNGAN · BANJIR & KUALITAS UDARA',
+      description: 'Kota, DAS, sensor lingkungan, dan aset mitigasi dalam satu model kawasan.',
+      metrics: [['Tinggi muka air', '1,24 m'], ['Curah hujan', '12 mm/jam'], ['Kualitas udara', 'AQI 68'], ['Peringatan aktif', '1 event']],
+      sensors: 'WL-DAS-04 · RG-KOTA-02 · AQ-PUSAT-01 · DRAIN-08',
+      controls: `<article class="pilot-infra-control-card"><div class="pilot-control-title"><span class="infra-control-icon icon-water">≈</span><div><strong>Pintu air & pompa DAS</strong><small data-domain-control-state>Siaga · pemantauan otomatis</small></div><span class="infra-equipment-state state-on">AUTO</span></div><label class="pilot-control-field">Kapasitas mitigasi <output data-domain-output="mitigation">65%</output><input type="range" min="0" max="100" value="65" data-domain-range="mitigation" aria-label="Kapasitas mitigasi banjir simulasi"></label><button type="button" data-domain-action="rain" aria-pressed="false">Simulasikan hujan deras</button></article>
+      <article class="pilot-infra-control-card"><div class="pilot-control-title"><span class="infra-control-icon icon-air">⌁</span><div><strong>Skenario cuaca kawasan</strong><small>Atur kondisi untuk model demonstrasi</small></div></div><div class="pilot-control-button-row" role="group" aria-label="Skenario cuaca"><button type="button" data-domain-mode="normal" aria-pressed="true">Cuaca normal</button><button type="button" data-domain-mode="storm" aria-pressed="false">Hujan ekstrem</button></div><div class="pilot-control-readout"><span>Sensor DAS</span><strong>4 / 4 online</strong><span>Gerbang limpasan</span><strong>Terpantau</strong></div></article>`,
+      label: 'LIVE DEMO · DATA SINTETIS',
+    },
+    agriculture: {
+      title: 'Lahan pertanian presisi',
+      kind: 'PERTANIAN · IRIGASI & TANAMAN',
+      description: 'Petak lahan, rumah kaca, jaringan irigasi, dan telemetri tanaman berbasis sensor.',
+      metrics: [['Kelembapan tanah', '38%'], ['Suhu lahan', '29,0 °C'], ['Kebutuhan air', '18,4 L/s'], ['Kesehatan tanaman', '84 /100']],
+      sensors: 'SOIL-A03 · WX-FARM-01 · FLOW-IR-02 · NPK-Z05',
+      controls: `<article class="pilot-infra-control-card"><div class="pilot-control-title"><span class="infra-control-icon icon-water">≈</span><div><strong>Irigasi presisi · petak A</strong><small data-domain-control-state>Jadwal irigasi aktif · demo</small></div><span class="infra-equipment-state state-on">AUTO</span></div><label class="pilot-control-field">Debit irigasi <output data-domain-output="irrigation">66%</output><input type="range" min="0" max="100" value="66" data-domain-range="irrigation" aria-label="Atur debit irigasi simulasi"></label><button type="button" data-domain-action="irrigation" aria-pressed="true">Matikan irigasi demo</button></article>
+      <article class="pilot-infra-control-card"><div class="pilot-control-title"><span class="infra-control-icon icon-light">☼</span><div><strong>Strategi budidaya</strong><small>Fase vegetatif · lahan demonstrasi</small></div></div><div class="pilot-control-button-row" role="group" aria-label="Mode pertanian"><button type="button" data-domain-mode="growth" aria-pressed="true">Pertumbuhan</button><button type="button" data-domain-mode="pause" aria-pressed="false">Jeda irigasi</button></div><div class="pilot-control-readout"><span>Cuaca</span><strong>Berawan</strong><span>Nutrisi NPK</span><strong>Seimbang</strong></div></article>`,
+      label: 'FARM TWIN · DEMO',
+    },
+    industry: {
+      title: 'Pabrik cerdas terhubung',
+      kind: 'INDUSTRI · PRODUKSI & PEMELIHARAAN',
+      description: 'Lini produksi, mesin, utilitas, dan sinyal pemeliharaan dalam visualisasi operasi 3D.',
+      metrics: [['Efektivitas OEE', '86%'], ['Output produksi', '1.240 unit/jam'], ['Getaran motor', '2,1 mm/s'], ['Alarm mesin', '1 perlu cek']],
+      sensors: 'VIB-MTR-03 · TEMP-OVN-01 · QC-LINE-02 · PWR-MAIN-01',
+      controls: `<article class="pilot-infra-control-card"><div class="pilot-control-title"><span class="infra-control-icon icon-hvac">⚙</span><div><strong>Lini perakitan · A-03</strong><small data-domain-control-state>Lini produksi beroperasi</small></div><span class="infra-equipment-state state-on" data-domain-equipment>BERJALAN</span></div><label class="pilot-control-field">Kecepatan lini <output data-domain-output="speed">84%</output><input type="range" min="0" max="100" value="84" data-domain-range="speed" aria-label="Atur kecepatan lini simulasi"></label><button type="button" data-domain-action="production" aria-pressed="true">Hentikan lini demo</button></article>
+      <article class="pilot-infra-control-card"><div class="pilot-control-title"><span class="infra-control-icon icon-light">⌁</span><div><strong>Mode operasi mesin</strong><small>Predictive maintenance · demo</small></div></div><div class="pilot-control-button-row" role="group" aria-label="Mode produksi"><button type="button" data-domain-mode="production" aria-pressed="true">Produksi</button><button type="button" data-domain-mode="maintenance" aria-pressed="false">Pemeliharaan</button></div><div class="pilot-control-readout"><span>Mesin online</span><strong>18 / 20</strong><span>Produk lolos QC</span><strong>98,6%</strong></div></article>`,
+      label: 'SMART FACTORY · DEMO',
+    },
+    waterEnergy: {
+      title: 'Ekosistem air & energi',
+      kind: 'AIR & ENERGI · UTILITAS TERINTEGRASI',
+      description: 'Instalasi air, jaringan energi terbarukan, penyimpanan, dan pemantauan beban kawasan.',
+      metrics: [['Debit air bersih', '86 L/s'], ['Tekanan jaringan', '3,4 bar'], ['Energi terbarukan', '68%'], ['Stabilitas grid', '95 /100']],
+      sensors: 'FLOW-PLANT-01 · PRES-NET-07 · INV-PV-02 · BATT-01',
+      controls: `<article class="pilot-infra-control-card"><div class="pilot-control-title"><span class="infra-control-icon icon-water">≈</span><div><strong>Jaringan distribusi air</strong><small data-domain-control-state>Tekanan jaringan stabil · demo</small></div><span class="infra-equipment-state state-on">AKTIF</span></div><label class="pilot-control-field">Beban permintaan <output data-domain-output="demand">64%</output><input type="range" min="20" max="100" value="64" data-domain-range="demand" aria-label="Atur beban permintaan air energi simulasi"></label><button type="button" data-domain-action="water" aria-pressed="true">Tutup katup demo</button></article>
+      <article class="pilot-infra-control-card"><div class="pilot-control-title"><span class="infra-control-icon icon-light">☼</span><div><strong>Pengelolaan energi kawasan</strong><small>PV, baterai, dan beban jaringan</small></div></div><div class="pilot-control-button-row" role="group" aria-label="Strategi energi"><button type="button" data-domain-action="renewable" aria-pressed="false">Maksimalkan energi surya</button></div><div class="pilot-control-button-row" role="group" aria-label="Skenario beban"><button type="button" data-domain-mode="saving" aria-pressed="false">Hemat</button><button type="button" data-domain-mode="normal" aria-pressed="true">Normal</button><button type="button" data-domain-mode="peak" aria-pressed="false">Puncak</button></div></article>`,
+      label: 'UTILITY TWIN · DEMO',
+    },
+  };
+  const item = scenarios[key];
+  return `<section class="pilot-infra-simulation pilot-domain-simulation pilot-domain-${key}" aria-labelledby="pilot-domain-${key}-title">
+    <header class="pilot-infra-heading"><div><p class="section-label">Digital Twin · pilot project</p><h4 id="pilot-domain-${key}-title">${item.title}</h4><p>${item.description}</p></div><span class="pilot-infra-demo-badge"><i></i>${item.label}</span></header>
+    <div class="pilot-infra-scene-wrap"><div class="pilot-city-viewport pilot-infra-viewport" data-pilot-domain-scene="${key}">
+      <div class="pilot-city-scene-status" data-domain-status role="status">Menyiapkan model 3D kawasan…</div>
+      <div class="pilot-city-overlay pilot-city-overlay-top"><span>${item.kind}</span><span data-domain-clock>08:30:00</span></div>
+      <div class="pilot-infra-scene-legend"><span><i class="infra-legend-air"></i>Sensor IoT</span><span><i class="infra-legend-energy"></i>Aset aktif</span><span><i class="infra-legend-water"></i>Utilitas</span><span><i class="infra-legend-alert"></i>Event</span></div>
+      <div class="pilot-city-overlay pilot-city-overlay-bottom"><span>Seret untuk orbit · scroll/cubit untuk zoom · klik objek untuk detail</span><span>GIS · IoT · DIGITAL TWIN</span></div>
+    </div><aside class="pilot-infra-selected" aria-live="polite"><span>OBJEK TERPILIH</span><strong data-domain-selected-name>${item.title}</strong><p data-domain-selected-text>Pilih aset atau sensor pada model untuk melihat profil demonstrasi.</p><div class="pilot-infra-selected-meta">${item.sensors}</div></aside></div>
+    <section class="pilot-infra-monitor" aria-label="Monitoring ${item.title}"><div class="pilot-infra-section-heading"><div><p class="section-label">01 · Telemetri sensor</p><h5>Monitoring kawasan</h5></div><span class="pilot-infra-connection"><i></i><b>12/12 node demo terhubung</b></span></div>
+      <div class="pilot-infra-kpis">${item.metrics.map((metric, index) => `<article class="pilot-infra-kpi"><span><i class="infra-dot ${['infra-dot-water','infra-dot-temp','infra-dot-energy','infra-dot-alert'][index]}"></i>${metric[0]}</span><strong data-domain-metric="${index}">${metric[1]}</strong><div class="pilot-infra-spark" data-domain-spark>${Array.from({ length: 10 }, () => '<i></i>').join('')}</div><small class="infra-reading-source">Gateway sensor · simulasi</small></article>`).join('')}</div>
+      <div class="pilot-infra-alerts"><div><span class="infra-alert-severity severity-info">STATUS · DEMO</span><p data-domain-alarm>Tidak ada alarm kritis</p><small>Event sintetis untuk eksplorasi skenario</small></div><div><span class="infra-alert-severity severity-warning">NODE SENSOR</span><p>${item.sensors}</p><small>Telemetri simulasi · bukan data operasional</small></div></div>
+    </section>
+    <section class="pilot-infra-controls" aria-label="Kontrol simulasi ${item.title}"><div class="pilot-infra-section-heading"><div><p class="section-label">02 · Monitoring & control</p><h5>Kontrol operasional</h5></div><span class="pilot-infra-local-only">SIMULASI LOKAL · TANPA AKSI KE PERANGKAT</span></div><div class="pilot-infra-control-grid">${item.controls}</div></section>
+    <footer class="pilot-infra-disclaimer"><span>SIMULASI DIGITAL TWIN · DATA SINTETIS</span><p>Model, sensor, alarm, dan kontrol adalah demonstrasi konseptual. Tidak tersambung ke sistem kebencanaan, lahan, pabrik, instalasi air, atau jaringan energi nyata.</p></footer>
+  </section>`;
+}
+
 function pilotProjectCategoriesMarkup() {
   const categories = [
     {
@@ -763,17 +1058,122 @@ function pilotProjectCategoriesMarkup() {
       ],
     },
   ];
-  return `<details class="pilot-project-block pilot-catalog" data-pilot-catalog>
+  return `<details class="pilot-project-block pilot-catalog" data-pilot-catalog open>
     <summary class="pilot-catalog-ribbon"><span class="pilot-catalog-eyebrow">Ide use case</span><span class="pilot-catalog-ribbon-title">Proyek berdasarkan kategori</span><span class="pilot-catalog-count">${categories.length} kategori</span></summary>
     <div class="pilot-catalog-content">
       <p class="pilot-catalog-note">Contoh berikut adalah opsi untuk dirumuskan menjadi pilot bersama mitra; bukan daftar proyek yang sudah berjalan.</p>
       <label class="pilot-category-select-label">Pilih kategori<select data-pilot-category-select>${categories.map((category, index) => `<option value="${index}">${esc(category.name)}</option>`).join('')}</select></label>
       <div class="pilot-category-list">${categories.map((category, categoryIndex) => {
         const benchmarks = pilotBenchmarkMarkup(category.name);
-        return `<section class="pilot-category" data-pilot-category="${categoryIndex}" aria-labelledby="pilot-category-${categoryIndex}"${categoryIndex ? ' hidden' : ''}><div class="pilot-category-heading"><span>${String(categoryIndex + 1).padStart(2, '0')}</span><h3 id="pilot-category-${categoryIndex}">${esc(category.name)}</h3></div><div class="pilot-project-type-grid">${category.projects.map(project => `<article class="pilot-project-type"><h4>${esc(project.title)}</h4><p>${esc(project.summary)}</p><dl><div><dt>Data awal</dt><dd>${esc(project.data)}</dd></div><div><dt>Indikator</dt><dd>${esc(project.indicators)}</dd></div></dl></article>`).join('')}</div>${benchmarks}</section>`;
+        const infrastructureSimulation = categoryIndex === 1 ? pilotInfrastructureSimulationMarkup() : '';
+        const domainKeys = { 2: 'environment', 3: 'waterEnergy', 4: 'agriculture', 5: 'industry' };
+        const domainSimulation = domainKeys[categoryIndex] ? pilotDomainSimulationMarkup(domainKeys[categoryIndex]) : '';
+        return `<section class="pilot-category" data-pilot-category="${categoryIndex}" aria-labelledby="pilot-category-${categoryIndex}"${categoryIndex ? ' hidden' : ''}><div class="pilot-category-heading"><span>${String(categoryIndex + 1).padStart(2, '0')}</span><h3 id="pilot-category-${categoryIndex}">${esc(category.name)}</h3></div><div class="pilot-project-type-grid">${category.projects.map((project, projectIndex) => `<article class="pilot-project-type" id="pilot-project-${categoryIndex}-${projectIndex}" tabindex="-1"><h4>${esc(project.title)}</h4><p>${esc(project.summary)}</p><dl><div><dt>Data awal</dt><dd>${esc(project.data)}</dd></div><div><dt>Indikator</dt><dd>${esc(project.indicators)}</dd></div></dl></article>`).join('')}</div>${infrastructureSimulation}${domainSimulation}${benchmarks}</section>`;
       }).join('')}</div>
     </div>
+    <aside class="pilot-ribbon" data-pilot-ribbon aria-label="Navigasi pilot project">
+      <button class="pilot-ribbon-toggle" type="button" data-pilot-ribbon-toggle aria-expanded="false" aria-label="Tampilkan navigasi pilot project"><span aria-hidden="true">‹</span></button>
+      <div class="pilot-ribbon-content">
+        <p class="pilot-ribbon-heading">PILOT PROJECT</p>
+        ${categories.map((category, categoryIndex) => `<nav class="pilot-ribbon-group" data-pilot-ribbon-group="${categoryIndex}" aria-label="Navigasi ${esc(category.name)}"${categoryIndex ? ' hidden' : ''}><span>${esc(category.name)}</span>${category.projects.map((project, projectIndex) => `<button class="pilot-ribbon-link" type="button" data-pilot-project-target="pilot-project-${categoryIndex}-${projectIndex}" tabindex="-1">${esc(project.title)}</button>`).join('')}</nav>`).join('')}
+      </div>
+    </aside>
   </details>`;
+}
+
+function bindPilotRibbon() {
+  pilotRibbonController?.abort();
+  if (pilotRibbonTimer !== null) clearTimeout(pilotRibbonTimer);
+  if (pilotRibbonScrollTimer !== null) clearTimeout(pilotRibbonScrollTimer);
+  document.querySelector('body > [data-pilot-ribbon]')?.remove();
+  const ribbon = app.querySelector('[data-pilot-ribbon]');
+  if (!ribbon) return;
+  document.body.append(ribbon);
+  const controller = new AbortController();
+  pilotRibbonController = controller;
+  const { signal } = controller;
+  const toggle = ribbon.querySelector('[data-pilot-ribbon-toggle]');
+  let isScrolling = false;
+  let expandedByUser = false;
+  let pointerToggleWasExpanded = null;
+  const updateCategoryGroup = () => {
+    const value = app.querySelector('[data-pilot-category-select]')?.value || '0';
+    ribbon.querySelectorAll('[data-pilot-ribbon-group]').forEach(group => {
+      const selected = group.dataset.pilotRibbonGroup === value;
+      group.hidden = !selected;
+      group.querySelectorAll('[data-pilot-project-target]').forEach(link => { link.tabIndex = selected && ribbon.classList.contains('is-visible') ? 0 : -1; });
+    });
+  };
+  const setExpanded = expanded => {
+    ribbon.classList.toggle('is-visible', expanded);
+    toggle.setAttribute('aria-expanded', String(expanded));
+    toggle.setAttribute('aria-label', expanded ? 'Sembunyikan navigasi pilot project' : 'Tampilkan navigasi pilot project');
+    ribbon.querySelector('.pilot-ribbon-content').setAttribute('aria-hidden', String(!expanded));
+    ribbon.querySelectorAll('[data-pilot-project-target]').forEach(link => {
+      link.tabIndex = expanded && !link.closest('[hidden]') ? 0 : -1;
+    });
+  };
+  const scheduleCollapse = delay => {
+    if (pilotRibbonTimer !== null) clearTimeout(pilotRibbonTimer);
+    if (expandedByUser) return;
+    pilotRibbonTimer = setTimeout(() => {
+      if (!ribbon.matches(':focus-within') && !ribbon.matches(':hover')) setExpanded(false);
+    }, delay);
+  };
+  const reveal = () => {
+    if (isScrolling) return;
+    updateCategoryGroup();
+    setExpanded(true);
+    scheduleCollapse(1700);
+  };
+  const hideWhileReading = event => {
+    if (event.target instanceof Node && ribbon.contains(event.target)) return;
+    isScrolling = true;
+    if (pilotRibbonScrollTimer !== null) clearTimeout(pilotRibbonScrollTimer);
+    pilotRibbonScrollTimer = setTimeout(() => { isScrolling = false; }, 500);
+    expandedByUser = false;
+    if (pilotRibbonTimer !== null) clearTimeout(pilotRibbonTimer);
+    setExpanded(false);
+  };
+  app.querySelector('[data-pilot-category-select]')?.addEventListener('change', updateCategoryGroup, { signal });
+  toggle.addEventListener('click', () => {
+    isScrolling = false;
+    if (pilotRibbonScrollTimer !== null) clearTimeout(pilotRibbonScrollTimer);
+    expandedByUser = !(pointerToggleWasExpanded ?? ribbon.classList.contains('is-visible'));
+    pointerToggleWasExpanded = null;
+    updateCategoryGroup();
+    setExpanded(expandedByUser);
+    if (!expandedByUser) scheduleCollapse(1200);
+  }, { signal });
+  toggle.addEventListener('pointerdown', () => { pointerToggleWasExpanded = ribbon.classList.contains('is-visible'); }, { signal });
+  ribbon.querySelectorAll('[data-pilot-project-target]').forEach(link => link.addEventListener('click', () => {
+    const target = document.getElementById(link.dataset.pilotProjectTarget);
+    if (!target) return;
+    target.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+    target.focus({ preventScroll: true });
+    expandedByUser = false;
+    scheduleCollapse(300);
+  }, { signal }));
+  ['scroll', 'wheel', 'touchstart'].forEach(eventName => window.addEventListener(eventName, hideWhileReading, { passive: true, signal }));
+  window.addEventListener('pointermove', event => {
+    if (!isScrolling && event.clientX >= window.innerWidth - 44) reveal();
+  }, { passive: true, signal });
+  ribbon.addEventListener('pointerenter', reveal, { signal });
+  ribbon.addEventListener('pointerleave', () => scheduleCollapse(350), { signal });
+  ribbon.addEventListener('focusin', event => {
+    if (event.target === toggle) return;
+    if (pilotRibbonTimer !== null) clearTimeout(pilotRibbonTimer);
+    updateCategoryGroup();
+    setExpanded(true);
+  }, { signal });
+  ribbon.addEventListener('focusout', event => {
+    if (!ribbon.contains(event.relatedTarget)) {
+      expandedByUser = false;
+      scheduleCollapse(700);
+    }
+  }, { signal });
+  updateCategoryGroup();
+  setExpanded(false);
 }
 
 document.addEventListener('change', event => {
@@ -781,11 +1181,53 @@ document.addEventListener('change', event => {
   if (!select) return;
   const catalog = select.closest('[data-pilot-catalog]');
   catalog?.querySelectorAll('[data-pilot-category]').forEach(category => { category.hidden = category.dataset.pilotCategory !== select.value; });
+  if (select.value !== '1' && pilotInfrastructureSimulationCleanup) {
+    pilotInfrastructureSimulationCleanup();
+    pilotInfrastructureSimulationCleanup = null;
+  }
+  if (pilotDomainSimulationCleanup) {
+    pilotDomainSimulationCleanup();
+    pilotDomainSimulationCleanup = null;
+  }
+  if (select.value === '1') {
+    const scene = catalog?.querySelector('[data-pilot-infrastructure-scene]');
+    if (scene && !scene.querySelector('.pilot-city-canvas')) {
+      import('./pilot-infrastructure-3d.js?v=4').then(({ mountPilotInfrastructureScene }) => {
+        if (scene.isConnected && catalog.querySelector('[data-pilot-category-select]')?.value === '1'
+          && !scene.closest('[data-pilot-category]')?.hidden
+          && !scene.querySelector('.pilot-city-canvas')) {
+          pilotInfrastructureSimulationCleanup = mountPilotInfrastructureScene(scene);
+        }
+      }).catch(error => {
+        console.error('Simulasi 3D infrastruktur tidak dapat dimuat.', error);
+        const status = scene.querySelector('[data-infra-scene-status]');
+        if (status) status.textContent = 'Visualisasi 3D tidak dapat dimuat di perangkat ini. Informasi monitoring dan kontrol demo tetap tersedia.';
+      });
+    }
+  }
+  const domainKeys = { 2: 'environment', 3: 'waterEnergy', 4: 'agriculture', 5: 'industry' };
+  const domainKey = domainKeys[select.value];
+  if (domainKey) {
+    const scene = catalog?.querySelector(`[data-pilot-domain-scene="${domainKey}"]`);
+    if (scene && !scene.querySelector('.pilot-city-canvas')) {
+      import('./pilot-domain-3d.js?v=5').then(({ mountPilotDomainScene }) => {
+        if (scene.isConnected && catalog.querySelector('[data-pilot-category-select]')?.value === select.value
+          && !scene.closest('[data-pilot-category]')?.hidden
+          && !scene.querySelector('.pilot-city-canvas')) {
+          pilotDomainSimulationCleanup = mountPilotDomainScene(scene, domainKey);
+        }
+      }).catch(error => {
+        console.error(`Simulasi 3D ${domainKey} tidak dapat dimuat.`, error);
+        const status = scene.querySelector('[data-domain-status]');
+        if (status) status.textContent = 'Visualisasi 3D tidak dapat dimuat. Panel monitoring dan kontrol demo tetap tersedia.';
+      });
+    }
+  }
 });
 
 function pilotProjectPageWithCategories() {
   const page = pilotProjectPage();
-  const marker = '<section class="pilot-project-block" aria-labelledby="pilot-stages-title">';
+  const marker = '<div class="pilot-project-intro">';
   const insertAt = page.indexOf(marker);
   return insertAt < 0 ? page : `${page.slice(0, insertAt)}${pilotProjectCategoriesMarkup()}${page.slice(insertAt)}`;
 }
@@ -959,66 +1401,88 @@ function bindEcosystemAd(organizations) {
   if (ecosystemAdBound) return;
   const root = document.querySelector('[data-ecosystem-ad]');
   const track = root?.querySelector('[data-ecosystem-ad-track]');
+  const sponsorshipNote = document.querySelector('[data-sponsorship-note]');
+  const sponsorshipDescription = sponsorshipNote?.querySelector('[data-sponsorship-description]');
   if (!root || !track || !Array.isArray(organizations) || !organizations.length) return;
   const validOrganizations = organizations.filter(item => item?.nama && item.logo && /^[a-z0-9.-]+$/i.test(item.domain || '') && /^[a-z0-9.-]+\.png$/i.test(item.logo));
   if (!validOrganizations.length) return;
   ecosystemAdBound = true;
-  let previousIndex = -1;
+  let previousOrganizations = new Set();
   const stop = () => {
     if (ecosystemAdTimer !== null) clearTimeout(ecosystemAdTimer);
     ecosystemAdTimer = null;
     root.hidden = true;
+    if (sponsorshipNote) sponsorshipNote.hidden = true;
     root.classList.remove('is-flying');
     track.replaceChildren();
     root.querySelector('.ecosystem-ad-close')?.remove();
   };
-  const chooseOrganization = () => {
-    const available = validOrganizations.map((_, index) => index).filter(index => index !== previousIndex);
-    const index = available[Math.floor(Math.random() * available.length)];
-    previousIndex = index;
-    return validOrganizations[index];
+  const canShow = () => {
+    const route = location.hash.slice(1) || initialRoute();
+    return !document.hidden && route === 'home' && Boolean(getCurrentSession());
+  };
+  const chooseOrganizations = () => {
+    const shuffled = [...validOrganizations];
+    for (let index = shuffled.length - 1; index > 0; index -= 1) {
+      const swapIndex = Math.floor(Math.random() * (index + 1));
+      [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+    }
+    let selection = shuffled.filter(organization => !previousOrganizations.has(organization));
+    if (selection.length < 4) selection = shuffled;
+    const chosen = selection.slice(0, Math.min(4, validOrganizations.length));
+    previousOrganizations = new Set(chosen);
+    return chosen;
   };
   const schedule = delay => {
     if (ecosystemAdTimer !== null) clearTimeout(ecosystemAdTimer);
-    if (ecosystemAdDismissed) return;
+    if (ecosystemAdDismissed || !canShow()) return;
     ecosystemAdTimer = setTimeout(show, delay);
   };
   const show = () => {
     ecosystemAdTimer = null;
-    const route = location.hash.slice(1) || 'home';
-    if (document.hidden || ['auth', 'onboarding', 'registration-success', 'shop', 'admin'].includes(route) || route.startsWith('pembelajaran/')) {
-      schedule(8000);
+    if (!canShow()) {
+      stop();
       return;
     }
-    const organization = chooseOrganization();
-    const card = document.createElement('div');
-    card.className = 'ecosystem-ad-card';
-    card.style.setProperty('--ad-drift', `${Math.round(Math.random() * 104 - 52)}px`);
-    card.style.setProperty('--ad-duration', `${(6 + Math.random() * 2).toFixed(2)}s`);
-    const link = document.createElement('a');
-    link.className = 'ecosystem-ad-link';
-    link.href = `https://${organization.domain}`;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    link.setAttribute('aria-label', `Iklan: Kenali ${organization.nama}, organisasi yang relevan untuk dijajaki dalam ekosistem Digital Twin. Bukan mitra atau pendukung resmi IDTC.`);
-    const badge = document.createElement('span');
-    badge.className = 'ecosystem-ad-badge';
-    badge.textContent = 'IKLAN';
-    const image = document.createElement('img');
-    image.className = 'ecosystem-ad-logo';
-    image.src = `assets/img/mitra/${organization.logo}`;
-    image.alt = organization.nama;
-    image.decoding = 'async';
-    image.addEventListener('error', stop, { once: true });
-    const copy = document.createElement('span');
-    copy.className = 'ecosystem-ad-copy';
-    copy.innerHTML = `<strong></strong><small></small>`;
-    copy.querySelector('strong').textContent = organization.nama;
-    copy.querySelector('small').textContent = `${organization.sektor} · organisasi untuk dijajaki, bukan mitra terkonfirmasi`;
+    const route = location.hash.slice(1) || 'home';
+    const organizationsToShow = chooseOrganizations();
+    const cards = organizationsToShow.map((organization, index) => {
+      const card = document.createElement('div');
+      card.className = 'ecosystem-ad-card';
+      card.style.setProperty('--ad-lane', `${index * 25 + 12.5}%`);
+      card.style.setProperty('--ad-sway-a', `${Math.round(Math.random() * 8 - 4)}px`);
+      card.style.setProperty('--ad-sway-b', `${Math.round(Math.random() * 8 - 4)}px`);
+      card.style.setProperty('--ad-sway-c', `${Math.round(Math.random() * 8 - 4)}px`);
+      card.style.setProperty('--ad-sway-d', `${Math.round(Math.random() * 8 - 4)}px`);
+      card.style.setProperty('--ad-sway-e', `${Math.round(Math.random() * 8 - 4)}px`);
+      card.style.setProperty('--ad-duration', `${(9 + Math.random() * 3).toFixed(2)}s`);
+      card.style.setProperty('--ad-delay', `${(Math.random() * 0.8).toFixed(2)}s`);
+      const link = document.createElement('a');
+      link.className = 'ecosystem-ad-link';
+      link.href = `https://${organization.domain}`;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.setAttribute('aria-label', `Sponsor ${organization.nama}, ${organization.sektor || 'institusi atau perusahaan'} dalam ekosistem Digital Twin Indonesia.`);
+      const image = document.createElement('img');
+      image.className = 'ecosystem-ad-logo';
+      image.src = `assets/img/mitra/${organization.logo}`;
+      image.alt = organization.nama;
+      image.decoding = 'async';
+      image.addEventListener('error', stop, { once: true });
+      const name = document.createElement('span');
+      name.className = 'ecosystem-ad-name';
+      name.textContent = organization.nama;
+      const category = document.createElement('span');
+      category.className = 'ecosystem-ad-category';
+      category.textContent = organization.sektor || 'Institusi / perusahaan';
+      link.append(image, name, category);
+      card.append(link);
+      return card;
+    });
     const close = document.createElement('button');
     close.className = 'ecosystem-ad-close';
     close.type = 'button';
-    close.setAttribute('aria-label', 'Tutup iklan');
+    close.setAttribute('aria-label', 'Tutup');
     close.textContent = '×';
     close.addEventListener('click', event => {
       event.preventDefault();
@@ -1026,26 +1490,33 @@ function bindEcosystemAd(organizations) {
       ecosystemAdDismissed = true;
       stop();
     }, { once: true });
-    link.append(badge, image, copy);
-    card.append(link);
-    track.replaceChildren(card);
+    root.querySelector('.ecosystem-ad-close')?.remove();
+    if (sponsorshipNote && sponsorshipDescription) {
+      const sponsorNames = organizationsToShow.map(organization => organization.nama).join(', ');
+      sponsorshipDescription.textContent = `${sponsorNames} mendukung pengembangan ekosistem Digital Twin Indonesia sebagai sponsor IDTC.`;
+      sponsorshipNote.hidden = route !== 'home';
+    }
+    track.replaceChildren(...cards);
     root.append(close);
     root.hidden = false;
     root.classList.remove('is-flying');
-    void card.offsetWidth;
+    cards.forEach(card => { void card.offsetWidth; });
     root.classList.add('is-flying');
-    schedule(+(card.style.getPropertyValue('--ad-duration').replace('s', '')) * 1000 + 9000 + Math.random() * 9000);
+    schedule(12_000 + Math.random() * 10_000);
   };
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) stop();
-    else if (!ecosystemAdDismissed) schedule(1200 + Math.random() * 2200);
+    else if (!ecosystemAdDismissed && canShow()) schedule(1200 + Math.random() * 2200);
   });
   window.addEventListener('hashchange', () => {
-    const route = location.hash.slice(1);
-    if (['auth', 'onboarding', 'registration-success', 'shop', 'admin'].includes(route) || route.startsWith('pembelajaran/')) stop();
-    else if (!ecosystemAdDismissed) schedule(900 + Math.random() * 1900);
+    const route = location.hash.slice(1) || initialRoute();
+    if (route !== 'home' || !getCurrentSession()) {
+      stop();
+      if (sponsorshipNote) sponsorshipNote.hidden = true;
+    } else if (!ecosystemAdDismissed) schedule(900 + Math.random() * 1900);
   });
-  schedule(2500 + Math.random() * 2500);
+  if (canShow()) schedule(2500 + Math.random() * 2500);
+  else stop();
 }
 function learningRoute(path, moduleIndex) { return `#pembelajaran/${path.id}/${moduleIndex}`; }
 function learningChecklistKey(path, module) {
@@ -1514,8 +1985,22 @@ async function load() {
   bindEcosystemAd(ecosystemOrganizations);
   render();
 }
-function addHomeFeatures() { const actions = app.querySelector('.hero-actions'); if (!actions || app.querySelector('.feature-actions')) return; actions.insertAdjacentHTML('afterend', '<div class="feature-actions" aria-label="Fitur utama"><a href="#belajar" class="feature-button feature-literasi"><span>◫</span>Literasi</a><a href="#regulasi" class="feature-button feature-regulasi"><span>◇</span>Regulasi</a><a href="#pilot-project" class="feature-button feature-pilot"><span>◈</span>Pilot Project</a><a href="#rating-tool" class="feature-button feature-rating"><span>◉</span>Rating Tool DT</a><a href="#kolaborasi" class="feature-button feature-collaboration"><span>↔</span>Kolaborasi & Dukungan</a></div>'); }
-function render() { stopHomeCarousel(); const route = location.hash.slice(1) || initialRoute(); if (route === 'admin' && !hasCmsAccess()) { location.hash = getCurrentSession() ? 'profile' : 'auth'; return; } document.body.classList.toggle('home-mode', route === 'home'); document.body.classList.toggle('onboarding-mode', route === 'onboarding'); document.body.classList.toggle('auth-mode', route === 'auth'); document.body.classList.toggle('shop-mode', route === 'shop'); applyPreferences(); app.innerHTML = route.startsWith('pembelajaran/') ? halamanPembelajaran(route) : views[route]?.() || home(); app.querySelectorAll('img:not([loading])').forEach(image => { image.loading = 'lazy'; image.decoding = 'async'; }); nav.querySelectorAll('a').forEach(link => link.classList.toggle('active', link.dataset.route === route || (route.startsWith('pembelajaran/') && link.dataset.route === 'belajar'))); if (route === 'onboarding') bindOnboarding(); if (route === 'auth') bindAuth(); if (route === 'profile') bindProfile(); if (route.startsWith('pembelajaran/')) bindLearningChecklist(); if (route === 'admin') bindAdmin({ root: app.querySelector('.cms-page'), data, session: getCurrentSession(), getUsers: getLocalUsers, escapeHtml: esc, databaseMode: databaseAuthMode, apiRequest: userApi }); if (route === 'shop') bindShop({ root: app.querySelector('.twini-shop'), catalog: data.merch, escapeHtml: esc }); if (route === 'home') { const heroImage = app.querySelector('.hero-art'); if (heroImage) heroImage.outerHTML = heroCarouselMarkup(); addHomeFeatures(); bindHomeCarousel(); } window.scrollTo(0,0); }
+function addHomeFeatures() {
+  const actions = app.querySelector('.hero-actions');
+  if (!actions || app.querySelector('.feature-actions')) return;
+  const random = (min, max) => (min + Math.random() * (max - min)).toFixed(2);
+  const effects = () => `${Array.from({ length: 4 }, () => `<i class="feature-bubble" aria-hidden="true" style="--particle-x:${random(8, 92)}%;--particle-y:${random(10, 90)}%;--particle-dx:${random(-17, 17)}px;--particle-dy:${random(-14, 14)}px;--particle-size:${random(3, 7)}px;--particle-duration:${random(1, 2.1)}s;--particle-delay:-${random(0, 2)}s"></i>`).join('')}${Array.from({ length: 2 }, () => `<i class="feature-sparkle" aria-hidden="true" style="--particle-x:${random(12, 88)}%;--particle-y:${random(12, 88)}%;--particle-duration:${random(.7, 1.4)}s;--particle-delay:-${random(0, 1.4)}s"></i>`).join('')}`;
+  const features = [
+    ['belajar', 'literasi', '◫', 'Literasi'],
+    ['regulasi', 'regulasi', '◇', 'Regulasi'],
+    ['pilot-project', 'pilot', '◈', 'Pilot Project'],
+    ['rating-tool', 'rating', '◉', 'Rating Tool DT'],
+    ['kolaborasi', 'collaboration', '↔', 'Kolaborasi & Dukungan'],
+  ];
+  const markup = features.map(([route, type, icon, label]) => `<a href="#${route}" class="feature-button feature-${type}"><span class="feature-button-label"><span class="feature-icon" aria-hidden="true">${icon}</span>${label}</span>${effects()}</a>`).join('');
+  actions.insertAdjacentHTML('afterend', `<div class="feature-actions" aria-label="Fitur utama">${markup}</div>`);
+}
+function render() { stopHomeCarousel(); pilotCitySimulationCleanup?.(); pilotCitySimulationCleanup = null; pilotInfrastructureSimulationCleanup?.(); pilotInfrastructureSimulationCleanup = null; pilotDomainSimulationCleanup?.(); pilotDomainSimulationCleanup = null; const route = location.hash.slice(1) || initialRoute(); if (route === 'admin' && !hasCmsAccess()) { location.hash = getCurrentSession() ? 'profile' : 'auth'; return; } document.body.classList.toggle('home-mode', route === 'home'); document.body.classList.toggle('onboarding-mode', route === 'onboarding'); document.body.classList.toggle('auth-mode', route === 'auth'); document.body.classList.toggle('shop-mode', route === 'shop'); applyPreferences(); app.innerHTML = route.startsWith('pembelajaran/') ? halamanPembelajaran(route) : views[route]?.() || home(); bindPokjaRibbon(); bindPilotRibbon(); app.querySelectorAll('img:not([loading])').forEach(image => { image.loading = 'lazy'; image.decoding = 'async'; }); nav.querySelectorAll('a').forEach(link => link.classList.toggle('active', link.dataset.route === route || (route.startsWith('pembelajaran/') && link.dataset.route === 'belajar'))); if (route === 'pilot-project') { const scene = app.querySelector('[data-pilot-city-scene]'); import('./pilot-city-3d.js?v=8').then(({ mountPilotCityScene }) => { if (scene?.isConnected) pilotCitySimulationCleanup = mountPilotCityScene(scene); }).catch(error => { console.error('Simulasi 3D kota tidak dapat dimuat.', error); const status = scene?.querySelector('[data-pilot-city-status]'); if (status) status.textContent = 'Visualisasi 3D tidak dapat dimuat di perangkat ini. Informasi pilot tetap tersedia di bawah.'; }); } if (route === 'onboarding') bindOnboarding(); if (route === 'auth') bindAuth(); if (route === 'profile') bindProfile(); if (route.startsWith('pembelajaran/')) bindLearningChecklist(); if (route === 'admin') bindAdmin({ root: app.querySelector('.cms-page'), data, session: getCurrentSession(), getUsers: getLocalUsers, escapeHtml: esc, databaseMode: databaseAuthMode, apiRequest: userApi }); if (route === 'shop') bindShop({ root: app.querySelector('.twini-shop'), catalog: data.merch, escapeHtml: esc }); if (route === 'home') { const heroImage = app.querySelector('.hero-art'); if (heroImage) heroImage.outerHTML = heroCarouselMarkup(); addHomeFeatures(); bindHomeCarousel(); } window.scrollTo(0,0); }
 window.addEventListener('hashchange', () => { const route = location.hash.slice(1) || 'home'; if (routeHistory.length > 1 && routeHistory[routeHistory.length - 2] === route) routeHistory.pop(); else if (routeHistory[routeHistory.length - 1] !== route) routeHistory.push(route); render(); });
 backButton.addEventListener('click', () => { if (routeHistory.length > 1) history.back(); else if (location.hash.slice(1) !== 'home') location.hash = 'home'; });
 nav.addEventListener('click', event => { const link = event.target.closest('a[data-route]'); if (!link) return; link.classList.remove('nav-bounce'); void link.offsetWidth; link.classList.add('nav-bounce'); setTimeout(() => link.classList.remove('nav-bounce'), 750); });

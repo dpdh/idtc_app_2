@@ -21,7 +21,8 @@
   },
   "dependencies": {
     "@capacitor/core": "^7.4.0",
-    "pg": "^8.23.0"
+    "pg": "^8.23.0",
+    "three": "^0.186.1"
   },
   "devDependencies": {
     "@capacitor/android": "^7.4.0",
