@@ -1,12 +1,12 @@
-const CACHE_VERSION = 'v156';
+const CACHE_VERSION = 'v158';
 const SHELL_CACHE = `idtc-mobile-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `idtc-runtime-${CACHE_VERSION}`;
 const CORE = [
   './',
   './index.html',
-  './styles.css?v=100',
+  './styles.css?v=102',
   './twini-config.js?v=1',
-  './app.js?v=125',
+  './app.js?v=127',
   './pilot-city-3d.js?v=8',
   './pilot-infrastructure-3d.js?v=4',
   './pilot-domain-3d.js?v=5',

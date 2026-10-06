@@ -1,6 +1,8 @@
 const app = document.querySelector('#app');
 const nav = document.querySelector('.bottom-nav');
 const backButton = document.querySelector('[data-back]');
+const menuToggle = document.querySelector('[data-menu-toggle]');
+const profileMenu = document.querySelector('#main-menu');
 import { adminPanel, bindAdmin } from './admin-cms.js?v=6';
 import { shopPage, bindShop } from './shop.js?v=3';
 import { hashPassword, verifyPassword } from './auth-security.js?v=1';
@@ -1232,12 +1234,23 @@ function pilotProjectPageWithCategories() {
   return insertAt < 0 ? page : `${page.slice(0, insertAt)}${pilotProjectCategoriesMarkup()}${page.slice(insertAt)}`;
 }
 
-function pengurus() {
+function strukturOrganisasiMarkup() {
   const { dewanPembina, pengurus, pokja } = data.struktur;
   const leader = item => `<div class="list-item"><div class="person-avatar">${item.foto ? `<img src="${esc(photoSrc(item.foto))}" alt="Foto ${esc(item.nama || 'pengurus')}" onerror="this.hidden=true;this.parentElement.classList.add('photo-missing')" />` : esc((item.nama || '—').slice(0, 1))}</div><div><strong>${esc(item.nama || 'Belum diisi')}</strong><small>${esc(item.peran)}</small></div></div>`;
   const featured = item => `<div class="featured-person"><div class="featured-avatar">${item.foto ? `<img src="${esc(photoSrc(item.foto))}" alt="Foto ${esc(item.nama)}" onerror="this.hidden=true;this.parentElement.classList.add('photo-missing')" />` : esc(item.nama.slice(0, 1))}</div><div><h3>${esc(item.nama)}</h3><p class="role">${esc(item.peran)}</p></div></div>`;
   const pokjaTeams = pokja.map(item => `<section class="pokja-team-unit"><p class="role ${colorClass(item.warna)}">POKJA ${item.nomor}</p><h4>${esc(item.nama)}</h4>${featured(item.ketua)}${item.wakil.map(leader).join('')}</section>`).join('');
-  return `<section class="section">${sectionHead('Struktur organisasi','Pengurus IDTC 2026–2029','Kepemimpinan, koordinasi, dan pelaksanaan program.')}<div class="card"><h3>${esc(dewanPembina.title)}</h3>${featured(dewanPembina.ketua)}<p>${esc(dewanPembina.desc)}</p>${dewanPembina.unit.map(unit => `<div class="list-item"><span class="index">◈</span><div><strong>${esc(unit.nama)}</strong><small>${esc(unit.desc)}</small></div></div>`).join('')}</div><div class="card"><h3>${esc(pengurus.title)}</h3>${featured(pengurus.ketua)}${pengurus.wakil.map(leader).join('')}</div><div class="card"><h3>Tim sekretariat</h3>${pengurus.sekjen.map(leader).join('')}</div><div class="card"><h3>Tim Pokja</h3><p>Jajaran ketua dan wakil dari tiga Pokja utama.</p>${pokjaTeams}</div></section>`;
+  return `<div class="card"><h3>${esc(dewanPembina.title)}</h3>${featured(dewanPembina.ketua)}<p>${esc(dewanPembina.desc)}</p>${dewanPembina.unit.map(unit => `<div class="list-item"><span class="index">◈</span><div><strong>${esc(unit.nama)}</strong><small>${esc(unit.desc)}</small></div></div>`).join('')}</div><div class="card"><h3>${esc(pengurus.title)}</h3>${featured(pengurus.ketua)}${pengurus.wakil.map(leader).join('')}</div><div class="card"><h3>Tim sekretariat</h3>${pengurus.sekjen.map(leader).join('')}</div><div class="card"><h3>Tim Pokja</h3><p>Jajaran ketua dan wakil dari tiga Pokja utama.</p>${pokjaTeams}</div>`;
+}
+function pengurus() {
+  return `<section class="section">${sectionHead('Struktur organisasi','Pengurus IDTC 2026–2029','Kepemimpinan, koordinasi, dan pelaksanaan program.')}${strukturOrganisasiMarkup()}</section>`;
+}
+function infoIdtc() {
+  const missions = [
+    'Menghubungkan pemerintah, akademisi, industri, dan komunitas dalam ekosistem Digital Twin Indonesia.',
+    'Mendorong literasi, kolaborasi, standar terbuka, interoperabilitas, dan tata kelola data yang bertanggung jawab.',
+    'Mendukung pengembangan gagasan menjadi pilot project yang nyata dan memberi manfaat bagi masyarakat.',
+  ];
+  return `<section class="section info-idtc-page">${sectionHead('Tentang komunitas','Info IDTC','Visi, misi, dan struktur organisasi pengurus Indonesia Digital Twin Community.')}<section class="card info-idtc-vision"><p class="section-label">VISI</p><h3>Menjadi wadah kolaborasi untuk membangun ekosistem Digital Twin Indonesia yang terbuka, terhubung, dan berdampak.</h3></section><section class="card info-idtc-mission"><p class="section-label">MISI</p><ul>${missions.map(mission => `<li>${esc(mission)}</li>`).join('')}</ul></section><div class="info-idtc-structure">${sectionHead('Kepemimpinan','Struktur Organisasi Pengurus','Pengurus IDTC periode 2026–2029.')}${strukturOrganisasiMarkup()}</div></section>`;
 }
 function profile() {
   const principles = [
@@ -1692,7 +1705,7 @@ function profil() {
   return `<section class="section">${sectionHead('Profil anggota','Satu ekosistem, banyak perspektif','Gambaran anggota IDTC dari database pendaftaran.')}<div class="profile-intro"><strong>${anggota.namaUnik}</strong><p>nama unik dari ${anggota.respons} responden</p></div><div class="card"><h3>Komposisi ekosistem</h3>${bars}</div><div class="card"><h3>Sektor teratas</h3>${sectors}</div><div class="card"><h3>Institusi dengan anggota terbanyak</h3>${anggota.topInstitusi.slice(0,5).map((item,i) => `<div class="list-item"><span class="index">${i+1}</span><div><strong>${esc(item.nama)}</strong><small>${item.jumlah} anggota</small></div></div>`).join('')}</div></section>`;
 }
 function hasCmsAccess(session = getCurrentSession()) { return ['admin', 'super_admin'].includes(session?.role); }
-const views = { home, pengurus, profile, regulasi, pokja, 'pilot-project': pilotProjectPageWithCategories, 'rating-tool': ratingTool, kolaborasi: collaborationPage, belajar, onboarding, auth, 'registration-success': registrationSuccess, shop: () => shopPage(), admin: () => adminPanel(getCurrentSession(), esc) };
+const views = { home, pengurus, 'info-idtc': infoIdtc, profile, regulasi, pokja, 'pilot-project': pilotProjectPageWithCategories, 'rating-tool': ratingTool, kolaborasi: collaborationPage, belajar, onboarding, auth, 'registration-success': registrationSuccess, shop: () => shopPage(), admin: () => adminPanel(getCurrentSession(), esc) };
 const TWINIAI_STOP_WORDS = new Set(['apa', 'apakah', 'bagaimana', 'mengapa', 'kenapa', 'siapa', 'kapan', 'dimana', 'di', 'ke', 'dari', 'dan', 'atau', 'yang', 'itu', 'ini', 'adalah', 'untuk', 'pada', 'dengan', 'tentang', 'saya', 'aku', 'tolong', 'bisa', 'dapat', 'kah', 'nya']);
 const TWINIAI_COMMON_WORDS = new Set(['digital', 'twin', 'data']);
 const TWINIAI_FALLBACK = 'Saya belum menemukan jawaban yang cukup cocok di basis pengetahuan TwiniAI. Coba tanyakan tentang konsep, data, standar, arsitektur, keamanan, penerapan, biaya, atau langkah pilot.';
@@ -2001,6 +2014,23 @@ function addHomeFeatures() {
   actions.insertAdjacentHTML('afterend', `<div class="feature-actions" aria-label="Fitur utama">${markup}</div>`);
 }
 function render() { stopHomeCarousel(); pilotCitySimulationCleanup?.(); pilotCitySimulationCleanup = null; pilotInfrastructureSimulationCleanup?.(); pilotInfrastructureSimulationCleanup = null; pilotDomainSimulationCleanup?.(); pilotDomainSimulationCleanup = null; const route = location.hash.slice(1) || initialRoute(); if (route === 'admin' && !hasCmsAccess()) { location.hash = getCurrentSession() ? 'profile' : 'auth'; return; } document.body.classList.toggle('home-mode', route === 'home'); document.body.classList.toggle('onboarding-mode', route === 'onboarding'); document.body.classList.toggle('auth-mode', route === 'auth'); document.body.classList.toggle('shop-mode', route === 'shop'); applyPreferences(); app.innerHTML = route.startsWith('pembelajaran/') ? halamanPembelajaran(route) : views[route]?.() || home(); bindPokjaRibbon(); bindPilotRibbon(); app.querySelectorAll('img:not([loading])').forEach(image => { image.loading = 'lazy'; image.decoding = 'async'; }); nav.querySelectorAll('a').forEach(link => link.classList.toggle('active', link.dataset.route === route || (route.startsWith('pembelajaran/') && link.dataset.route === 'belajar'))); if (route === 'pilot-project') { const scene = app.querySelector('[data-pilot-city-scene]'); import('./pilot-city-3d.js?v=8').then(({ mountPilotCityScene }) => { if (scene?.isConnected) pilotCitySimulationCleanup = mountPilotCityScene(scene); }).catch(error => { console.error('Simulasi 3D kota tidak dapat dimuat.', error); const status = scene?.querySelector('[data-pilot-city-status]'); if (status) status.textContent = 'Visualisasi 3D tidak dapat dimuat di perangkat ini. Informasi pilot tetap tersedia di bawah.'; }); } if (route === 'onboarding') bindOnboarding(); if (route === 'auth') bindAuth(); if (route === 'profile') bindProfile(); if (route.startsWith('pembelajaran/')) bindLearningChecklist(); if (route === 'admin') bindAdmin({ root: app.querySelector('.cms-page'), data, session: getCurrentSession(), getUsers: getLocalUsers, escapeHtml: esc, databaseMode: databaseAuthMode, apiRequest: userApi }); if (route === 'shop') bindShop({ root: app.querySelector('.twini-shop'), catalog: data.merch, escapeHtml: esc }); if (route === 'home') { const heroImage = app.querySelector('.hero-art'); if (heroImage) heroImage.outerHTML = heroCarouselMarkup(); addHomeFeatures(); bindHomeCarousel(); } window.scrollTo(0,0); }
+function closeProfileMenu() { profileMenu.hidden = true; menuToggle.setAttribute('aria-expanded', 'false'); menuToggle.setAttribute('aria-label', 'Buka menu'); }
+menuToggle.addEventListener('click', () => {
+  const isOpen = menuToggle.getAttribute('aria-expanded') === 'true';
+  profileMenu.hidden = isOpen;
+  menuToggle.setAttribute('aria-expanded', String(!isOpen));
+  menuToggle.setAttribute('aria-label', isOpen ? 'Buka menu' : 'Tutup menu');
+});
+document.addEventListener('click', event => {
+  if (!event.target.closest('.topbar-menu')) closeProfileMenu();
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && menuToggle.getAttribute('aria-expanded') === 'true') {
+    closeProfileMenu();
+    menuToggle.focus();
+  }
+});
+profileMenu.addEventListener('click', closeProfileMenu);
 window.addEventListener('hashchange', () => { const route = location.hash.slice(1) || 'home'; if (routeHistory.length > 1 && routeHistory[routeHistory.length - 2] === route) routeHistory.pop(); else if (routeHistory[routeHistory.length - 1] !== route) routeHistory.push(route); render(); });
 backButton.addEventListener('click', () => { if (routeHistory.length > 1) history.back(); else if (location.hash.slice(1) !== 'home') location.hash = 'home'; });
 nav.addEventListener('click', event => { const link = event.target.closest('a[data-route]'); if (!link) return; link.classList.remove('nav-bounce'); void link.offsetWidth; link.classList.add('nav-bounce'); setTimeout(() => link.classList.remove('nav-bounce'), 750); });
