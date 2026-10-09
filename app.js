@@ -1259,7 +1259,10 @@ function profile() {
     ['Terbuka & terdokumentasi', 'Hasil dan pembelajaran dibagikan agar dapat direplikasi.'],
     ['Setara & konstruktif', 'Semua anggota memiliki ruang untuk berkontribusi dan berkembang.']
   ];
-  return `<section class="section profile-page">${sectionHead('Profile IDTC','Akun, tentang, dan pengaturan','People · Data · Places · A Brighter Indonesia')}${profileAccountMarkup(getCurrentSession())}<div class="profile-principles">${principles.map(([title, description]) => `<div class="card"><h3>${title}</h3><p>${description}</p></div>`).join('')}</div><div class="card settings-card"><h3>Pengaturan tampilan</h3><p>Sesuaikan mode dan tema aplikasi.</p><div class="setting-row"><div><strong>Mode gelap</strong><small>Gunakan tampilan gelap yang lebih nyaman.</small></div><button type="button" class="setting-switch" data-setting-mode aria-pressed="false"><span></span></button></div><div class="setting-row"><div><strong>Tema biru futuristik</strong><small>Aktifkan aksen cyan dan navy pada aplikasi.</small></div><button type="button" class="setting-switch" data-setting-theme aria-pressed="false"><span></span></button></div></div><button class="button primary profile-onboarding" type="button" data-open-onboarding>↗ Lihat kembali Onboarding</button><a class="button profile-github" href="https://github.com/idtc-id" target="_blank" rel="noreferrer">Kunjungi GitHub IDTC ↗</a>${idtcAppAboutMarkup()}</section>`;
+  return `<section class="section profile-page">${sectionHead('Profile IDTC','Akun dan tentang IDTC','People · Data · Places · A Brighter Indonesia')}${profileAccountMarkup(getCurrentSession())}<div class="profile-principles">${principles.map(([title, description]) => `<div class="card"><h3>${title}</h3><p>${description}</p></div>`).join('')}</div><button class="button primary profile-onboarding" type="button" data-open-onboarding>↗ Lihat kembali Onboarding</button><a class="button profile-github" href="https://github.com/idtc-id" target="_blank" rel="noreferrer">Kunjungi GitHub IDTC ↗</a>${idtcAppAboutMarkup()}</section>`;
+}
+function pengaturan() {
+  return `<section class="section settings-page">${sectionHead('Preferensi','Pengaturan aplikasi','Sesuaikan tampilan aplikasi IDTC di perangkat ini.')}<div class="card settings-card"><h3>Pengaturan tampilan</h3><p>Preferensi disimpan di perangkat ini.</p><div class="setting-row"><div><strong>Mode gelap</strong><small>Gunakan tampilan gelap yang lebih nyaman.</small></div><button type="button" class="setting-switch" data-setting-mode aria-label="Aktifkan mode gelap" aria-pressed="false"><span></span></button></div><div class="setting-row"><div><strong>Tema biru futuristik</strong><small>Aktifkan aksen cyan dan navy pada aplikasi.</small></div><button type="button" class="setting-switch" data-setting-theme aria-label="Aktifkan tema biru futuristik" aria-pressed="false"><span></span></button></div></div></section>`;
 }
 
 function regulationEntry(item) {
@@ -1280,8 +1283,6 @@ function regulasi() {
 
 function bindProfile() {
   const root = app.querySelector('.profile-page');
-  const mode = app.querySelector('[data-setting-mode]');
-  const theme = app.querySelector('[data-setting-theme]');
   const session = getCurrentSession();
   const accountCard = root?.querySelector('.account-card');
   if (accountCard) accountCard.insertAdjacentHTML('afterend', learningAchievementMarkup(session));
@@ -1402,10 +1403,33 @@ function bindProfile() {
     localStorage.removeItem('idtc-session');
     location.hash = 'auth';
   });
-  const sync = () => { const dark = localStorage.getItem('idtc-mode') === 'dark'; const future = localStorage.getItem('idtc-theme') === 'future'; mode.classList.toggle('is-on', dark); mode.setAttribute('aria-pressed', String(dark)); theme.classList.toggle('is-on', future); theme.setAttribute('aria-pressed', String(future)); };
-  mode.addEventListener('click', () => { localStorage.setItem('idtc-mode', mode.classList.contains('is-on') ? 'light' : 'dark'); applyPreferences(); sync(); });
-  theme.addEventListener('click', () => { localStorage.setItem('idtc-theme', theme.classList.contains('is-on') ? 'default' : 'future'); applyPreferences(); sync(); });
   app.querySelector('[data-open-onboarding]').addEventListener('click', () => { localStorage.removeItem('idtc-onboarding-seen'); location.hash = 'onboarding'; });
+}
+
+function bindAppSettings() {
+  const mode = app.querySelector('[data-setting-mode]');
+  const theme = app.querySelector('[data-setting-theme]');
+  if (!mode || !theme) return;
+  const sync = () => {
+    const dark = localStorage.getItem('idtc-mode') === 'dark';
+    const future = localStorage.getItem('idtc-theme') === 'future';
+    mode.classList.toggle('is-on', dark);
+    mode.setAttribute('aria-pressed', String(dark));
+    mode.setAttribute('aria-label', `${dark ? 'Nonaktifkan' : 'Aktifkan'} mode gelap`);
+    theme.classList.toggle('is-on', future);
+    theme.setAttribute('aria-pressed', String(future));
+    theme.setAttribute('aria-label', `${future ? 'Nonaktifkan' : 'Aktifkan'} tema biru futuristik`);
+  };
+  mode.addEventListener('click', () => {
+    localStorage.setItem('idtc-mode', mode.classList.contains('is-on') ? 'light' : 'dark');
+    applyPreferences();
+    sync();
+  });
+  theme.addEventListener('click', () => {
+    localStorage.setItem('idtc-theme', theme.classList.contains('is-on') ? 'default' : 'future');
+    applyPreferences();
+    sync();
+  });
   sync();
 }
 
@@ -1705,7 +1729,7 @@ function profil() {
   return `<section class="section">${sectionHead('Profil anggota','Satu ekosistem, banyak perspektif','Gambaran anggota IDTC dari database pendaftaran.')}<div class="profile-intro"><strong>${anggota.namaUnik}</strong><p>nama unik dari ${anggota.respons} responden</p></div><div class="card"><h3>Komposisi ekosistem</h3>${bars}</div><div class="card"><h3>Sektor teratas</h3>${sectors}</div><div class="card"><h3>Institusi dengan anggota terbanyak</h3>${anggota.topInstitusi.slice(0,5).map((item,i) => `<div class="list-item"><span class="index">${i+1}</span><div><strong>${esc(item.nama)}</strong><small>${item.jumlah} anggota</small></div></div>`).join('')}</div></section>`;
 }
 function hasCmsAccess(session = getCurrentSession()) { return ['admin', 'super_admin'].includes(session?.role); }
-const views = { home, pengurus, 'info-idtc': infoIdtc, profile, regulasi, pokja, 'pilot-project': pilotProjectPageWithCategories, 'rating-tool': ratingTool, kolaborasi: collaborationPage, belajar, onboarding, auth, 'registration-success': registrationSuccess, shop: () => shopPage(), admin: () => adminPanel(getCurrentSession(), esc) };
+const views = { home, pengurus, 'info-idtc': infoIdtc, profile, pengaturan, regulasi, pokja, 'pilot-project': pilotProjectPageWithCategories, 'rating-tool': ratingTool, kolaborasi: collaborationPage, belajar, onboarding, auth, 'registration-success': registrationSuccess, shop: () => shopPage(), admin: () => adminPanel(getCurrentSession(), esc) };
 const TWINIAI_STOP_WORDS = new Set(['apa', 'apakah', 'bagaimana', 'mengapa', 'kenapa', 'siapa', 'kapan', 'dimana', 'di', 'ke', 'dari', 'dan', 'atau', 'yang', 'itu', 'ini', 'adalah', 'untuk', 'pada', 'dengan', 'tentang', 'saya', 'aku', 'tolong', 'bisa', 'dapat', 'kah', 'nya']);
 const TWINIAI_COMMON_WORDS = new Set(['digital', 'twin', 'data']);
 const TWINIAI_FALLBACK = 'Saya belum menemukan jawaban yang cukup cocok di basis pengetahuan TwiniAI. Coba tanyakan tentang konsep, data, standar, arsitektur, keamanan, penerapan, biaya, atau langkah pilot.';
@@ -2013,7 +2037,7 @@ function addHomeFeatures() {
   const markup = features.map(([route, type, icon, label]) => `<a href="#${route}" class="feature-button feature-${type}"><span class="feature-button-label"><span class="feature-icon" aria-hidden="true">${icon}</span>${label}</span>${effects()}</a>`).join('');
   actions.insertAdjacentHTML('afterend', `<div class="feature-actions" aria-label="Fitur utama">${markup}</div>`);
 }
-function render() { stopHomeCarousel(); pilotCitySimulationCleanup?.(); pilotCitySimulationCleanup = null; pilotInfrastructureSimulationCleanup?.(); pilotInfrastructureSimulationCleanup = null; pilotDomainSimulationCleanup?.(); pilotDomainSimulationCleanup = null; const route = location.hash.slice(1) || initialRoute(); if (route === 'admin' && !hasCmsAccess()) { location.hash = getCurrentSession() ? 'profile' : 'auth'; return; } document.body.classList.toggle('home-mode', route === 'home'); document.body.classList.toggle('onboarding-mode', route === 'onboarding'); document.body.classList.toggle('auth-mode', route === 'auth'); document.body.classList.toggle('shop-mode', route === 'shop'); applyPreferences(); app.innerHTML = route.startsWith('pembelajaran/') ? halamanPembelajaran(route) : views[route]?.() || home(); bindPokjaRibbon(); bindPilotRibbon(); app.querySelectorAll('img:not([loading])').forEach(image => { image.loading = 'lazy'; image.decoding = 'async'; }); nav.querySelectorAll('a').forEach(link => link.classList.toggle('active', link.dataset.route === route || (route.startsWith('pembelajaran/') && link.dataset.route === 'belajar'))); if (route === 'pilot-project') { const scene = app.querySelector('[data-pilot-city-scene]'); import('./pilot-city-3d.js?v=8').then(({ mountPilotCityScene }) => { if (scene?.isConnected) pilotCitySimulationCleanup = mountPilotCityScene(scene); }).catch(error => { console.error('Simulasi 3D kota tidak dapat dimuat.', error); const status = scene?.querySelector('[data-pilot-city-status]'); if (status) status.textContent = 'Visualisasi 3D tidak dapat dimuat di perangkat ini. Informasi pilot tetap tersedia di bawah.'; }); } if (route === 'onboarding') bindOnboarding(); if (route === 'auth') bindAuth(); if (route === 'profile') bindProfile(); if (route.startsWith('pembelajaran/')) bindLearningChecklist(); if (route === 'admin') bindAdmin({ root: app.querySelector('.cms-page'), data, session: getCurrentSession(), getUsers: getLocalUsers, escapeHtml: esc, databaseMode: databaseAuthMode, apiRequest: userApi }); if (route === 'shop') bindShop({ root: app.querySelector('.twini-shop'), catalog: data.merch, escapeHtml: esc }); if (route === 'home') { const heroImage = app.querySelector('.hero-art'); if (heroImage) heroImage.outerHTML = heroCarouselMarkup(); addHomeFeatures(); bindHomeCarousel(); } window.scrollTo(0,0); }
+function render() { stopHomeCarousel(); pilotCitySimulationCleanup?.(); pilotCitySimulationCleanup = null; pilotInfrastructureSimulationCleanup?.(); pilotInfrastructureSimulationCleanup = null; pilotDomainSimulationCleanup?.(); pilotDomainSimulationCleanup = null; const route = location.hash.slice(1) || initialRoute(); if (route === 'admin' && !hasCmsAccess()) { location.hash = getCurrentSession() ? 'profile' : 'auth'; return; } document.body.classList.toggle('home-mode', route === 'home'); document.body.classList.toggle('onboarding-mode', route === 'onboarding'); document.body.classList.toggle('auth-mode', route === 'auth'); document.body.classList.toggle('shop-mode', route === 'shop'); applyPreferences(); app.innerHTML = route.startsWith('pembelajaran/') ? halamanPembelajaran(route) : views[route]?.() || home(); bindPokjaRibbon(); bindPilotRibbon(); app.querySelectorAll('img:not([loading])').forEach(image => { image.loading = 'lazy'; image.decoding = 'async'; }); nav.querySelectorAll('a').forEach(link => link.classList.toggle('active', link.dataset.route === route || (route.startsWith('pembelajaran/') && link.dataset.route === 'belajar'))); if (route === 'pilot-project') { const scene = app.querySelector('[data-pilot-city-scene]'); import('./pilot-city-3d.js?v=8').then(({ mountPilotCityScene }) => { if (scene?.isConnected) pilotCitySimulationCleanup = mountPilotCityScene(scene); }).catch(error => { console.error('Simulasi 3D kota tidak dapat dimuat.', error); const status = scene?.querySelector('[data-pilot-city-status]'); if (status) status.textContent = 'Visualisasi 3D tidak dapat dimuat di perangkat ini. Informasi pilot tetap tersedia di bawah.'; }); } if (route === 'onboarding') bindOnboarding(); if (route === 'auth') bindAuth(); if (route === 'profile') bindProfile(); if (route === 'pengaturan') bindAppSettings(); if (route.startsWith('pembelajaran/')) bindLearningChecklist(); if (route === 'admin') bindAdmin({ root: app.querySelector('.cms-page'), data, session: getCurrentSession(), getUsers: getLocalUsers, escapeHtml: esc, databaseMode: databaseAuthMode, apiRequest: userApi }); if (route === 'shop') bindShop({ root: app.querySelector('.twini-shop'), catalog: data.merch, escapeHtml: esc }); if (route === 'home') { const heroImage = app.querySelector('.hero-art'); if (heroImage) heroImage.outerHTML = heroCarouselMarkup(); addHomeFeatures(); bindHomeCarousel(); } window.scrollTo(0,0); }
 function closeProfileMenu() { profileMenu.hidden = true; menuToggle.setAttribute('aria-expanded', 'false'); menuToggle.setAttribute('aria-label', 'Buka menu'); }
 menuToggle.addEventListener('click', () => {
   const isOpen = menuToggle.getAttribute('aria-expanded') === 'true';
