@@ -21,6 +21,8 @@
   },
   "dependencies": {
     "@capacitor/core": "^7.4.0",
+    "docx": "^9.5.1",
+    "jspdf": "^4.2.1",
     "pg": "^8.23.0",
     "three": "^0.186.1"
   },

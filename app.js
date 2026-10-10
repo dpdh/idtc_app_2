@@ -8,6 +8,8 @@ import { shopPage, bindShop } from './shop.js?v=3';
 import { hashPassword, verifyPassword } from './auth-security.js?v=1';
 import { bindImageZoom } from './image-zoom.js?v=2';
 import { bubbleFieldMarkup } from './ambient-bubbles.js?v=1';
+import { downloadLearningPdf } from './learning-pdf.js?v=2';
+import { downloadLearningDocx } from './learning-docx.js?v=1';
 bindImageZoom();
 let data;
 let databaseAuthMode = false;
@@ -1672,7 +1674,87 @@ function belajar() {
   const introPath = data.materi.jalur.find(path => path.kode === 'A') || data.materi.jalur[0];
   const introModuleIndex = introPath?.modul.findIndex(module => module.judul.startsWith('Pengantar Digital Twin')) ?? -1;
   const startLink = introModuleIndex >= 0 ? `<a class="button primary learning-start" href="${learningRoute(introPath, introModuleIndex)}">Mulai Belajar <span aria-hidden="true">→</span></a>` : '';
-  return `<section class="section">${sectionHead('Materi belajar','Peta belajar Digital Twin','Pilih jalur yang sesuai dengan peran dan kebutuhanmu.')} ${startLink}${paths}</section>`;
+  const downloads = `<div class="learning-exports"><button class="button primary" type="button" data-download-learning-pdf>Unduh semua materi sebagai PDF <span aria-hidden="true">↓</span></button><p data-learning-pdf-status role="status" aria-live="polite">PDF mencakup semua jalur, modul, dan penjelasan section yang tersedia.</p><button class="button primary" type="button" data-download-learning-docx>Unduh semua materi sebagai Word <span aria-hidden="true">↓</span></button><p data-learning-docx-status role="status" aria-live="polite">File Microsoft Word (.docx) mencakup seluruh materi dan penjelasan section yang tersedia.</p></div>`;
+  return `<section class="section">${sectionHead('Materi belajar','Peta belajar Digital Twin','Pilih jalur yang sesuai dengan peran dan kebutuhanmu.')} ${startLink}${downloads}${paths}</section>`;
+}
+function learningExportProgress(path, module) {
+  const items = checklistItems(module);
+  const checked = savedChecklist(learningChecklistKey(path, module));
+  const detailedItems = items.map((title, index) => ({
+    title,
+    kum: checklistKum(module, index),
+    done: Boolean(checked[index]),
+  }));
+  return {
+    items: detailedItems,
+    completed: detailedItems.filter(item => item.done).length,
+    earnedKum: detailedItems.reduce((total, item) => total + (item.done ? item.kum : 0), 0),
+    totalKum: detailedItems.reduce((total, item) => total + item.kum, 0),
+  };
+}
+function bindLearningPdfExport() {
+  const button = app.querySelector('[data-download-learning-pdf]');
+  const status = app.querySelector('[data-learning-pdf-status]');
+  const wordButton = app.querySelector('[data-download-learning-docx]');
+  const wordStatus = app.querySelector('[data-learning-docx-status]');
+  if (button && status) {
+    button.disabled = true;
+    status.textContent = 'Memuat generator PDF...';
+    import('./vendor/jspdf.umd.min.js?v=1').then(() => {
+      if (typeof globalThis.jspdf?.jsPDF !== 'function') throw new Error('Generator PDF tidak berhasil dimuat.');
+      if (!button.isConnected) return;
+      button.disabled = false;
+      status.textContent = 'PDF siap diunduh dan mencakup seluruh materi Belajar.';
+    }).catch(error => {
+      console.error('Generator PDF materi Belajar gagal dimuat.', error);
+      if (!button.isConnected) return;
+      button.disabled = false;
+      status.textContent = 'Generator PDF gagal dimuat. Periksa koneksi lalu muat ulang halaman.';
+    });
+    button.addEventListener('click', () => {
+      button.disabled = true;
+      status.textContent = 'Menyiapkan rangkuman PDF seluruh materi...';
+      try {
+        const result = downloadLearningPdf(data.materi, learningExportProgress);
+        status.textContent = `PDF berhasil dibuat: ${result.moduleCount} modul dan ${result.sectionCount} section, ${result.pageCount} halaman.`;
+      } catch (error) {
+        console.error('Rangkuman PDF materi Belajar gagal dibuat.', error);
+        status.textContent = `PDF gagal dibuat. ${error instanceof Error ? error.message : 'Silakan coba lagi.'}`;
+      } finally {
+        button.disabled = false;
+      }
+    });
+  }
+  if (wordButton && wordStatus) {
+    wordButton.disabled = true;
+    wordStatus.textContent = 'Memuat generator Microsoft Word...';
+    import('./vendor/docx.umd.js?v=1').then(() => {
+      if (typeof globalThis.docx?.Document !== 'function' || typeof globalThis.docx?.Packer?.toBlob !== 'function') {
+        throw new Error('Generator Microsoft Word tidak berhasil dimuat.');
+      }
+      if (!wordButton.isConnected) return;
+      wordButton.disabled = false;
+      wordStatus.textContent = 'File Word siap diunduh dan mencakup seluruh materi Belajar.';
+    }).catch(error => {
+      console.error('Generator Microsoft Word materi Belajar gagal dimuat.', error);
+      if (!wordButton.isConnected) return;
+      wordButton.disabled = false;
+      wordStatus.textContent = 'Generator Word gagal dimuat. Periksa koneksi lalu muat ulang halaman.';
+    });
+    wordButton.addEventListener('click', async () => {
+      wordButton.disabled = true;
+      wordStatus.textContent = 'Menyiapkan rangkuman Microsoft Word seluruh materi...';
+      try {
+        const result = await downloadLearningDocx(data.materi, learningExportProgress);
+        wordStatus.textContent = `File Word berhasil dibuat: ${result.moduleCount} modul dan ${result.sectionCount} section.`;
+      } catch (error) {
+        console.error('Rangkuman Word materi Belajar gagal dibuat.', error);
+        wordStatus.textContent = `File Word gagal dibuat. ${error instanceof Error ? error.message : 'Silakan coba lagi.'}`;
+      } finally {
+        wordButton.disabled = false;
+      }
+    });
+  }
 }
 function halamanPembelajaran(route) {
   const [, pathId, moduleValue] = route.split('/');
@@ -2037,7 +2119,7 @@ function addHomeFeatures() {
   const markup = features.map(([route, type, icon, label]) => `<a href="#${route}" class="feature-button feature-${type}"><span class="feature-button-label"><span class="feature-icon" aria-hidden="true">${icon}</span>${label}</span>${effects()}</a>`).join('');
   actions.insertAdjacentHTML('afterend', `<div class="feature-actions" aria-label="Fitur utama">${markup}</div>`);
 }
-function render() { stopHomeCarousel(); pilotCitySimulationCleanup?.(); pilotCitySimulationCleanup = null; pilotInfrastructureSimulationCleanup?.(); pilotInfrastructureSimulationCleanup = null; pilotDomainSimulationCleanup?.(); pilotDomainSimulationCleanup = null; const route = location.hash.slice(1) || initialRoute(); if (route === 'admin' && !hasCmsAccess()) { location.hash = getCurrentSession() ? 'profile' : 'auth'; return; } document.body.classList.toggle('home-mode', route === 'home'); document.body.classList.toggle('onboarding-mode', route === 'onboarding'); document.body.classList.toggle('auth-mode', route === 'auth'); document.body.classList.toggle('shop-mode', route === 'shop'); applyPreferences(); app.innerHTML = route.startsWith('pembelajaran/') ? halamanPembelajaran(route) : views[route]?.() || home(); bindPokjaRibbon(); bindPilotRibbon(); app.querySelectorAll('img:not([loading])').forEach(image => { image.loading = 'lazy'; image.decoding = 'async'; }); nav.querySelectorAll('a').forEach(link => link.classList.toggle('active', link.dataset.route === route || (route.startsWith('pembelajaran/') && link.dataset.route === 'belajar'))); if (route === 'pilot-project') { const scene = app.querySelector('[data-pilot-city-scene]'); import('./pilot-city-3d.js?v=8').then(({ mountPilotCityScene }) => { if (scene?.isConnected) pilotCitySimulationCleanup = mountPilotCityScene(scene); }).catch(error => { console.error('Simulasi 3D kota tidak dapat dimuat.', error); const status = scene?.querySelector('[data-pilot-city-status]'); if (status) status.textContent = 'Visualisasi 3D tidak dapat dimuat di perangkat ini. Informasi pilot tetap tersedia di bawah.'; }); } if (route === 'onboarding') bindOnboarding(); if (route === 'auth') bindAuth(); if (route === 'profile') bindProfile(); if (route === 'pengaturan') bindAppSettings(); if (route.startsWith('pembelajaran/')) bindLearningChecklist(); if (route === 'admin') bindAdmin({ root: app.querySelector('.cms-page'), data, session: getCurrentSession(), getUsers: getLocalUsers, escapeHtml: esc, databaseMode: databaseAuthMode, apiRequest: userApi }); if (route === 'shop') bindShop({ root: app.querySelector('.twini-shop'), catalog: data.merch, escapeHtml: esc }); if (route === 'home') { const heroImage = app.querySelector('.hero-art'); if (heroImage) heroImage.outerHTML = heroCarouselMarkup(); addHomeFeatures(); bindHomeCarousel(); } window.scrollTo(0,0); }
+function render() { stopHomeCarousel(); pilotCitySimulationCleanup?.(); pilotCitySimulationCleanup = null; pilotInfrastructureSimulationCleanup?.(); pilotInfrastructureSimulationCleanup = null; pilotDomainSimulationCleanup?.(); pilotDomainSimulationCleanup = null; const route = location.hash.slice(1) || initialRoute(); if (route === 'admin' && !hasCmsAccess()) { location.hash = getCurrentSession() ? 'profile' : 'auth'; return; } document.body.classList.toggle('home-mode', route === 'home'); document.body.classList.toggle('onboarding-mode', route === 'onboarding'); document.body.classList.toggle('auth-mode', route === 'auth'); document.body.classList.toggle('shop-mode', route === 'shop'); applyPreferences(); app.innerHTML = route.startsWith('pembelajaran/') ? halamanPembelajaran(route) : views[route]?.() || home(); bindPokjaRibbon(); bindPilotRibbon(); app.querySelectorAll('img:not([loading])').forEach(image => { image.loading = 'lazy'; image.decoding = 'async'; }); nav.querySelectorAll('a').forEach(link => link.classList.toggle('active', link.dataset.route === route || (route.startsWith('pembelajaran/') && link.dataset.route === 'belajar'))); if (route === 'pilot-project') { const scene = app.querySelector('[data-pilot-city-scene]'); import('./pilot-city-3d.js?v=8').then(({ mountPilotCityScene }) => { if (scene?.isConnected) pilotCitySimulationCleanup = mountPilotCityScene(scene); }).catch(error => { console.error('Simulasi 3D kota tidak dapat dimuat.', error); const status = scene?.querySelector('[data-pilot-city-status]'); if (status) status.textContent = 'Visualisasi 3D tidak dapat dimuat di perangkat ini. Informasi pilot tetap tersedia di bawah.'; }); } if (route === 'onboarding') bindOnboarding(); if (route === 'auth') bindAuth(); if (route === 'profile') bindProfile(); if (route === 'pengaturan') bindAppSettings(); if (route === 'belajar') bindLearningPdfExport(); if (route.startsWith('pembelajaran/')) bindLearningChecklist(); if (route === 'admin') bindAdmin({ root: app.querySelector('.cms-page'), data, session: getCurrentSession(), getUsers: getLocalUsers, escapeHtml: esc, databaseMode: databaseAuthMode, apiRequest: userApi }); if (route === 'shop') bindShop({ root: app.querySelector('.twini-shop'), catalog: data.merch, escapeHtml: esc }); if (route === 'home') { const heroImage = app.querySelector('.hero-art'); if (heroImage) heroImage.outerHTML = heroCarouselMarkup(); addHomeFeatures(); bindHomeCarousel(); } window.scrollTo(0,0); }
 function closeProfileMenu() { profileMenu.hidden = true; menuToggle.setAttribute('aria-expanded', 'false'); menuToggle.setAttribute('aria-label', 'Buka menu'); }
 menuToggle.addEventListener('click', () => {
   const isOpen = menuToggle.getAttribute('aria-expanded') === 'true';
