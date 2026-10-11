@@ -2164,6 +2164,7 @@ function addHomeFeatures() {
     ['pilot-project', 'pilot', '◈', 'Pilot Project'],
     ['rating-tool', 'rating', '◉', 'Rating Tool DT'],
     ['kolaborasi', 'collaboration', '↔', 'Kolaborasi & Dukungan'],
+    ['twini-book', 'book', '▤', 'Twini Book'],
   ];
   const markup = features.map(([route, type, icon, label]) => `<a href="#${route}" class="feature-button feature-${type}"><span class="feature-button-label"><span class="feature-icon" aria-hidden="true">${icon}</span>${label}</span>${effects()}</a>`).join('');
   actions.insertAdjacentHTML('afterend', `<div class="feature-actions" aria-label="Fitur utama">${markup}</div>`);
