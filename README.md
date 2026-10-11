@@ -21,6 +21,7 @@ Aplikasi web responsif dan PWA untuk **Indonesia Digital Twin Community (IDTC)**
 - Beranda dengan ringkasan komunitas, peta, dan carousel materi pengenalan.
 - Informasi pengurus, dewan pembina, sekretariat, dan tiga Pokja utama.
 - Materi belajar Digital Twin dengan rangkuman PDF dan Microsoft Word (.docx) yang dapat diunduh, mencakup seluruh jalur, modul, section terperinci, checklist, dan hasil belajar yang tersedia.
+- Twini Book dengan katalog bacaan Digital Twin yang dapat dicari dan difilter berdasarkan jalur pembelajaran, serta tautan untuk membaca materi di aplikasi.
 - Onboarding dengan ilustrasi IDTC dan TwiniShop.
 - Profil, avatar, pengaturan tema, dan mode gelap; akun dapat memakai localStorage atau PostgreSQL server-side.
 - CMS User Management dengan role Member/Admin/Super Admin, session server-side, serta audit log bila PostgreSQL dikonfigurasi.

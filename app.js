@@ -1677,6 +1677,55 @@ function belajar() {
   const downloads = `<div class="learning-exports"><button class="button primary" type="button" data-download-learning-pdf>Unduh semua materi sebagai PDF <span aria-hidden="true">↓</span></button><p data-learning-pdf-status role="status" aria-live="polite">PDF mencakup semua jalur, modul, dan penjelasan section yang tersedia.</p><button class="button primary" type="button" data-download-learning-docx>Unduh semua materi sebagai Word <span aria-hidden="true">↓</span></button><p data-learning-docx-status role="status" aria-live="polite">File Microsoft Word (.docx) mencakup seluruh materi dan penjelasan section yang tersedia.</p></div>`;
   return `<section class="section">${sectionHead('Materi belajar','Peta belajar Digital Twin','Pilih jalur yang sesuai dengan peran dan kebutuhanmu.')} ${startLink}${downloads}${paths}</section>`;
 }
+function learningSectionCount(sections = []) {
+  return sections.reduce((total, section) => total + 1 + learningSectionCount(section.subbagian || []), 0);
+}
+function twiniBook() {
+  const paths = data.materi.jalur;
+  const books = paths.flatMap(path => path.modul.map((module, moduleIndex) => ({
+    path,
+    module,
+    moduleIndex,
+    sectionCount: learningSectionCount(module.konten || []),
+  })));
+  const categories = [
+    `<button class="twini-book-category is-active" type="button" data-book-category="all" aria-pressed="true">Semua kategori <span>${books.length}</span></button>`,
+    ...paths.map(path => `<button class="twini-book-category" type="button" data-book-category="${esc(path.id)}" aria-pressed="false">Jalur ${esc(path.kode)} · ${esc(path.nama)} <span>${path.modul.length}</span></button>`),
+  ].join('');
+  const cards = books.map(({ path, module, moduleIndex, sectionCount }) => `<article class="card twini-book-card" data-book-card data-book-path="${esc(path.id)}"><div class="twini-book-cover" aria-hidden="true"><span>TW</span><small>DIGITAL TWIN</small></div><div class="twini-book-copy"><p class="role ${colorClass(path.warna)}">JALUR ${esc(path.kode)} · ${esc(path.nama)}</p><h3>${esc(module.judul)}</h3><p>${esc(module.ringkasan || 'Ringkasan materi ini belum tersedia.')}</p><div class="chips">${(module.fokus || []).slice(0, 3).map(item => `<span class="chip ${colorClass(path.warna)}">${esc(item)}</span>`).join('')}</div><small class="twini-book-meta">${esc(module.tingkat || 'Materi belajar')} · ${sectionCount ? `${sectionCount} section tersedia` : 'Materi ringkasan'}</small><a class="button primary" href="${learningRoute(path, moduleIndex)}">Baca materi <span aria-hidden="true">→</span></a></div></article>`).join('');
+  return `<section class="section twini-book-page">${sectionHead('Perpustakaan digital','Twini Book','Koleksi bacaan pengetahuan Digital Twin berdasarkan jalur pembelajaran IDTC.')}<div class="card twini-book-intro"><span class="twini-book-intro-icon" aria-hidden="true">▤</span><div><strong>${books.length} bacaan digital</strong><p>Telusuri materi berdasarkan kategori dan baca langsung di aplikasi. Daftar ini mengambil konten dari modul Belajar IDTC.</p></div></div><label class="twini-book-search"><span aria-hidden="true">⌕</span><span class="twini-sr-only">Cari buku atau topik</span><input type="search" data-book-search placeholder="Cari judul atau topik Digital Twin..." autocomplete="off" /></label><div class="twini-book-categories" role="group" aria-label="Kategori bacaan">${categories}</div><p class="twini-book-count" data-book-count aria-live="polite">${books.length} bacaan ditampilkan</p><div class="twini-book-list" data-book-list>${cards}<p class="card empty twini-book-empty" data-book-empty hidden>Bacaan tidak ditemukan. Coba kata kunci atau kategori lain.</p></div></section>`;
+}
+function bindTwiniBook() {
+  const search = app.querySelector('[data-book-search]');
+  const cards = [...app.querySelectorAll('[data-book-card]')];
+  const categoryButtons = [...app.querySelectorAll('[data-book-category]')];
+  const empty = app.querySelector('[data-book-empty]');
+  const count = app.querySelector('[data-book-count]');
+  if (!search || !count) return;
+  let category = 'all';
+  const filter = () => {
+    const query = search.value.trim().toLocaleLowerCase('id-ID');
+    let visible = 0;
+    cards.forEach(card => {
+      const matchesCategory = category === 'all' || card.dataset.bookPath === category;
+      const matchesQuery = !query || card.textContent.toLocaleLowerCase('id-ID').includes(query);
+      card.hidden = !(matchesCategory && matchesQuery);
+      if (!card.hidden) visible += 1;
+    });
+    count.textContent = `${visible} bacaan ditampilkan`;
+    if (empty) empty.hidden = visible > 0;
+  };
+  search.addEventListener('input', filter);
+  categoryButtons.forEach(button => button.addEventListener('click', () => {
+    category = button.dataset.bookCategory || 'all';
+    categoryButtons.forEach(item => {
+      const active = item === button;
+      item.classList.toggle('is-active', active);
+      item.setAttribute('aria-pressed', String(active));
+    });
+    filter();
+  }));
+}
 function learningExportProgress(path, module) {
   const items = checklistItems(module);
   const checked = savedChecklist(learningChecklistKey(path, module));
@@ -1811,7 +1860,7 @@ function profil() {
   return `<section class="section">${sectionHead('Profil anggota','Satu ekosistem, banyak perspektif','Gambaran anggota IDTC dari database pendaftaran.')}<div class="profile-intro"><strong>${anggota.namaUnik}</strong><p>nama unik dari ${anggota.respons} responden</p></div><div class="card"><h3>Komposisi ekosistem</h3>${bars}</div><div class="card"><h3>Sektor teratas</h3>${sectors}</div><div class="card"><h3>Institusi dengan anggota terbanyak</h3>${anggota.topInstitusi.slice(0,5).map((item,i) => `<div class="list-item"><span class="index">${i+1}</span><div><strong>${esc(item.nama)}</strong><small>${item.jumlah} anggota</small></div></div>`).join('')}</div></section>`;
 }
 function hasCmsAccess(session = getCurrentSession()) { return ['admin', 'super_admin'].includes(session?.role); }
-const views = { home, pengurus, 'info-idtc': infoIdtc, profile, pengaturan, regulasi, pokja, 'pilot-project': pilotProjectPageWithCategories, 'rating-tool': ratingTool, kolaborasi: collaborationPage, belajar, onboarding, auth, 'registration-success': registrationSuccess, shop: () => shopPage(), admin: () => adminPanel(getCurrentSession(), esc) };
+const views = { home, pengurus, 'info-idtc': infoIdtc, profile, pengaturan, regulasi, pokja, 'pilot-project': pilotProjectPageWithCategories, 'rating-tool': ratingTool, kolaborasi: collaborationPage, belajar, 'twini-book': twiniBook, onboarding, auth, 'registration-success': registrationSuccess, shop: () => shopPage(), admin: () => adminPanel(getCurrentSession(), esc) };
 const TWINIAI_STOP_WORDS = new Set(['apa', 'apakah', 'bagaimana', 'mengapa', 'kenapa', 'siapa', 'kapan', 'dimana', 'di', 'ke', 'dari', 'dan', 'atau', 'yang', 'itu', 'ini', 'adalah', 'untuk', 'pada', 'dengan', 'tentang', 'saya', 'aku', 'tolong', 'bisa', 'dapat', 'kah', 'nya']);
 const TWINIAI_COMMON_WORDS = new Set(['digital', 'twin', 'data']);
 const TWINIAI_FALLBACK = 'Saya belum menemukan jawaban yang cukup cocok di basis pengetahuan TwiniAI. Coba tanyakan tentang konsep, data, standar, arsitektur, keamanan, penerapan, biaya, atau langkah pilot.';
@@ -2119,7 +2168,7 @@ function addHomeFeatures() {
   const markup = features.map(([route, type, icon, label]) => `<a href="#${route}" class="feature-button feature-${type}"><span class="feature-button-label"><span class="feature-icon" aria-hidden="true">${icon}</span>${label}</span>${effects()}</a>`).join('');
   actions.insertAdjacentHTML('afterend', `<div class="feature-actions" aria-label="Fitur utama">${markup}</div>`);
 }
-function render() { stopHomeCarousel(); pilotCitySimulationCleanup?.(); pilotCitySimulationCleanup = null; pilotInfrastructureSimulationCleanup?.(); pilotInfrastructureSimulationCleanup = null; pilotDomainSimulationCleanup?.(); pilotDomainSimulationCleanup = null; const route = location.hash.slice(1) || initialRoute(); if (route === 'admin' && !hasCmsAccess()) { location.hash = getCurrentSession() ? 'profile' : 'auth'; return; } document.body.classList.toggle('home-mode', route === 'home'); document.body.classList.toggle('onboarding-mode', route === 'onboarding'); document.body.classList.toggle('auth-mode', route === 'auth'); document.body.classList.toggle('shop-mode', route === 'shop'); applyPreferences(); app.innerHTML = route.startsWith('pembelajaran/') ? halamanPembelajaran(route) : views[route]?.() || home(); bindPokjaRibbon(); bindPilotRibbon(); app.querySelectorAll('img:not([loading])').forEach(image => { image.loading = 'lazy'; image.decoding = 'async'; }); nav.querySelectorAll('a').forEach(link => link.classList.toggle('active', link.dataset.route === route || (route.startsWith('pembelajaran/') && link.dataset.route === 'belajar'))); if (route === 'pilot-project') { const scene = app.querySelector('[data-pilot-city-scene]'); import('./pilot-city-3d.js?v=8').then(({ mountPilotCityScene }) => { if (scene?.isConnected) pilotCitySimulationCleanup = mountPilotCityScene(scene); }).catch(error => { console.error('Simulasi 3D kota tidak dapat dimuat.', error); const status = scene?.querySelector('[data-pilot-city-status]'); if (status) status.textContent = 'Visualisasi 3D tidak dapat dimuat di perangkat ini. Informasi pilot tetap tersedia di bawah.'; }); } if (route === 'onboarding') bindOnboarding(); if (route === 'auth') bindAuth(); if (route === 'profile') bindProfile(); if (route === 'pengaturan') bindAppSettings(); if (route === 'belajar') bindLearningPdfExport(); if (route.startsWith('pembelajaran/')) bindLearningChecklist(); if (route === 'admin') bindAdmin({ root: app.querySelector('.cms-page'), data, session: getCurrentSession(), getUsers: getLocalUsers, escapeHtml: esc, databaseMode: databaseAuthMode, apiRequest: userApi }); if (route === 'shop') bindShop({ root: app.querySelector('.twini-shop'), catalog: data.merch, escapeHtml: esc }); if (route === 'home') { const heroImage = app.querySelector('.hero-art'); if (heroImage) heroImage.outerHTML = heroCarouselMarkup(); addHomeFeatures(); bindHomeCarousel(); } window.scrollTo(0,0); }
+function render() { stopHomeCarousel(); pilotCitySimulationCleanup?.(); pilotCitySimulationCleanup = null; pilotInfrastructureSimulationCleanup?.(); pilotInfrastructureSimulationCleanup = null; pilotDomainSimulationCleanup?.(); pilotDomainSimulationCleanup = null; const route = location.hash.slice(1) || initialRoute(); if (route === 'admin' && !hasCmsAccess()) { location.hash = getCurrentSession() ? 'profile' : 'auth'; return; } document.body.classList.toggle('home-mode', route === 'home'); document.body.classList.toggle('onboarding-mode', route === 'onboarding'); document.body.classList.toggle('auth-mode', route === 'auth'); document.body.classList.toggle('shop-mode', route === 'shop'); applyPreferences(); app.innerHTML = route.startsWith('pembelajaran/') ? halamanPembelajaran(route) : views[route]?.() || home(); bindPokjaRibbon(); bindPilotRibbon(); app.querySelectorAll('img:not([loading])').forEach(image => { image.loading = 'lazy'; image.decoding = 'async'; }); nav.querySelectorAll('a').forEach(link => link.classList.toggle('active', link.dataset.route === route || (route.startsWith('pembelajaran/') && link.dataset.route === 'belajar'))); if (route === 'pilot-project') { const scene = app.querySelector('[data-pilot-city-scene]'); import('./pilot-city-3d.js?v=8').then(({ mountPilotCityScene }) => { if (scene?.isConnected) pilotCitySimulationCleanup = mountPilotCityScene(scene); }).catch(error => { console.error('Simulasi 3D kota tidak dapat dimuat.', error); const status = scene?.querySelector('[data-pilot-city-status]'); if (status) status.textContent = 'Visualisasi 3D tidak dapat dimuat di perangkat ini. Informasi pilot tetap tersedia di bawah.'; }); } if (route === 'onboarding') bindOnboarding(); if (route === 'auth') bindAuth(); if (route === 'profile') bindProfile(); if (route === 'pengaturan') bindAppSettings(); if (route === 'belajar') bindLearningPdfExport(); if (route === 'twini-book') bindTwiniBook(); if (route.startsWith('pembelajaran/')) bindLearningChecklist(); if (route === 'admin') bindAdmin({ root: app.querySelector('.cms-page'), data, session: getCurrentSession(), getUsers: getLocalUsers, escapeHtml: esc, databaseMode: databaseAuthMode, apiRequest: userApi }); if (route === 'shop') bindShop({ root: app.querySelector('.twini-shop'), catalog: data.merch, escapeHtml: esc }); if (route === 'home') { const heroImage = app.querySelector('.hero-art'); if (heroImage) heroImage.outerHTML = heroCarouselMarkup(); addHomeFeatures(); bindHomeCarousel(); } window.scrollTo(0,0); }
 function closeProfileMenu() { profileMenu.hidden = true; menuToggle.setAttribute('aria-expanded', 'false'); menuToggle.setAttribute('aria-label', 'Buka menu'); }
 menuToggle.addEventListener('click', () => {
   const isOpen = menuToggle.getAttribute('aria-expanded') === 'true';
