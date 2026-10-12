@@ -372,7 +372,7 @@ body.mode-dark.home-mode .hero { background:linear-gradient(128deg,#06172e 0%,#0
 body .bottom-nav a.nav-bounce small { background:none !important; color:inherit !important; -webkit-text-fill-color:currentColor !important; -webkit-background-clip:border-box; background-clip:border-box; animation:none; }
 .bottom-nav a span { line-height:1; }
 .hero-actions { flex-wrap:wrap; }
-.feature-actions { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.feature-actions { grid-template-columns:repeat(3,minmax(0,1fr)); }.bottom-nav { grid-template-columns:repeat(5,minmax(0,1fr)); }
 .feature-button { min-width:0; padding:6px; text-align:center; }
 .account-card-heading { grid-template-columns:58px minmax(0,1fr) auto; }
 .settings-card .setting-row > div { min-width:0; }
@@ -829,6 +829,7 @@ body .bottom-nav a.nav-bounce small { background:none !important; color:inherit 
 .twini-book-copy .button { display:flex; width:100%; min-height:38px; align-items:center; justify-content:space-between; padding:0 10px; font-size:10px; }
 .twini-book-card[hidden] { display:none; }
 .twini-book-empty[hidden] { display:none; }
+.twini-games-intro { display:flex; align-items:center; gap:13px; }.twini-games-intro-icon { width:44px; height:44px; display:grid; place-items:center; flex:none; border-radius:12px; color:#8b5cf6; background:rgba(139,92,246,.1); font-size:22px; }.twini-games-intro strong { display:block; margin-bottom:4px; color:var(--ink); font:700 15px 'Space Grotesk',sans-serif; }.twini-games-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px; margin-top:14px; }.twini-game-card { display:flex; flex-direction:column; justify-content:space-between; gap:12px; margin:0; padding:15px; }.twini-game-head { display:flex; align-items:flex-start; gap:12px; }.twini-game-icon { width:42px; height:42px; display:grid; place-items:center; flex:none; border-radius:11px; color:#087a73; background:linear-gradient(150deg,rgba(13,139,131,.14),rgba(139,92,246,.12)); font-size:20px; }.twini-game-head h3 { margin:0 0 4px; color:var(--ink); font:700 14px/1.3 'Space Grotesk',sans-serif; }.twini-game-head p { margin:0; color:var(--muted); font-size:11px; line-height:1.55; }.twini-game-foot { display:flex; align-items:center; justify-content:space-between; gap:10px; }.twini-game-status { padding:4px 9px; border-radius:20px; color:#8a6d3b; background:rgba(243,164,119,.16); font-size:9px; font-weight:700; letter-spacing:.02em; }.twini-game-foot .button:disabled { cursor:not-allowed; opacity:.55; }.twini-games-note { margin:14px 0 0; color:var(--muted); font-size:10px; line-height:1.6; text-align:center; }
 @media(max-width:520px) { .pilot-ribbon { width:min(220px,calc(100vw - 42px)); padding:9px 8px 9px 38px; }.pilot-ribbon-link { min-height:40px; font-size:8px; } }
 @media(prefers-reduced-motion:reduce) { .pilot-ribbon,.pilot-ribbon-toggle span { transition:none; } }
 @media(max-width:700px) { .pilot-infra-scene-wrap { grid-template-columns:minmax(0,1fr); }.pilot-infra-viewport { height:350px; }.pilot-infra-selected { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:6px 12px; padding:11px 13px; }.pilot-infra-selected > span,.pilot-infra-selected p { grid-column:1/-1; }.pilot-infra-selected-meta { grid-column:1/-1; }.pilot-infra-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); } }

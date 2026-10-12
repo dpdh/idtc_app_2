@@ -1,12 +1,12 @@
-const CACHE_VERSION = 'v167';
+const CACHE_VERSION = 'v168';
 const SHELL_CACHE = `idtc-mobile-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `idtc-runtime-${CACHE_VERSION}`;
 const CORE = [
   './',
   './index.html',
-  './styles.css?v=109',
+  './styles.css?v=110',
   './twini-config.js?v=1',
-  './app.js?v=134',
+  './app.js?v=135',
   './learning-pdf.js?v=2',
   './learning-docx.js?v=1',
   './pilot-city-3d.js?v=8',
