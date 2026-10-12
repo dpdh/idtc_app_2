@@ -1680,6 +1680,104 @@ function belajar() {
 function learningSectionCount(sections = []) {
   return sections.reduce((total, section) => total + 1 + learningSectionCount(section.subbagian || []), 0);
 }
+function flipbookBlockHtml(block, depth = 0) {
+  const heading = depth === 0 ? 'h4' : 'h5';
+  const title = block.judul ? `<${heading}>${esc(block.judul)}</${heading}>` : '';
+  const paragraphs = (block.paragraf || []).map(paragraph => `<p>${esc(paragraph)}</p>`).join('');
+  const points = (block.poin || []).length ? `<ul>${block.poin.map(point => `<li>${esc(point)}</li>`).join('')}</ul>` : '';
+  const steps = (block.langkah || []).length ? `<ol>${block.langkah.map(step => `<li>${esc(step)}</li>`).join('')}</ol>` : '';
+  const flow = (block.alur || []).length ? `<ol class="flipbook-flow">${block.alur.map(step => `<li>${esc(step)}</li>`).join('')}</ol>` : '';
+  const quote = block.kutipan ? `<blockquote>${esc(block.kutipan)}</blockquote>` : '';
+  const note = block.catatan ? `<aside class="flipbook-note"><strong>Catatan</strong><p>${esc(block.catatan)}</p></aside>` : '';
+  const table = block.tabel ? `<div class="flipbook-table-wrap"><table><thead><tr>${block.tabel.kolom.map(cell => `<th scope="col">${esc(cell)}</th>`).join('')}</tr></thead><tbody>${block.tabel.baris.map(row => `<tr>${row.map(cell => `<td>${esc(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>` : '';
+  const subsections = (block.subbagian || []).map(item => flipbookBlockHtml(item, depth + 1)).join('');
+  return `<div class="flipbook-block ${depth ? 'flipbook-subblock' : ''}">${title}${paragraphs}${points}${steps}${flow}${table}${quote}${note}${subsections}</div>`;
+}
+function flipbookPages(path, module) {
+  const cover = `<div class="flipbook-cover-page"><span class="flipbook-cover-badge" aria-hidden="true">TW</span><p class="flipbook-cover-path">JALUR ${esc(path.kode)} · ${esc(path.nama)}</p><h3 class="flipbook-cover-title">${esc(module.judul)}</h3><p class="flipbook-cover-summary">${esc(module.ringkasan || 'Ringkasan materi ini belum tersedia.')}</p>${(module.fokus || []).length ? `<div class="flipbook-cover-chips">${module.fokus.map(item => `<span>${esc(item)}</span>`).join('')}</div>` : ''}<p class="flipbook-cover-meta">${esc(module.tingkat || 'Materi belajar')}${module.hasil ? ` · Hasil: ${esc(module.hasil)}` : ''}</p></div>`;
+  const intro = `<div class="flipbook-intro-page"><p class="flipbook-page-label">Pengantar</p><h3 class="flipbook-intro-title">${esc(module.judul)}</h3>${module.hasil ? `<div class="flipbook-outcome"><strong>Hasil belajar</strong><p>${esc(module.hasil)}</p></div>` : ''}${(module.fokus || []).length ? `<div class="flipbook-focus"><strong>Fokus pembelajaran</strong><ul>${module.fokus.map(item => `<li>${esc(item)}</li>`).join('')}</ul></div>` : ''}<p class="flipbook-intro-hint">Gunakan panah atau ketuk area tepi buku untuk membalik halaman.</p></div>`;
+  const sections = (module.konten || []).map(section => flipbookBlockHtml(section)).join('');
+  const body = sections ? `<div class="flipbook-content-page"><p class="flipbook-page-label">Materi</p>${sections}</div>` : `<div class="flipbook-content-page"><p class="flipbook-page-label">Materi</p><p class="flipbook-empty-note">Uraian section terperinci untuk modul ini belum tersedia. Ringkasan, fokus, dan hasil belajar di atas adalah informasi yang tersedia saat ini.</p></div>`;
+  return [cover, intro, body];
+}
+function flipbookOverlayMarkup(path, module) {
+  return `<div class="flipbook-overlay" data-flipbook-overlay role="dialog" aria-modal="true" aria-label="Flipbook ${esc(module.judul)}"><div class="flipbook-backdrop" data-flipbook-close></div><div class="flipbook-shell"><header class="flipbook-toolbar"><div class="flipbook-toolbar-title"><p class="flipbook-page-label">Twini Book · Flipbook</p><strong>${esc(module.judul)}</strong></div><button class="flipbook-close" type="button" data-flipbook-close aria-label="Tutup flipbook">×</button></header><div class="flipbook-stage" data-flipbook-stage><button class="flipbook-nav flipbook-prev" type="button" data-flipbook-prev aria-label="Halaman sebelumnya"><span aria-hidden="true">‹</span></button><div class="flipbook-book" data-flipbook-book><div class="flipbook-spine" aria-hidden="true"></div><div class="flipbook-page flipbook-page-left" data-flipbook-left></div><div class="flipbook-page flipbook-page-right" data-flipbook-right></div><div class="flipbook-flipper" data-flipbook-flipper aria-hidden="true"><div class="flipbook-flipper-face flipbook-flipper-front" data-flipbook-flipper-front></div><div class="flipbook-flipper-face flipbook-flipper-back" data-flipbook-flipper-back></div></div></div><button class="flipbook-nav flipbook-next" type="button" data-flipbook-next aria-label="Halaman berikutnya"><span aria-hidden="true">›</span></button></div><footer class="flipbook-footer"><span class="flipbook-progress" data-flipbook-progress aria-live="polite">Halaman 1</span><div class="flipbook-dots" data-flipbook-dots></div></footer></div></div>`;
+}
+function openFlipbook(pathId, moduleIndex) {
+  closeFlipbook();
+  const path = data.materi.jalur.find(item => item.id === pathId);
+  const module = path?.modul[Number(moduleIndex)];
+  if (!path || !module) return;
+  const pages = flipbookPages(path, module);
+  const overlay = document.createElement('div');
+  overlay.className = 'flipbook-portal';
+  overlay.innerHTML = flipbookOverlayMarkup(path, module);
+  document.body.appendChild(overlay);
+  document.body.classList.add('flipbook-open');
+  let current = 0;
+  let animating = false;
+  const book = overlay.querySelector('[data-flipbook-book]');
+  const left = overlay.querySelector('[data-flipbook-left]');
+  const right = overlay.querySelector('[data-flipbook-right]');
+  const prevBtn = overlay.querySelector('[data-flipbook-prev]');
+  const nextBtn = overlay.querySelector('[data-flipbook-next]');
+  const progress = overlay.querySelector('[data-flipbook-progress]');
+  const dots = overlay.querySelector('[data-flipbook-dots]');
+  const flipper = overlay.querySelector('[data-flipbook-flipper]');
+  const flipperFront = overlay.querySelector('[data-flipbook-flipper-front]');
+  const flipperBack = overlay.querySelector('[data-flipbook-flipper-back]');
+  dots.innerHTML = pages.map((_, index) => `<span class="flipbook-dot${index === 0 ? ' is-active' : ''}" data-flipbook-dot="${index}"></span>`).join('');
+  const spreadIndex = page => Math.floor(page / 2);
+  const totalSpreads = Math.ceil(pages.length / 2);
+  const paint = () => {
+    const spread = spreadIndex(current);
+    const leftPage = spread * 2;
+    const rightPage = leftPage + 1;
+    left.innerHTML = pages[leftPage] || '';
+    right.innerHTML = pages[rightPage] || '';
+    left.classList.toggle('is-empty', !pages[leftPage]);
+    right.classList.toggle('is-empty', !pages[rightPage]);
+    book.classList.toggle('is-cover', leftPage === 0);
+    progress.textContent = `Halaman ${current + 1} dari ${pages.length}`;
+    dots.querySelectorAll('[data-flipbook-dot]').forEach((dot, index) => dot.classList.toggle('is-active', index === spread));
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current >= pages.length - 1;
+    overlay.querySelectorAll('[data-flipbook-dot]').forEach(dot => dot.addEventListener('click', () => { if (!animating) { current = Number(dot.dataset.flipbookDot) * 2; paint(); } }));
+  };
+  const flip = direction => {
+    if (animating) return;
+    const target = current + direction;
+    if (target < 0 || target >= pages.length) return;
+    animating = true;
+    const forward = direction > 0;
+    flipperFront.innerHTML = forward ? pages[current] : pages[target];
+    flipperBack.innerHTML = forward ? pages[target] : pages[current];
+    flipper.classList.remove('is-forward', 'is-backward');
+    void flipper.offsetWidth;
+    flipper.classList.add('is-flipping', forward ? 'is-forward' : 'is-backward');
+    const done = () => { flipper.classList.remove('is-flipping', 'is-forward', 'is-backward'); current = target; paint(); animating = false; };
+    flipper.addEventListener('animationend', done, { once: true });
+    setTimeout(() => { if (animating) done(); }, 700);
+  };
+  prevBtn.addEventListener('click', () => flip(-1));
+  nextBtn.addEventListener('click', () => flip(1));
+  overlay.querySelectorAll('[data-flipbook-close]').forEach(btn => btn.addEventListener('click', closeFlipbook));
+  const onKey = event => {
+    if (event.key === 'Escape') closeFlipbook();
+    else if (event.key === 'ArrowRight') flip(1);
+    else if (event.key === 'ArrowLeft') flip(-1);
+  };
+  document.addEventListener('keydown', onKey);
+  overlay._flipbookCleanup = () => document.removeEventListener('keydown', onKey);
+  paint();
+  const firstOpen = overlay.querySelector('[data-flipbook-next]');
+  firstOpen?.focus({ preventScroll: true });
+}
+function closeFlipbook() {
+  const existing = document.querySelector('.flipbook-portal');
+  if (existing) { existing._flipbookCleanup?.(); existing.remove(); }
+  document.body.classList.remove('flipbook-open');
+}
 function twiniBook() {
   const paths = data.materi.jalur;
   const books = paths.flatMap(path => path.modul.map((module, moduleIndex) => ({
@@ -1692,7 +1790,7 @@ function twiniBook() {
     `<button class="twini-book-category is-active" type="button" data-book-category="all" aria-pressed="true">Semua kategori <span>${books.length}</span></button>`,
     ...paths.map(path => `<button class="twini-book-category" type="button" data-book-category="${esc(path.id)}" aria-pressed="false">Jalur ${esc(path.kode)} · ${esc(path.nama)} <span>${path.modul.length}</span></button>`),
   ].join('');
-  const cards = books.map(({ path, module, moduleIndex, sectionCount }) => `<article class="card twini-book-card" data-book-card data-book-path="${esc(path.id)}"><div class="twini-book-cover" aria-hidden="true"><span>TW</span><small>DIGITAL TWIN</small></div><div class="twini-book-copy"><p class="role ${colorClass(path.warna)}">JALUR ${esc(path.kode)} · ${esc(path.nama)}</p><h3>${esc(module.judul)}</h3><p>${esc(module.ringkasan || 'Ringkasan materi ini belum tersedia.')}</p><div class="chips">${(module.fokus || []).slice(0, 3).map(item => `<span class="chip ${colorClass(path.warna)}">${esc(item)}</span>`).join('')}</div><small class="twini-book-meta">${esc(module.tingkat || 'Materi belajar')} · ${sectionCount ? `${sectionCount} section tersedia` : 'Materi ringkasan'}</small><a class="button primary" href="${learningRoute(path, moduleIndex)}">Baca materi <span aria-hidden="true">→</span></a></div></article>`).join('');
+  const cards = books.map(({ path, module, moduleIndex, sectionCount }) => `<article class="card twini-book-card" data-book-card data-book-path="${esc(path.id)}"><div class="twini-book-cover" aria-hidden="true"><span>TW</span><small>DIGITAL TWIN</small></div><div class="twini-book-copy"><p class="role ${colorClass(path.warna)}">JALUR ${esc(path.kode)} · ${esc(path.nama)}</p><h3>${esc(module.judul)}</h3><p>${esc(module.ringkasan || 'Ringkasan materi ini belum tersedia.')}</p><div class="chips">${(module.fokus || []).slice(0, 3).map(item => `<span class="chip ${colorClass(path.warna)}">${esc(item)}</span>`).join('')}</div><small class="twini-book-meta">${esc(module.tingkat || 'Materi belajar')} · ${sectionCount ? `${sectionCount} section tersedia` : 'Materi ringkasan'}</small><div class="twini-book-actions"><button class="button primary" type="button" data-flipbook-open data-flipbook-path="${esc(path.id)}" data-flipbook-module="${moduleIndex}">Buka Flipbook <span aria-hidden="true">📖</span></button><a class="button ghost" href="${learningRoute(path, moduleIndex)}">Baca materi <span aria-hidden="true">→</span></a></div></div></article>`).join('');
   return `<section class="section twini-book-page">${sectionHead('Perpustakaan digital','Twini Book','Koleksi bacaan pengetahuan Digital Twin berdasarkan jalur pembelajaran IDTC.')}<div class="card twini-book-intro"><span class="twini-book-intro-icon" aria-hidden="true">▤</span><div><strong>${books.length} bacaan digital</strong><p>Telusuri materi berdasarkan kategori dan baca langsung di aplikasi. Daftar ini mengambil konten dari modul Belajar IDTC.</p></div></div><label class="twini-book-search"><span aria-hidden="true">⌕</span><span class="twini-sr-only">Cari buku atau topik</span><input type="search" data-book-search placeholder="Cari judul atau topik Digital Twin..." autocomplete="off" /></label><div class="twini-book-categories" role="group" aria-label="Kategori bacaan">${categories}</div><p class="twini-book-count" data-book-count aria-live="polite">${books.length} bacaan ditampilkan</p><div class="twini-book-list" data-book-list>${cards}<p class="card empty twini-book-empty" data-book-empty hidden>Bacaan tidak ditemukan. Coba kata kunci atau kategori lain.</p></div></section>`;
 }
 function bindTwiniBook() {
@@ -1724,6 +1822,10 @@ function bindTwiniBook() {
       item.setAttribute('aria-pressed', String(active));
     });
     filter();
+  }));
+  const flipbookButtons = [...app.querySelectorAll('[data-flipbook-open]')];
+  flipbookButtons.forEach(button => button.addEventListener('click', () => {
+    openFlipbook(button.dataset.flipbookPath, button.dataset.flipbookModule);
   }));
 }
 function learningExportProgress(path, module) {
@@ -2177,7 +2279,7 @@ function addHomeFeatures() {
   const markup = features.map(([route, type, icon, label]) => `<a href="#${route}" class="feature-button feature-${type}"><span class="feature-button-label"><span class="feature-icon" aria-hidden="true">${icon}</span>${label}</span>${effects()}</a>`).join('');
   actions.insertAdjacentHTML('afterend', `<div class="feature-actions" aria-label="Fitur utama">${markup}</div>`);
 }
-function render() { stopHomeCarousel(); pilotCitySimulationCleanup?.(); pilotCitySimulationCleanup = null; pilotInfrastructureSimulationCleanup?.(); pilotInfrastructureSimulationCleanup = null; pilotDomainSimulationCleanup?.(); pilotDomainSimulationCleanup = null; const route = location.hash.slice(1) || initialRoute(); if (route === 'admin' && !hasCmsAccess()) { location.hash = getCurrentSession() ? 'profile' : 'auth'; return; } document.body.classList.toggle('home-mode', route === 'home'); document.body.classList.toggle('onboarding-mode', route === 'onboarding'); document.body.classList.toggle('auth-mode', route === 'auth'); document.body.classList.toggle('shop-mode', route === 'shop'); applyPreferences(); app.innerHTML = route.startsWith('pembelajaran/') ? halamanPembelajaran(route) : views[route]?.() || home(); bindPokjaRibbon(); bindPilotRibbon(); app.querySelectorAll('img:not([loading])').forEach(image => { image.loading = 'lazy'; image.decoding = 'async'; }); nav.querySelectorAll('a').forEach(link => link.classList.toggle('active', link.dataset.route === route || (route.startsWith('pembelajaran/') && link.dataset.route === 'belajar'))); if (route === 'pilot-project') { const scene = app.querySelector('[data-pilot-city-scene]'); import('./pilot-city-3d.js?v=8').then(({ mountPilotCityScene }) => { if (scene?.isConnected) pilotCitySimulationCleanup = mountPilotCityScene(scene); }).catch(error => { console.error('Simulasi 3D kota tidak dapat dimuat.', error); const status = scene?.querySelector('[data-pilot-city-status]'); if (status) status.textContent = 'Visualisasi 3D tidak dapat dimuat di perangkat ini. Informasi pilot tetap tersedia di bawah.'; }); } if (route === 'onboarding') bindOnboarding(); if (route === 'auth') bindAuth(); if (route === 'profile') bindProfile(); if (route === 'pengaturan') bindAppSettings(); if (route === 'belajar') bindLearningPdfExport(); if (route === 'twini-book') bindTwiniBook(); if (route.startsWith('pembelajaran/')) bindLearningChecklist(); if (route === 'admin') bindAdmin({ root: app.querySelector('.cms-page'), data, session: getCurrentSession(), getUsers: getLocalUsers, escapeHtml: esc, databaseMode: databaseAuthMode, apiRequest: userApi }); if (route === 'shop') bindShop({ root: app.querySelector('.twini-shop'), catalog: data.merch, escapeHtml: esc }); if (route === 'home') { const heroImage = app.querySelector('.hero-art'); if (heroImage) heroImage.outerHTML = heroCarouselMarkup(); addHomeFeatures(); bindHomeCarousel(); } window.scrollTo(0,0); }
+function render() { closeFlipbook(); stopHomeCarousel(); pilotCitySimulationCleanup?.(); pilotCitySimulationCleanup = null; pilotInfrastructureSimulationCleanup?.(); pilotInfrastructureSimulationCleanup = null; pilotDomainSimulationCleanup?.(); pilotDomainSimulationCleanup = null; const route = location.hash.slice(1) || initialRoute(); if (route === 'admin' && !hasCmsAccess()) { location.hash = getCurrentSession() ? 'profile' : 'auth'; return; } document.body.classList.toggle('home-mode', route === 'home'); document.body.classList.toggle('onboarding-mode', route === 'onboarding'); document.body.classList.toggle('auth-mode', route === 'auth'); document.body.classList.toggle('shop-mode', route === 'shop'); applyPreferences(); app.innerHTML = route.startsWith('pembelajaran/') ? halamanPembelajaran(route) : views[route]?.() || home(); bindPokjaRibbon(); bindPilotRibbon(); app.querySelectorAll('img:not([loading])').forEach(image => { image.loading = 'lazy'; image.decoding = 'async'; }); nav.querySelectorAll('a').forEach(link => link.classList.toggle('active', link.dataset.route === route || (route.startsWith('pembelajaran/') && link.dataset.route === 'belajar'))); if (route === 'pilot-project') { const scene = app.querySelector('[data-pilot-city-scene]'); import('./pilot-city-3d.js?v=8').then(({ mountPilotCityScene }) => { if (scene?.isConnected) pilotCitySimulationCleanup = mountPilotCityScene(scene); }).catch(error => { console.error('Simulasi 3D kota tidak dapat dimuat.', error); const status = scene?.querySelector('[data-pilot-city-status]'); if (status) status.textContent = 'Visualisasi 3D tidak dapat dimuat di perangkat ini. Informasi pilot tetap tersedia di bawah.'; }); } if (route === 'onboarding') bindOnboarding(); if (route === 'auth') bindAuth(); if (route === 'profile') bindProfile(); if (route === 'pengaturan') bindAppSettings(); if (route === 'belajar') bindLearningPdfExport(); if (route === 'twini-book') bindTwiniBook(); if (route.startsWith('pembelajaran/')) bindLearningChecklist(); if (route === 'admin') bindAdmin({ root: app.querySelector('.cms-page'), data, session: getCurrentSession(), getUsers: getLocalUsers, escapeHtml: esc, databaseMode: databaseAuthMode, apiRequest: userApi }); if (route === 'shop') bindShop({ root: app.querySelector('.twini-shop'), catalog: data.merch, escapeHtml: esc }); if (route === 'home') { const heroImage = app.querySelector('.hero-art'); if (heroImage) heroImage.outerHTML = heroCarouselMarkup(); addHomeFeatures(); bindHomeCarousel(); } window.scrollTo(0,0); }
 function closeProfileMenu() { profileMenu.hidden = true; menuToggle.setAttribute('aria-expanded', 'false'); menuToggle.setAttribute('aria-label', 'Buka menu'); }
 menuToggle.addEventListener('click', () => {
   const isOpen = menuToggle.getAttribute('aria-expanded') === 'true';
