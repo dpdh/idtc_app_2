@@ -1799,10 +1799,29 @@ function elearningPageHtml(lines) {
   }).join('');
   return `<div class="flipbook-content-page flipbook-doc-page">${html}</div>`;
 }
+const ebookLoaders = {
+  elearning: null,
+  twini: null,
+};
+function ensureElearningBook() {
+  if (Array.isArray(data.elearningBook) && data.elearningBook.length) return Promise.resolve(data.elearningBook);
+  if (!ebookLoaders.elearning) {
+    ebookLoaders.elearning = fetch('data/elearning-book.json?v=1').then(response => response.json()).then(result => { data.elearningBook = Array.isArray(result) ? result : []; return data.elearningBook; }).catch(() => { data.elearningBook = []; return data.elearningBook; });
+  }
+  return ebookLoaders.elearning;
+}
+function ensureTwiniEbook() {
+  if (data.twiniEbook && Array.isArray(data.twiniEbook.pages) && data.twiniEbook.pages.length) return Promise.resolve(data.twiniEbook);
+  if (!ebookLoaders.twini) {
+    ebookLoaders.twini = fetch('data/twini-ebook.json?v=1').then(response => response.json()).then(result => { data.twiniEbook = result || null; return data.twiniEbook; }).catch(() => { data.twiniEbook = null; return data.twiniEbook; });
+  }
+  return ebookLoaders.twini;
+}
 function openELearningFlipbook() {
-  const raw = data.elearningBook;
-  if (!Array.isArray(raw) || !raw.length) return;
-  openFlipbookPages('Rangkuman Pembelajaran Digital Twin', raw.map(elearningPageHtml));
+  ensureElearningBook().then(raw => {
+    if (!Array.isArray(raw) || !raw.length) return;
+    openFlipbookPages('Rangkuman Pembelajaran Digital Twin', raw.map(elearningPageHtml));
+  });
 }
 function twiniEbookPageHtml(page, index, total) {
   const theme = ['teal', 'purple', 'orange'].includes(page.theme) ? page.theme : 'teal';
@@ -1824,10 +1843,11 @@ function twiniEbookPageHtml(page, index, total) {
   return parts.join('');
 }
 function openTwiniEbook() {
-  const book = data.twiniEbook;
-  if (!book || !Array.isArray(book.pages) || !book.pages.length) return;
-  const total = book.pages.length;
-  openFlipbookPages(book.title || 'Twini Ebook', book.pages.map((page, index) => twiniEbookPageHtml(page, index, total)));
+  ensureTwiniEbook().then(book => {
+    if (!book || !Array.isArray(book.pages) || !book.pages.length) return;
+    const total = book.pages.length;
+    openFlipbookPages(book.title || 'Twini Ebook', book.pages.map((page, index) => twiniEbookPageHtml(page, index, total)));
+  });
 }
 function closeFlipbook() {
   const existing = document.querySelector('.flipbook-portal');
@@ -2290,7 +2310,7 @@ function initTwiniWidget() {
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && !panel.hidden) setOpen(false); });
 }
 async function load() {
-  const [anggota, materi, struktur, produk, merch, twini, sensorFaq, bimFaq, authStatus, pokja1Handbook, pokja2Handbook, pokja3Handbook, ecosystemOrganizations, elearningBook, twiniEbook] = await Promise.all([
+  const [anggota, materi, struktur, produk, merch, twini, sensorFaq, bimFaq, authStatus, pokja1Handbook, pokja2Handbook, pokja3Handbook, ecosystemOrganizations, twiniEbook] = await Promise.all([
     ...['anggota', 'materi', 'struktur', 'produk'].map(name => fetch(`data/${name}.json?v=${name === 'struktur' ? 27 : 22}`).then(response => response.json())),
     fetch('data/merch.json?v=22').then(response => response.json()),
     fetch('data/twini-ai.json?v=3').then(response => response.json()),
@@ -2301,7 +2321,6 @@ async function load() {
     fetch('data/pokja2-handbook.json?v=1').then(response => response.json()),
     fetch('data/pokja3-handbook.json?v=1').then(response => response.json()),
     fetch('data/iklan-ekosistem.json?v=1').then(response => response.json()),
-    fetch('data/elearning-book.json?v=1').then(response => response.json()).catch(() => []),
     fetch('data/twini-ebook.json?v=1').then(response => response.json()).catch(() => null),
   ]);
   databaseAuthMode = authStatus.database === true;
@@ -2321,7 +2340,7 @@ async function load() {
   }
   let overrides = {};
   try { overrides = JSON.parse(localStorage.getItem('idtc-cms-content') || '{}') || {}; } catch { overrides = {}; }
-  data = { anggota, materi: mergeLessonContent(materi, overrides.materi), struktur, handbooks: { pokja1: pokja1Handbook, pokja2: pokja2Handbook, pokja3: pokja3Handbook }, produk: overrides.produk || produk, twini: expandTwiniKnowledge(overrides.twini || twini, [...sensorFaqEntries(sensorFaq), ...bimFaqEntries(bimFaq)]), merch, elearningBook: Array.isArray(elearningBook) ? elearningBook : [], twiniEbook: twiniEbook || null };
+  data = { anggota, materi: mergeLessonContent(materi, overrides.materi), struktur, handbooks: { pokja1: pokja1Handbook, pokja2: pokja2Handbook, pokja3: pokja3Handbook }, produk: overrides.produk || produk, twini: expandTwiniKnowledge(overrides.twini || twini, [...sensorFaqEntries(sensorFaq), ...bimFaqEntries(bimFaq)]), merch, elearningBook: [], twiniEbook: twiniEbook || null };
   bindEcosystemAd(ecosystemOrganizations);
   render();
 }
