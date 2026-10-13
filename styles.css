@@ -889,6 +889,28 @@ body.flipbook-open { overflow:hidden; }
 .theme-teal .flipbook-cover-path,.theme-teal .flipbook-ebook-label { color:#0d6a63; }
 .theme-purple .flipbook-cover-path,.theme-purple .flipbook-ebook-label { color:#6d4bc4; }
 .theme-orange .flipbook-cover-path,.theme-orange .flipbook-ebook-label { color:#c25f1f; }
+.flipbook-cover-page { position:relative; overflow:hidden; }
+.flipbook-cover-page::before { position:absolute; top:-40%; right:-20%; width:220px; height:220px; border-radius:50%; content:''; opacity:.16; pointer-events:none; }
+.flipbook-cover-page::after { position:absolute; bottom:-30%; left:-15%; width:180px; height:180px; border-radius:50%; content:''; opacity:.12; pointer-events:none; }
+.flipbook-cover-page > * { position:relative; z-index:1; }
+.flipbook-cover-page.theme-teal { background:linear-gradient(160deg,#e7f6f3 0%,#c9ece5 45%,#a8ded2 100%); }
+.flipbook-cover-page.theme-teal::before { background:radial-gradient(circle,#0aa38f,transparent 70%); }
+.flipbook-cover-page.theme-teal::after { background:radial-gradient(circle,#087a73,transparent 70%); }
+.flipbook-cover-page.theme-teal .flipbook-cover-badge { background:linear-gradient(150deg,#0b4f4a,#0aa38f 72%,#5fbba2); }
+.flipbook-cover-page.theme-purple { background:linear-gradient(160deg,#f0ebfb 0%,#ded3f6 45%,#c6b6f0 100%); }
+.flipbook-cover-page.theme-purple::before { background:radial-gradient(circle,#8b5cf6,transparent 70%); }
+.flipbook-cover-page.theme-purple::after { background:radial-gradient(circle,#6d4bc4,transparent 70%); }
+.flipbook-cover-page.theme-purple .flipbook-cover-badge { background:linear-gradient(150deg,#3d2a72,#8b5cf6 72%,#b39af5); }
+.flipbook-cover-page.theme-orange { background:linear-gradient(160deg,#fdf0e4 0%,#fad9bd 45%,#f4bd93 100%); }
+.flipbook-cover-page.theme-orange::before { background:radial-gradient(circle,#f3a477,transparent 70%); }
+.flipbook-cover-page.theme-orange::after { background:radial-gradient(circle,#d9722c,transparent 70%); }
+.flipbook-cover-page.theme-orange .flipbook-cover-badge { background:linear-gradient(150deg,#a3511a,#f3a477 72%,#f6c39a); }
+.flipbook-cover-page.theme-teal .flipbook-cover-summary { color:#2f5f59; }
+.flipbook-cover-page.theme-purple .flipbook-cover-summary { color:#4a3a7a; }
+.flipbook-cover-page.theme-orange .flipbook-cover-summary { color:#8a5320; }
+.flipbook-cover-page.theme-teal .flipbook-cover-chips span { color:#0d6a63; background:rgba(10,163,143,.16); }
+.flipbook-cover-page.theme-purple .flipbook-cover-chips span { color:#5b3fa8; background:rgba(139,92,246,.16); }
+.flipbook-cover-page.theme-orange .flipbook-cover-chips span { color:#b45f1c; background:rgba(243,164,119,.22); }
 .flipbook-ebook-page { position:relative; height:100%; overflow:hidden; padding:6px 4px; }
 .flipbook-ebook-page.theme-teal { background:linear-gradient(165deg,rgba(13,139,131,.09),rgba(95,187,162,.04)); }
 .flipbook-ebook-page.theme-purple { background:linear-gradient(165deg,rgba(139,92,246,.1),rgba(179,154,245,.05)); }
