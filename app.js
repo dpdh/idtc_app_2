@@ -1693,9 +1693,16 @@ function flipbookBlockHtml(block, depth = 0) {
   const subsections = (block.subbagian || []).map(item => flipbookBlockHtml(item, depth + 1)).join('');
   return `<div class="flipbook-block ${depth ? 'flipbook-subblock' : ''}">${title}${paragraphs}${points}${steps}${flow}${table}${quote}${note}${subsections}</div>`;
 }
+function flipbookThemeClass(color) {
+  return color === 'orange' ? 'theme-orange' : color === 'purple' ? 'theme-purple' : 'theme-teal';
+}
+function flipbookTwiniImage() {
+  return 'assets/img/dni/twini-shop-icon.png';
+}
 function flipbookPages(path, module) {
-  const cover = `<div class="flipbook-cover-page"><span class="flipbook-cover-badge" aria-hidden="true">TW</span><p class="flipbook-cover-path">JALUR ${esc(path.kode)} · ${esc(path.nama)}</p><h3 class="flipbook-cover-title">${esc(module.judul)}</h3><p class="flipbook-cover-summary">${esc(module.ringkasan || 'Ringkasan materi ini belum tersedia.')}</p>${(module.fokus || []).length ? `<div class="flipbook-cover-chips">${module.fokus.map(item => `<span>${esc(item)}</span>`).join('')}</div>` : ''}<p class="flipbook-cover-meta">${esc(module.tingkat || 'Materi belajar')}${module.hasil ? ` · Hasil: ${esc(module.hasil)}` : ''}</p></div>`;
-  const intro = `<div class="flipbook-intro-page"><p class="flipbook-page-label">Pengantar</p><h3 class="flipbook-intro-title">${esc(module.judul)}</h3>${module.hasil ? `<div class="flipbook-outcome"><strong>Hasil belajar</strong><p>${esc(module.hasil)}</p></div>` : ''}${(module.fokus || []).length ? `<div class="flipbook-focus"><strong>Fokus pembelajaran</strong><ul>${module.fokus.map(item => `<li>${esc(item)}</li>`).join('')}</ul></div>` : ''}<p class="flipbook-intro-hint">Gunakan panah atau ketuk area tepi buku untuk membalik halaman.</p></div>`;
+  const theme = flipbookThemeClass(path.warna);
+  const cover = `<div class="flipbook-cover-page theme-${path.warna === 'orange' ? 'orange' : path.warna === 'purple' ? 'purple' : 'teal'}"><div class="flipbook-cover-head"><span class="flipbook-cover-badge" aria-hidden="true">TW</span><img class="flipbook-cover-twini" src="${flipbookTwiniImage()}" alt="Maskot Twini" loading="lazy" decoding="async" /></div><p class="flipbook-cover-path">JALUR ${esc(path.kode)} · ${esc(path.nama)}</p><h3 class="flipbook-cover-title flipbook-highlight">${esc(module.judul)}</h3><p class="flipbook-cover-summary">${esc(module.ringkasan || 'Ringkasan materi ini belum tersedia.')}</p>${(module.fokus || []).length ? `<div class="flipbook-cover-chips">${module.fokus.map(item => `<span>${esc(item)}</span>`).join('')}</div>` : ''}<p class="flipbook-cover-meta">${esc(module.tingkat || 'Materi belajar')}${module.hasil ? ` · Hasil: ${esc(module.hasil)}` : ''}</p></div>`;
+  const intro = `<div class="flipbook-intro-page"><p class="flipbook-page-label">Pengantar</p><h3 class="flipbook-intro-title flipbook-highlight">${esc(module.judul)}</h3>${module.hasil ? `<div class="flipbook-outcome"><strong>Hasil belajar</strong><p>${esc(module.hasil)}</p></div>` : ''}${(module.fokus || []).length ? `<div class="flipbook-focus"><strong>Fokus pembelajaran</strong><ul>${module.fokus.map(item => `<li>${esc(item)}</li>`).join('')}</ul></div>` : ''}<p class="flipbook-intro-hint">Gunakan panah atau ketuk area tepi buku untuk membalik halaman.</p></div>`;
   const sections = (module.konten || []).map(section => flipbookBlockHtml(section)).join('');
   const body = sections ? `<div class="flipbook-content-page"><p class="flipbook-page-label">Materi</p>${sections}</div>` : `<div class="flipbook-content-page"><p class="flipbook-page-label">Materi</p><p class="flipbook-empty-note">Uraian section terperinci untuk modul ini belum tersedia. Ringkasan, fokus, dan hasil belajar di atas adalah informasi yang tersedia saat ini.</p></div>`;
   return [cover, intro, body];
@@ -1703,15 +1710,12 @@ function flipbookPages(path, module) {
 function flipbookOverlayMarkup(path, module) {
   return `<div class="flipbook-overlay" data-flipbook-overlay role="dialog" aria-modal="true" aria-label="Flipbook ${esc(module.judul)}"><div class="flipbook-backdrop" data-flipbook-close></div><div class="flipbook-shell"><header class="flipbook-toolbar"><div class="flipbook-toolbar-title"><p class="flipbook-page-label">Twini Book · Flipbook</p><strong>${esc(module.judul)}</strong></div><button class="flipbook-close" type="button" data-flipbook-close aria-label="Tutup flipbook">×</button></header><div class="flipbook-stage" data-flipbook-stage><button class="flipbook-nav flipbook-prev" type="button" data-flipbook-prev aria-label="Halaman sebelumnya"><span aria-hidden="true">‹</span></button><div class="flipbook-book" data-flipbook-book><div class="flipbook-spine" aria-hidden="true"></div><div class="flipbook-page flipbook-page-left" data-flipbook-left></div><div class="flipbook-page flipbook-page-right" data-flipbook-right></div><div class="flipbook-flipper" data-flipbook-flipper aria-hidden="true"><div class="flipbook-flipper-face flipbook-flipper-front" data-flipbook-flipper-front></div><div class="flipbook-flipper-face flipbook-flipper-back" data-flipbook-flipper-back></div></div></div><button class="flipbook-nav flipbook-next" type="button" data-flipbook-next aria-label="Halaman berikutnya"><span aria-hidden="true">›</span></button></div><footer class="flipbook-footer"><span class="flipbook-progress" data-flipbook-progress aria-live="polite">Halaman 1</span><div class="flipbook-dots" data-flipbook-dots></div></footer></div></div>`;
 }
-function openFlipbook(pathId, moduleIndex) {
+function openFlipbookPages(title, pages) {
   closeFlipbook();
-  const path = data.materi.jalur.find(item => item.id === pathId);
-  const module = path?.modul[Number(moduleIndex)];
-  if (!path || !module) return;
-  const pages = flipbookPages(path, module);
+  if (!Array.isArray(pages) || !pages.length) return;
   const overlay = document.createElement('div');
   overlay.className = 'flipbook-portal';
-  overlay.innerHTML = flipbookOverlayMarkup(path, module);
+  overlay.innerHTML = `<div class="flipbook-overlay" data-flipbook-overlay role="dialog" aria-modal="true" aria-label="Flipbook ${esc(title)}"><div class="flipbook-backdrop" data-flipbook-close></div><div class="flipbook-shell"><header class="flipbook-toolbar"><div class="flipbook-toolbar-title"><p class="flipbook-page-label">Twini Book · Flipbook</p><strong>${esc(title)}</strong></div><button class="flipbook-close" type="button" data-flipbook-close aria-label="Tutup flipbook">×</button></header><div class="flipbook-stage" data-flipbook-stage><button class="flipbook-nav flipbook-prev" type="button" data-flipbook-prev aria-label="Halaman sebelumnya"><span aria-hidden="true">‹</span></button><div class="flipbook-book" data-flipbook-book><div class="flipbook-spine" aria-hidden="true"></div><div class="flipbook-page flipbook-page-left" data-flipbook-left></div><div class="flipbook-page flipbook-page-right" data-flipbook-right></div><div class="flipbook-flipper" data-flipbook-flipper aria-hidden="true"><div class="flipbook-flipper-face flipbook-flipper-front" data-flipbook-flipper-front></div><div class="flipbook-flipper-face flipbook-flipper-back" data-flipbook-flipper-back></div></div></div><button class="flipbook-nav flipbook-next" type="button" data-flipbook-next aria-label="Halaman berikutnya"><span aria-hidden="true">›</span></button></div><footer class="flipbook-footer"><span class="flipbook-progress" data-flipbook-progress aria-live="polite">Halaman 1</span><div class="flipbook-dots" data-flipbook-dots></div></footer></div></div>`;
   document.body.appendChild(overlay);
   document.body.classList.add('flipbook-open');
   let current = 0;
@@ -1728,7 +1732,6 @@ function openFlipbook(pathId, moduleIndex) {
   const flipperBack = overlay.querySelector('[data-flipbook-flipper-back]');
   dots.innerHTML = pages.map((_, index) => `<span class="flipbook-dot${index === 0 ? ' is-active' : ''}" data-flipbook-dot="${index}"></span>`).join('');
   const spreadIndex = page => Math.floor(page / 2);
-  const totalSpreads = Math.ceil(pages.length / 2);
   const paint = () => {
     const spread = spreadIndex(current);
     const leftPage = spread * 2;
@@ -1773,6 +1776,59 @@ function openFlipbook(pathId, moduleIndex) {
   const firstOpen = overlay.querySelector('[data-flipbook-next]');
   firstOpen?.focus({ preventScroll: true });
 }
+function openFlipbook(pathId, moduleIndex) {
+  const path = data.materi.jalur.find(item => item.id === pathId);
+  const module = path?.modul[Number(moduleIndex)];
+  if (!path || !module) return;
+  openFlipbookPages(module.judul, flipbookPages(path, module));
+}
+function elearningPageHtml(lines) {
+  if (!Array.isArray(lines) || !lines.length) return '<div class="flipbook-content-page"><p class="flipbook-empty-note">Halaman kosong.</p></div>';
+  const html = lines.map(line => {
+    const t = String(line);
+    if (/^INDONESIA DIGITAL TWIN COMMUNITY$/.test(t)) return `<h4 class="flipbook-h">${esc(t)}</h4>`;
+    if (/^Jalur [A-C]\b/.test(t)) return `<h4 class="flipbook-h">${esc(t)}</h4>`;
+    if (/^Modul \d+/.test(t)) return `<h4 class="flipbook-h">${esc(t)}</h4>`;
+    if (/^Sasaran peserta:/.test(t)) return `<p class="flipbook-sub">${esc(t)}</p>`;
+    if (/^(Ringkasan modul|Fokus pembelajaran|Hasil belajar|Checklist pembelajaran|Cara membaca dokumen|Kelengkapan materi|Peta jalur belajar)$/.test(t)) return `<h5 class="flipbook-h5">${esc(t)}</h5>`;
+    if (/^-\s/.test(t)) return `<p class="flipbook-li">${esc(t.replace(/^-\s*/, ''))}</p>`;
+    if (/^\[\s\]\s/.test(t)) return `<p class="flipbook-check">${esc(t.replace(/^\[\s\]\s*/, ''))}</p>`;
+    if (/^\d+\.\s/.test(t)) return `<p class="flipbook-li">${esc(t)}</p>`;
+    if (/^Tingkat:/.test(t)) return `<p class="flipbook-meta">${esc(t)}</p>`;
+    return `<p>${esc(t)}</p>`;
+  }).join('');
+  return `<div class="flipbook-content-page flipbook-doc-page">${html}</div>`;
+}
+function openELearningFlipbook() {
+  const raw = data.elearningBook;
+  if (!Array.isArray(raw) || !raw.length) return;
+  openFlipbookPages('Rangkuman Pembelajaran Digital Twin', raw.map(elearningPageHtml));
+}
+function twiniEbookPageHtml(page, index, total) {
+  const theme = ['teal', 'purple', 'orange'].includes(page.theme) ? page.theme : 'teal';
+  const isCover = index === 0;
+  const parts = [];
+  parts.push(`<div class="flipbook-ebook-page theme-${theme}">`);
+  parts.push(`<div class="flipbook-ebook-head"><span class="flipbook-ebook-label">${esc(page.label || `Halaman ${index + 1}`)}</span><span class="flipbook-ebook-num">${index + 1}/${total}</span></div>`);
+  if (isCover) parts.push(`<img class="flipbook-ebook-twini" src="${flipbookTwiniImage()}" alt="Maskot Twini" loading="lazy" decoding="async" />`);
+  parts.push(`<h3 class="flipbook-ebook-heading flipbook-highlight">${esc(page.heading)}</h3>`);
+  if (page.body) parts.push(`<p class="flipbook-ebook-body">${esc(page.body)}</p>`);
+  if (page.quote) parts.push(`<blockquote class="flipbook-ebook-quote">${esc(page.quote)}</blockquote>`);
+  if (page.note) parts.push(`<aside class="flipbook-ebook-note"><strong>Catatan</strong><p>${esc(page.note)}</p></aside>`);
+  if (page.points) parts.push(`<ul class="flipbook-ebook-points">${page.points.map(p => `<li>${esc(p)}</li>`).join('')}</ul>`);
+  if (page.steps) parts.push(`<ol class="flipbook-ebook-steps">${page.steps.map((s, i) => `<li><span>${i + 1}</span>${esc(s)}</li>`).join('')}</ol>`);
+  if (page.flow) parts.push(`<ol class="flipbook-ebook-flow">${page.flow.map(s => `<li>${esc(s)}</li>`).join('')}</ol>`);
+  if (page.table) parts.push(`<div class="flipbook-table-wrap"><table><thead><tr>${page.table.kolom.map(c => `<th scope="col">${esc(c)}</th>`).join('')}</tr></thead><tbody>${page.table.baris.map(row => `<tr>${row.map(cell => `<td>${esc(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`);
+  parts.push(`<img class="flipbook-ebook-twini-floating" src="${flipbookTwiniImage()}" alt="" aria-hidden="true" loading="lazy" decoding="async" />`);
+  parts.push(`</div>`);
+  return parts.join('');
+}
+function openTwiniEbook() {
+  const book = data.twiniEbook;
+  if (!book || !Array.isArray(book.pages) || !book.pages.length) return;
+  const total = book.pages.length;
+  openFlipbookPages(book.title || 'Twini Ebook', book.pages.map((page, index) => twiniEbookPageHtml(page, index, total)));
+}
 function closeFlipbook() {
   const existing = document.querySelector('.flipbook-portal');
   if (existing) { existing._flipbookCleanup?.(); existing.remove(); }
@@ -1791,7 +1847,9 @@ function twiniBook() {
     ...paths.map(path => `<button class="twini-book-category" type="button" data-book-category="${esc(path.id)}" aria-pressed="false">Jalur ${esc(path.kode)} · ${esc(path.nama)} <span>${path.modul.length}</span></button>`),
   ].join('');
   const cards = books.map(({ path, module, moduleIndex, sectionCount }) => `<article class="card twini-book-card" data-book-card data-book-path="${esc(path.id)}"><div class="twini-book-cover" aria-hidden="true"><span>TW</span><small>DIGITAL TWIN</small></div><div class="twini-book-copy"><p class="role ${colorClass(path.warna)}">JALUR ${esc(path.kode)} · ${esc(path.nama)}</p><h3>${esc(module.judul)}</h3><p>${esc(module.ringkasan || 'Ringkasan materi ini belum tersedia.')}</p><div class="chips">${(module.fokus || []).slice(0, 3).map(item => `<span class="chip ${colorClass(path.warna)}">${esc(item)}</span>`).join('')}</div><small class="twini-book-meta">${esc(module.tingkat || 'Materi belajar')} · ${sectionCount ? `${sectionCount} section tersedia` : 'Materi ringkasan'}</small><div class="twini-book-actions"><button class="button primary" type="button" data-flipbook-open data-flipbook-path="${esc(path.id)}" data-flipbook-module="${moduleIndex}">Buka Flipbook <span aria-hidden="true">📖</span></button><a class="button ghost" href="${learningRoute(path, moduleIndex)}">Baca materi <span aria-hidden="true">→</span></a></div></div></article>`).join('');
-  return `<section class="section twini-book-page">${sectionHead('Perpustakaan digital','Twini Book','Koleksi bacaan pengetahuan Digital Twin berdasarkan jalur pembelajaran IDTC.')}<div class="card twini-book-intro"><span class="twini-book-intro-icon" aria-hidden="true">▤</span><div><strong>${books.length} bacaan digital</strong><p>Telusuri materi berdasarkan kategori dan baca langsung di aplikasi. Daftar ini mengambil konten dari modul Belajar IDTC.</p></div></div><label class="twini-book-search"><span aria-hidden="true">⌕</span><span class="twini-sr-only">Cari buku atau topik</span><input type="search" data-book-search placeholder="Cari judul atau topik Digital Twin..." autocomplete="off" /></label><div class="twini-book-categories" role="group" aria-label="Kategori bacaan">${categories}</div><p class="twini-book-count" data-book-count aria-live="polite">${books.length} bacaan ditampilkan</p><div class="twini-book-list" data-book-list>${cards}<p class="card empty twini-book-empty" data-book-empty hidden>Bacaan tidak ditemukan. Coba kata kunci atau kategori lain.</p></div></section>`;
+  const ebook = data.twiniEbook;
+  const ebookBanner = ebook && Array.isArray(ebook.pages) && ebook.pages.length ? `<article class="card twini-ebook-card" data-twini-ebook-card><div class="twini-ebook-card-cover"><img class="twini-ebook-card-twini" src="${flipbookTwiniImage()}" alt="Maskot Twini" loading="lazy" decoding="async" /><span class="twini-ebook-card-badge" aria-hidden="true">TW</span></div><div class="twini-ebook-card-copy"><p class="twini-ebook-card-kicker">EBOOK INTERAKTIF · ${ebook.pages.length} HALAMAN</p><h3 class="twini-ebook-card-title">${esc(ebook.title || 'Twini Ebook')}</h3><p>${esc(ebook.subtitle || 'Petualangan seru mengenalkan Digital Twin.')}</p><button class="button primary" type="button" data-twini-ebook-open>Buka Ebook Flipbook <span aria-hidden="true">📖</span></button></div></article>` : '';
+  return `<section class="section twini-book-page">${sectionHead('Perpustakaan digital','Twini Book','Koleksi bacaan pengetahuan Digital Twin berdasarkan jalur pembelajaran IDTC.')}<div class="card twini-book-intro"><span class="twini-book-intro-icon" aria-hidden="true">▤</span><div><strong>${books.length} bacaan digital</strong><p>Telusuri materi berdasarkan kategori dan baca langsung di aplikasi. Daftar ini mengambil konten dari modul Belajar IDTC.</p></div></div>${ebookBanner}<label class="twini-book-search"><span aria-hidden="true">⌕</span><span class="twini-sr-only">Cari buku atau topik</span><input type="search" data-book-search placeholder="Cari judul atau topik Digital Twin..." autocomplete="off" /></label><div class="twini-book-categories" role="group" aria-label="Kategori bacaan">${categories}</div><p class="twini-book-count" data-book-count aria-live="polite">${books.length} bacaan ditampilkan</p><div class="twini-book-list" data-book-list>${cards}<p class="card empty twini-book-empty" data-book-empty hidden>Bacaan tidak ditemukan. Coba kata kunci atau kategori lain.</p></div></section>`;
 }
 function bindTwiniBook() {
   const search = app.querySelector('[data-book-search]');
@@ -1799,6 +1857,12 @@ function bindTwiniBook() {
   const categoryButtons = [...app.querySelectorAll('[data-book-category]')];
   const empty = app.querySelector('[data-book-empty]');
   const count = app.querySelector('[data-book-count]');
+  const ebookButton = app.querySelector('[data-twini-ebook-open]');
+  if (ebookButton) ebookButton.addEventListener('click', () => openTwiniEbook());
+  const flipbookButtons = [...app.querySelectorAll('[data-flipbook-open]')];
+  flipbookButtons.forEach(button => button.addEventListener('click', () => {
+    openFlipbook(button.dataset.flipbookPath, button.dataset.flipbookModule);
+  }));
   if (!search || !count) return;
   let category = 'all';
   const filter = () => {
@@ -1822,10 +1886,6 @@ function bindTwiniBook() {
       item.setAttribute('aria-pressed', String(active));
     });
     filter();
-  }));
-  const flipbookButtons = [...app.querySelectorAll('[data-flipbook-open]')];
-  flipbookButtons.forEach(button => button.addEventListener('click', () => {
-    openFlipbook(button.dataset.flipbookPath, button.dataset.flipbookModule);
   }));
 }
 function learningExportProgress(path, module) {
@@ -2230,7 +2290,7 @@ function initTwiniWidget() {
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && !panel.hidden) setOpen(false); });
 }
 async function load() {
-  const [anggota, materi, struktur, produk, merch, twini, sensorFaq, bimFaq, authStatus, pokja1Handbook, pokja2Handbook, pokja3Handbook, ecosystemOrganizations] = await Promise.all([
+  const [anggota, materi, struktur, produk, merch, twini, sensorFaq, bimFaq, authStatus, pokja1Handbook, pokja2Handbook, pokja3Handbook, ecosystemOrganizations, elearningBook, twiniEbook] = await Promise.all([
     ...['anggota', 'materi', 'struktur', 'produk'].map(name => fetch(`data/${name}.json?v=${name === 'struktur' ? 27 : 22}`).then(response => response.json())),
     fetch('data/merch.json?v=22').then(response => response.json()),
     fetch('data/twini-ai.json?v=3').then(response => response.json()),
@@ -2241,6 +2301,8 @@ async function load() {
     fetch('data/pokja2-handbook.json?v=1').then(response => response.json()),
     fetch('data/pokja3-handbook.json?v=1').then(response => response.json()),
     fetch('data/iklan-ekosistem.json?v=1').then(response => response.json()),
+    fetch('data/elearning-book.json?v=1').then(response => response.json()).catch(() => []),
+    fetch('data/twini-ebook.json?v=1').then(response => response.json()).catch(() => null),
   ]);
   databaseAuthMode = authStatus.database === true;
   databaseBootstrapRequired = authStatus.bootstrapRequired === true;
@@ -2259,7 +2321,7 @@ async function load() {
   }
   let overrides = {};
   try { overrides = JSON.parse(localStorage.getItem('idtc-cms-content') || '{}') || {}; } catch { overrides = {}; }
-  data = { anggota, materi: mergeLessonContent(materi, overrides.materi), struktur, handbooks: { pokja1: pokja1Handbook, pokja2: pokja2Handbook, pokja3: pokja3Handbook }, produk: overrides.produk || produk, twini: expandTwiniKnowledge(overrides.twini || twini, [...sensorFaqEntries(sensorFaq), ...bimFaqEntries(bimFaq)]), merch };
+  data = { anggota, materi: mergeLessonContent(materi, overrides.materi), struktur, handbooks: { pokja1: pokja1Handbook, pokja2: pokja2Handbook, pokja3: pokja3Handbook }, produk: overrides.produk || produk, twini: expandTwiniKnowledge(overrides.twini || twini, [...sensorFaqEntries(sensorFaq), ...bimFaqEntries(bimFaq)]), merch, elearningBook: Array.isArray(elearningBook) ? elearningBook : [], twiniEbook: twiniEbook || null };
   bindEcosystemAd(ecosystemOrganizations);
   render();
 }

@@ -1,0 +1,101 @@
+{
+  "id": "twini-petualangan",
+  "title": "Twini Petualangan Digital Twin",
+  "subtitle": "Petualangan seru Twini mengenalkan konsep Digital Twin untuk semua usia.",
+  "author": "IDTC Community",
+  "twiniImage": "assets/img/dni/twini-shop-icon.png",
+  "pages": [
+    {
+      "theme": "teal",
+      "label": "Sampul",
+      "heading": "Twini Petualangan Digital Twin",
+      "body": "Hai! Aku Twini, maskot Indonesia Digital Twin Community. Ayo ikut petualanganku mengenalkan dunia Digital Twin dengan cara yang menyenangkan.",
+      "points": ["12 halaman seru", "Cocok untuk pemula", "Dari IDTC Community"]
+    },
+    {
+      "theme": "purple",
+      "label": "Halaman 1",
+      "heading": "Siapa itu Twini?",
+      "body": "Twini adalah kembaran digital kecil yang tinggal di dalam komputer. Aku mewakili data, model, dan kecerdasan yang bekerja bersama untuk membantu manusia mengambil keputusan.",
+      "points": ["Twini = Digital Twin", "Tinggal di dunia digital", "Membantu manusia"]
+    },
+    {
+      "theme": "orange",
+      "label": "Halaman 2",
+      "heading": "Apa itu Digital Twin?",
+      "body": "Digital Twin adalah salinan digital dari sesuatu yang nyata: gedung, jembatan, mesin, bahkan seluruh kota. Salinan ini terhubung dengan data dari dunia nyata sehingga bisa dipantau dan dipelajari.",
+      "quote": "Digital Twin menghubungkan dunia nyata dengan dunia digital lewat data."
+    },
+    {
+      "theme": "teal",
+      "label": "Halaman 3",
+      "heading": "Dua dunia yang terhubung",
+      "body": "Bayangkan sebuah jembatan sungguhan. Sensor di jembatan mengirim data getaran dan suhu. Di dunia digital, Twini membuat model jembatan yang sama untuk menganalisis kondisinya.",
+      "points": ["Dunia nyata: jembatan + sensor", "Data mengalir ke digital", "Twini menganalisis kondisinya"]
+    },
+    {
+      "theme": "purple",
+      "label": "Halaman 4",
+      "heading": "Komponen sahabat Twini",
+      "body": "Digital Twin bukan benda tunggal. Ia tersusun dari beberapa bagian yang bekerja sama seperti tim.",
+      "steps": ["Objek nyata yang diamati", "Sensor & sumber data", "Model digital di komputer", "Analitik & visualisasi", "Keputusan manusia"]
+    },
+    {
+      "theme": "orange",
+      "label": "Halaman 5",
+      "heading": "Model, Shadow, dan Twin",
+      "body": "Tidak semua salinan digital sama. Ada tingkatan keterhubungannya.",
+      "table": {
+        "kolom": ["Istilah", "Keterhubungan", "Contoh"],
+        "baris": [
+          ["Digital Model", "Berdiri sendiri", "Gambar CAD tanpa data"],
+          ["Digital Shadow", "Data mengalir ke digital", "Dashboard sensor mesin"],
+          ["Digital Twin", "Terhubung & dua arah", "Kota digital pintar"]
+        ]
+      }
+    },
+    {
+      "theme": "teal",
+      "label": "Halaman 6",
+      "heading": "Satu siklus bersama Twini",
+      "body": "Digital Twin bekerja dalam siklus yang terus berulang, seperti napas yang tak berhenti.",
+      "flow": ["Kumpulkan data", "Validasi kualitas", "Hubungkan ke model", "Analisis & simulasi", "Keputusan & tindakan"]
+    },
+    {
+      "theme": "purple",
+      "label": "Halaman 7",
+      "heading": "Data adalah makanan Twini",
+      "body": "Twini butuh data yang berkualitas. Data yang salah satuan atau waktunya bisa membuat Twini salah menilai.",
+      "note": "Data yang baik: lengkap, tepat waktu, satuan benar, dan jelas asalnya.",
+      "points": ["Sensor IoT", "Kamera & pemindaian", "GPS & peta", "Dokumen aset"]
+    },
+    {
+      "theme": "orange",
+      "label": "Halaman 8",
+      "heading": "Twini di berbagai bidang",
+      "body": "Digital Twin bisa dipakai di mana saja yang punya aset dan data.",
+      "points": ["Kota pintar & lalu lintas", "Gedung & infrastruktur", "Pabrik & energi", "Kesehatan & lingkungan"]
+    },
+    {
+      "theme": "teal",
+      "label": "Halaman 9",
+      "heading": "Manfaat yang terasa",
+      "body": "Dengan Twini, keputusan jadi lebih terinformasi dan risiko bisa dikurangi sebelum terjadi di dunia nyata.",
+      "points": ["Pemantauan kondisi real-time", "Perawatan lebih tepat", "Simulasi sebelum eksekusi", "Efisiensi biaya & energi"]
+    },
+    {
+      "theme": "purple",
+      "label": "Halaman 10",
+      "heading": "Batasan & tanggung jawab",
+      "body": "Digital Twin bukan sihir. Kualitasnya tergantung data dan tata kelolanya. Manusia tetap berwenang mengambil keputusan akhir.",
+      "note": "Jaga keamanan data, hak akses, dan selalu verifikasi sebelum bertindak."
+    },
+    {
+      "theme": "orange",
+      "label": "Penutup",
+      "heading": "Terima kasih, Sampai jumpa!",
+      "body": "Semoga petualangan bersama Twini membantumu memahami Digital Twin. Ayo bergabung dengan Indonesia Digital Twin Community untuk belajar lebih dalam!",
+      "quote": "Satu data, satu masa depan. Mari membangun ekosistem Digital Twin Indonesia."
+    }
+  ]
+}
