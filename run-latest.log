@@ -1,0 +1,9 @@
+
+> idtc-mobile@1.0.0 start
+> npm run build:web && node server.js
+
+
+> idtc-mobile@1.0.0 build:web
+> node build-web.mjs
+
+TwiniAI server ready at http://127.0.0.1:4174

@@ -1,101 +1,595 @@
-{
-  "id": "twini-petualangan",
-  "title": "Twini Petualangan Digital Twin",
-  "subtitle": "Petualangan seru Twini mengenalkan konsep Digital Twin untuk semua usia.",
+﻿{
+  "id": "twini-digital-twin-lengkap",
+  "title": "Fundamental Digital Twin",
+  "subtitle": "Panduan lengkap memahami Digital Twin dari konsep hingga implementasi untuk Indonesia.",
   "author": "IDTC Community",
+  "edition": "Edisi 2026",
   "twiniImage": "assets/img/dni/twini-shop-icon.png",
+  "soundEnabled": true,
   "pages": [
     {
       "theme": "teal",
       "label": "Sampul",
-      "heading": "Twini Petualangan Digital Twin",
-      "body": "Hai! Aku Twini, maskot Indonesia Digital Twin Community. Ayo ikut petualanganku mengenalkan dunia Digital Twin dengan cara yang menyenangkan.",
-      "points": ["12 halaman seru", "Cocok untuk pemula", "Dari IDTC Community"]
-    },
-    {
-      "theme": "purple",
-      "label": "Halaman 1",
-      "heading": "Siapa itu Twini?",
-      "body": "Twini adalah kembaran digital kecil yang tinggal di dalam komputer. Aku mewakili data, model, dan kecerdasan yang bekerja bersama untuk membantu manusia mengambil keputusan.",
-      "points": ["Twini = Digital Twin", "Tinggal di dunia digital", "Membantu manusia"]
-    },
-    {
-      "theme": "orange",
-      "label": "Halaman 2",
-      "heading": "Apa itu Digital Twin?",
-      "body": "Digital Twin adalah salinan digital dari sesuatu yang nyata: gedung, jembatan, mesin, bahkan seluruh kota. Salinan ini terhubung dengan data dari dunia nyata sehingga bisa dipantau dan dipelajari.",
-      "quote": "Digital Twin menghubungkan dunia nyata dengan dunia digital lewat data."
+      "chapter": "FUNDAMENTAL DIGITAL TWIN",
+      "heading": "Fundamental Digital Twin",
+      "body": "Panduan komprehensif memahami Digital Twin dari dasar hingga implementasi, dirancang untuk pemerintah, akademisi, industri, dan komunitas Indonesia. Disusun oleh Indonesia Digital Twin Community (IDTC).",
+      "image": "assets/img/dni/twini-shop-onboarding.png",
+      "imageCaption": "Twini, maskot IDTC, menuntun perjalanan belajarmu.",
+      "points": [
+        "Bab lengkap 6 bagian",
+        "Gambar referensi & diagram",
+        "Studi kasus nyata Indonesia"
+      ],
+      "isCover": true
     },
     {
       "theme": "teal",
-      "label": "Halaman 3",
-      "heading": "Dua dunia yang terhubung",
-      "body": "Bayangkan sebuah jembatan sungguhan. Sensor di jembatan mengirim data getaran dan suhu. Di dunia digital, Twini membuat model jembatan yang sama untuk menganalisis kondisinya.",
-      "points": ["Dunia nyata: jembatan + sensor", "Data mengalir ke digital", "Twini menganalisis kondisinya"]
+      "label": "Kata Pengantar",
+      "chapter": "PENGANTAR",
+      "heading": "Selamat Datang di Dunia Kembaran Digital",
+      "body": "Digital Twin adalah jembatan antara dunia fisik dan dunia digital. Ia bukan sekadar model 3D, melainkan sistem hidup yang terus diperbarui oleh data, dianalisis untuk memahami kondisi, dan dipakai mengambil keputusan yang lebih baik. Buku ini memandu Anda memahami setiap lapisan secara runtut dan aplikatif.",
+      "quote": "Satu data, satu visi, satu masa depan. Mari membangun ekosistem Digital Twin Indonesia bersama."
     },
     {
       "theme": "purple",
-      "label": "Halaman 4",
-      "heading": "Komponen sahabat Twini",
-      "body": "Digital Twin bukan benda tunggal. Ia tersusun dari beberapa bagian yang bekerja sama seperti tim.",
-      "steps": ["Objek nyata yang diamati", "Sensor & sumber data", "Model digital di komputer", "Analitik & visualisasi", "Keputusan manusia"]
+      "label": "Daftar Isi",
+      "chapter": "PETA PERJALANAN",
+      "heading": "Enam Bab Menuju Penguasaan",
+      "body": "Buku ini dibagi menjadi enam bab yang saling berkesinambungan, dari fondasi konsep hingga arah masa depan dan aksi nyata yang bisa Anda mulai hari ini.",
+      "toc": [
+        "Bab 1 â€” Fondasi Konsep Digital Twin",
+        "Bab 2 â€” Anatomi & Komponen Inti",
+        "Bab 3 â€” Data: Bahan Bakar Digital Twin",
+        "Bab 4 â€” Arsitektur & Teknologi",
+        "Bab 5 â€” Implementasi & Studi Kasus",
+        "Bab 6 â€” Masa Depan & Aksi Anda"
+      ]
+    },
+    {
+      "theme": "teal",
+      "label": "Bab 1 Â· Mengapa",
+      "chapter": "BAB 1 Â· FONDASI KONSEP",
+      "heading": "Mengapa Digital Twin Penting?",
+      "body": "Organisasi modern menghadapi keputusan yang makin kompleks dengan konsekuensi mahal. Digital Twin mengurangi risiko dengan menguji skenario secara virtual sebelum dieksekusi di dunia nyata, menghemat biaya, waktu, dan potensi kesalahan.",
+      "points": [
+        "Menguji skenario tanpa risiko fisik",
+        "Mempercepat pengambilan keputusan",
+        "Mengoptimalkan aset & operasi",
+        "Meningkatkan transparansi data"
+      ]
+    },
+    {
+      "theme": "teal",
+      "label": "Bab 1 Â· Definisi",
+      "chapter": "BAB 1 Â· FONDASI KONSEP",
+      "heading": "Apa Itu Digital Twin?",
+      "body": "Digital Twin adalah representasi digital dari objek, sistem, proses, atau lingkungan fisik yang terhubung dengan data tentang keadaan atau perilaku dunia nyata. Representasi ini membantu memantau kondisi, menganalisis perubahan, menguji skenario, dan mengambil keputusan dengan lebih terinformasi.",
+      "image": "assets/img/pokja/hero-maskot.jpg",
+      "imageCaption": "Visual kota dan maskot IDTC: representasi digital yang terhubung dengan kondisi nyata.",
+      "note": "Bentuknya tidak harus 3D. Bisa berupa dashboard, model matematis, atau simulasi â€” yang penting keterhubungannya dengan data nyata."
+    },
+    {
+      "theme": "purple",
+      "label": "Bab 1 Â· Konteks",
+      "chapter": "BAB 1 Â· FONDASI KONSEP",
+      "heading": "Indonesia dalam Model Digital",
+      "body": "Indonesia dengan 17.000+ pulau dan ribuan infrastruktur menghadapi tantangan pengelolaan yang unik. Digital Twin memungkinkan pemerintah dan industri menghubungkan data, tempat, dan sistem untuk memahami kondisi secara menyeluruh â€” dari lalu lintas kota hingga ketahanan energi.",
+      "image": "assets/img/pokja/sapujagad.jpg",
+      "imageCaption": "Proyek ekosistem Digital Twin Indonesia: menghubungkan data lintas sektor.",
+      "points": [
+        "Kota pintar & infrastruktur",
+        "Ketahanan pangan & energi",
+        "Mitigasi bencana & lingkungan"
+      ]
     },
     {
       "theme": "orange",
-      "label": "Halaman 5",
+      "label": "Bab 1 Â· Tingkatan",
+      "chapter": "BAB 1 Â· FONDASI KONSEP",
       "heading": "Model, Shadow, dan Twin",
-      "body": "Tidak semua salinan digital sama. Ada tingkatan keterhubungannya.",
+      "body": "Tidak semua salinan digital sama. Ada tingkatan keterhubungan yang menentukan seberapa hidup sebuah representasi digital. Pahami perbedaannya agar ekspektasi tetap realistis.",
       "table": {
-        "kolom": ["Istilah", "Keterhubungan", "Contoh"],
+        "kolom": [
+          "Tingkatan",
+          "Arah Data",
+          "Contoh"
+        ],
         "baris": [
-          ["Digital Model", "Berdiri sendiri", "Gambar CAD tanpa data"],
-          ["Digital Shadow", "Data mengalir ke digital", "Dashboard sensor mesin"],
-          ["Digital Twin", "Terhubung & dua arah", "Kota digital pintar"]
+          [
+            "Digital Model",
+            "Berdiri sendiri / manual",
+            "Gambar CAD tanpa data"
+          ],
+          [
+            "Digital Shadow",
+            "Fisik ke Digital",
+            "Dashboard sensor mesin"
+          ],
+          [
+            "Digital Twin",
+            "Dua arah & adaptif",
+            "Kota digital pintar"
+          ]
+        ]
+      },
+      "note": "Kendali otomatis dari model ke aset bukan syarat. Otonomi adalah kemampuan tambahan yang memerlukan pengawasan kuat."
+    },
+    {
+      "theme": "teal",
+      "label": "Bab 2 Â· Anatomi",
+      "chapter": "BAB 2 Â· ANATOMI & KOMPONEN",
+      "heading": "Komponen yang Bekerja Sama",
+      "body": "Digital Twin adalah sistem, bukan benda tunggal. Memahami komponennya membantu merancang solusi yang benar sejak awal dan menghindari pemborosan sumber daya.",
+      "steps": [
+        "Objek fisik yang diamati",
+        "Data & sensor penghubung",
+        "Representasi digital",
+        "Analitik & kecerdasan",
+        "Visualisasi untuk manusia",
+        "Keputusan & tindakan"
+      ]
+    },
+    {
+      "theme": "teal",
+      "label": "Bab 2 Â· Objek",
+      "chapter": "BAB 2 Â· ANATOMI & KOMPONEN",
+      "heading": "Objek atau Proses Fisik",
+      "body": "Aset yang menjadi fokus: mesin, gedung, jembatan, kendaraan, jaringan energi, kawasan, atau proses layanan. Data dapat berasal dari sensor langsung, inspeksi, dokumen, maupun sistem operasional lain yang tepercaya.",
+      "points": [
+        "Mesin & peralatan industri",
+        "Gedung & infrastruktur sipil",
+        "Jaringan utilitas listrik & air",
+        "Proses produksi & layanan"
+      ]
+    },
+    {
+      "theme": "purple",
+      "label": "Bab 2 Â· Representasi",
+      "chapter": "BAB 2 Â· ANATOMI & KOMPONEN",
+      "heading": "Representasi Digital",
+      "body": "Representasi memuat geometri 2D/3D, struktur aset, hubungan antarbagian, parameter teknik, aturan proses, atau model matematis. Model yang diperlukan bergantung pada keputusan yang hendak didukung.",
+      "points": [
+        "Geometri untuk bentuk & lokasi",
+        "Model fisik untuk perilaku sistem",
+        "Model AI untuk prediksi & deteksi"
+      ],
+      "note": "Rancang representasi seminimal mungkin namun mencukupi kebutuhan keputusan, bukan serumit mungkin."
+    },
+    {
+      "theme": "orange",
+      "label": "Bab 2 Â· Standar",
+      "chapter": "BAB 2 Â· ANATOMI & KOMPONEN",
+      "heading": "Standar & Interoperabilitas",
+      "body": "Standar dan interoperabilitas membantu Digital Twin bekerja lintas platform dan sektor. Tanpa standar, setiap sistem menjadi pulau yang tidak bisa saling berbicara, menghambat kolaborasi dan pemerataan manfaat.",
+      "image": "assets/img/pokja/pokja1.jpg",
+      "imageCaption": "Kolaborasi standar dan kebijakan Digital Twin: sistem yang saling terhubung.",
+      "points": [
+        "Standar pertukaran data",
+        "Metadata & sistem koordinat",
+        "Kontrak antarsistem (API)"
+      ]
+    },
+    {
+      "theme": "teal",
+      "label": "Bab 2 Â· Tata Kelola",
+      "chapter": "BAB 2 Â· ANATOMI & KOMPONEN",
+      "heading": "Koneksi & Tata Kelola",
+      "body": "Data berpindah melalui jaringan, API, platform integrasi, atau pemutakhiran berkala. Pengelola perlu menetapkan pemilik data, hak akses, keamanan, kualitas, dan tanggung jawab atas keputusan.",
+      "image": "assets/img/pokja/sekretariatan.jpg",
+      "imageCaption": "Sekretariat IDTC: tata kelola menjaga tujuan dan tanggung jawab.",
+      "flow": [
+        "Objek nyata",
+        "Sensor & sumber",
+        "Integrasi & validasi",
+        "Model & analitik",
+        "Visualisasi",
+        "Keputusan berwenang"
+      ]
+    },
+    {
+      "theme": "purple",
+      "label": "Bab 3 Â· Data",
+      "chapter": "BAB 3 Â· DATA: BAHAN BAKAR",
+      "heading": "Data adalah Segalanya",
+      "body": "Kualitas Digital Twin tidak pernah melebihi kualitas datanya. Bab ini membahas jenis data, sumber akuisisi, dan cara menjamin kualitasnya agar twin tidak menyesatkan pengambil keputusan.",
+      "points": [
+        "Jenis-jenis data Digital Twin",
+        "Sumber & proses akuisisi",
+        "Kualitas, validasi & lineage"
+      ]
+    },
+    {
+      "theme": "orange",
+      "label": "Bab 3 Â· Jenis Data",
+      "chapter": "BAB 3 Â· DATA: BAHAN BAKAR",
+      "heading": "Jenis-Jenis Data",
+      "body": "Setiap jenis data punya karakteristik, kualitas, format, dan kebutuhan penggunaan yang berbeda. Memilih jenis yang tepat adalah kunci efisiensi dan akurasi keputusan.",
+      "table": {
+        "kolom": [
+          "Jenis Data",
+          "Karakteristik",
+          "Contoh"
+        ],
+        "baris": [
+          [
+            "2D / Peta",
+            "Ringan, spasial",
+            "Peta RBI, tata ruang"
+          ],
+          [
+            "3D / BIM",
+            "Detail aset",
+            "Model gedung"
+          ],
+          [
+            "Point Cloud",
+            "Sangat detail, berat",
+            "Hasil scan LiDAR"
+          ],
+          [
+            "Sensor / IoT",
+            "Real-time, time-series",
+            "Suhu, getaran"
+          ],
+          [
+            "Dokumen",
+            "Konteks & aturan",
+            "SOP, kontrak"
+          ]
         ]
       }
     },
     {
       "theme": "teal",
-      "label": "Halaman 6",
-      "heading": "Satu siklus bersama Twini",
-      "body": "Digital Twin bekerja dalam siklus yang terus berulang, seperti napas yang tak berhenti.",
-      "flow": ["Kumpulkan data", "Validasi kualitas", "Hubungkan ke model", "Analisis & simulasi", "Keputusan & tindakan"]
+      "label": "Bab 3 Â· Point Cloud",
+      "chapter": "BAB 3 Â· DATA: BAHAN BAKAR",
+      "heading": "Point Cloud: Realitas dalam Titik",
+      "body": "Point cloud adalah kumpulan jutaan titik 3D hasil pemindaian laser (LiDAR) atau fotogrametri. Ia merekam bentuk nyata dengan detail sangat tinggi, menjadi fondasi model as-built yang akurat untuk berbagai bidang.",
+      "points": [
+        "Dari scan LiDAR & fotogrametri",
+        "Jutaan titik per detik",
+        "Perlu pembersihan & registrasi",
+        "Fondasi model as-built"
+      ],
+      "note": "Ukuran file bisa mencapai ratusan MB hingga GB. Gunakan format terkompresi (.laz) dan strategi streaming LOD agar ringan di web."
     },
     {
       "theme": "purple",
-      "label": "Halaman 7",
-      "heading": "Data adalah makanan Twini",
-      "body": "Twini butuh data yang berkualitas. Data yang salah satuan atau waktunya bisa membuat Twini salah menilai.",
-      "note": "Data yang baik: lengkap, tepat waktu, satuan benar, dan jelas asalnya.",
-      "points": ["Sensor IoT", "Kamera & pemindaian", "GPS & peta", "Dokumen aset"]
+      "label": "Bab 3 Â· Kualitas",
+      "chapter": "BAB 3 Â· DATA: BAHAN BAKAR",
+      "heading": "Menjaga Kualitas Data",
+      "body": "Kualitas, waktu pencatatan, satuan, konteks, dan asal data harus diketahui. Data tidak lengkap atau tidak sinkron dapat membuat gambaran kondisi menyesatkan dan berpotensi berbahaya bagi keputusan.",
+      "image": "assets/img/dni/ITDC_05.jpeg",
+      "imageCaption": "Dokumentasi komunitas: kolaborasi memastikan kualitas data bersama.",
+      "points": [
+        "Kelengkapan & konsistensi",
+        "Ketepatan waktu (timestamp)",
+        "Satuan & format seragam",
+        "Jejak asal-usul data (lineage)"
+      ]
     },
     {
       "theme": "orange",
-      "label": "Halaman 8",
-      "heading": "Twini di berbagai bidang",
-      "body": "Digital Twin bisa dipakai di mana saja yang punya aset dan data.",
-      "points": ["Kota pintar & lalu lintas", "Gedung & infrastruktur", "Pabrik & energi", "Kesehatan & lingkungan"]
+      "label": "Bab 4 Â· Arsitektur",
+      "chapter": "BAB 4 Â· ARSITEKTUR & TEKNOLOGI",
+      "heading": "Lapisan Platform Digital Twin",
+      "body": "Platform Digital Twin modern tersusun dari lapisan yang saling menumpuk. Setiap lapisan punya peran dan tantangan sendiri, dan dirancang agar dapat diskalakan seiring bertambahnya aset dan pengguna.",
+      "steps": [
+        "Ingest: tangkap data masuk",
+        "Penyimpanan: simpan & indeks",
+        "Model: susun representasi",
+        "Analitik: hitung & prediksi",
+        "Visualisasi: tampilkan",
+        "Governance: kendalikan akses"
+      ]
     },
     {
       "theme": "teal",
-      "label": "Halaman 9",
-      "heading": "Manfaat yang terasa",
-      "body": "Dengan Twini, keputusan jadi lebih terinformasi dan risiko bisa dikurangi sebelum terjadi di dunia nyata.",
-      "points": ["Pemantauan kondisi real-time", "Perawatan lebih tepat", "Simulasi sebelum eksekusi", "Efisiensi biaya & energi"]
+      "label": "Bab 4 Â· Pipeline",
+      "chapter": "BAB 4 Â· ARSITEKTUR & TEKNOLOGI",
+      "heading": "Pipeline Data yang Terulang",
+      "body": "Pipeline data yang baik bersifat dapat diulang (reproducible). Ia mengotomasi validasi, transformasi, orkestrasi, hingga publikasi sehingga twin selalu mutakhir tanpa kerja manual yang rawan galat.",
+      "flow": [
+        "Sumber data",
+        "Validasi",
+        "Transformasi",
+        "Orkestrasi",
+        "Publikasi",
+        "Pemantauan"
+      ]
     },
     {
       "theme": "purple",
-      "label": "Halaman 10",
-      "heading": "Batasan & tanggung jawab",
-      "body": "Digital Twin bukan sihir. Kualitasnya tergantung data dan tata kelolanya. Manusia tetap berwenang mengambil keputusan akhir.",
-      "note": "Jaga keamanan data, hak akses, dan selalu verifikasi sebelum bertindak."
+      "label": "Bab 4 Â· Sensor IoT",
+      "chapter": "BAB 4 Â· ARSITEKTUR & TEKNOLOGI",
+      "heading": "Sensor, IoT & Waktu Nyata",
+      "body": "Data sensor mengalir melalui protokol pesan seperti MQTT atau HTTP dengan perhatian pada kualitas telemetry dan latensi. Tidak semua kasus butuh real-time, sesuaikan dengan kebutuhan keputusan agar efisien.",
+      "points": [
+        "Protokol: MQTT, HTTP, OPC-UA",
+        "Edge vs cloud computing",
+        "Latensi & throughput",
+        "Kualitas telemetry & buffering"
+      ]
     },
     {
       "theme": "orange",
+      "label": "Bab 4 Â· AI",
+      "chapter": "BAB 4 Â· ARSITEKTUR & TEKNOLOGI",
+      "heading": "AI untuk Digital Twin",
+      "body": "Kecerdasan buatan menambah kemampuan prediksi, deteksi anomali, optimasi, dan dukungan keputusan. AI mengubah twin dari cermin pasif menjadi asisten aktif yang proaktif.",
+      "image": "assets/img/produk/dt-f-01.jpg",
+      "imageCaption": "Produk DT-F-01: kerangka klasifikasi standar Digital Twin Indonesia.",
+      "points": [
+        "Prediksi & forecasting",
+        "Deteksi anomali",
+        "Optimasi otomatis",
+        "Dukungan keputusan"
+      ]
+    },
+    {
+      "theme": "teal",
+      "label": "Bab 4 Â· Integrasi",
+      "chapter": "BAB 4 Â· ARSITEKTUR & TEKNOLOGI",
+      "heading": "Integrasi BIM-GIS",
+      "body": "Menghubungkan detail aset dari BIM dengan konteks lokasi dan jaringan dari GIS menciptakan gambaran utuh: dari satu katup di dalam gedung hingga seluruh jaringan kota secara terpadu.",
+      "points": [
+        "BIM: detail komponen aset",
+        "GIS: konteks lokasi & jaringan",
+        "Fusi untuk keputusan spasial",
+        "Tantangan: skala & presisi"
+      ]
+    },
+    {
+      "theme": "purple",
+      "label": "Bab 5 Â· Pilot",
+      "chapter": "BAB 5 Â· IMPLEMENTASI & STUDI KASUS",
+      "heading": "Mulai dari Masalah Nyata",
+      "body": "Uji manfaat Digital Twin melalui pilot yang terukur dan dapat direplikasi. Fokus pada satu masalah jelas, KPI yang terdefinisi, dan kriteria sukses yang disepakati bersama sejak awal.",
+      "image": "assets/img/pokja/pokja2.jpg",
+      "imageCaption": "Kelompok kerja pilot project IDTC: mulai dari masalah nyata.",
+      "steps": [
+        "Tentukan masalah & keputusan",
+        "Pilih aset, data, pemilik",
+        "Sepakati ruang lingkup & KPI",
+        "Jalankan & evaluasi bukti",
+        "Dokumentasikan untuk replikasi"
+      ]
+    },
+    {
+      "theme": "teal",
+      "label": "Bab 5 Â· SDM",
+      "chapter": "BAB 5 Â· IMPLEMENTASI & STUDI KASUS",
+      "heading": "SDM & Ekosistem",
+      "body": "Teknologi tumbuh bersama talenta. Bangun kemampuan lintas disiplin untuk merancang dan mengelola Digital Twin, serta libatkan pemerintah, akademisi, industri, dan komunitas dalam satu ekosistem.",
+      "image": "assets/img/pokja/pokja3.jpg",
+      "imageCaption": "Pengembangan SDM dan ekosistem Digital Twin Indonesia.",
+      "points": [
+        "Kurikulum & pelatihan",
+        "Kolaborasi akademisi-industri",
+        "Komunitas praktisi aktif",
+        "Sertifikasi kompetensi"
+      ]
+    },
+    {
+      "theme": "orange",
+      "label": "Bab 5 Â· Komunitas",
+      "chapter": "BAB 5 Â· IMPLEMENTASI & STUDI KASUS",
+      "heading": "Banyak Sektor, Satu Ekosistem",
+      "body": "Pemerintah, akademisi, industri, dan komunitas bergerak bersama. Kolaborasi lintas sektor mengubah wawasan menjadi solusi nyata yang memberi dampak berkelanjutan bagi masyarakat.",
+      "image": "assets/img/pokja/sekretariatan.jpg",
+      "imageCaption": "Komunitas IDTC berkolaborasi: banyak sektor, satu ekosistem.",
+      "quote": "Kolaborasi berkelanjutan mengubah wawasan menjadi solusi nyata."
+    },
+    {
+      "theme": "teal",
+      "label": "Bab 5 Â· Manfaat",
+      "chapter": "BAB 5 Â· IMPLEMENTASI & STUDI KASUS",
+      "heading": "Manfaat yang Terukur",
+      "body": "Digital Twin memberi nilai ketika manfaatnya diukur. Terjemahkan tujuan menjadi KPI, indikator manfaat, dan evaluasi dampak yang terukur agar nilai investasinya dapat dibuktikan.",
+      "table": {
+        "kolom": [
+          "Area",
+          "Manfaat",
+          "Contoh KPI"
+        ],
+        "baris": [
+          [
+            "Operasi",
+            "Efisiensi proses",
+            "Waktu henti mesin turun"
+          ],
+          [
+            "Pemeliharaan",
+            "Prediktif",
+            "Biaya perawatan turun"
+          ],
+          [
+            "Energi",
+            "Optimasi konsumsi",
+            "Pemakaian energi turun"
+          ],
+          [
+            "Keputusan",
+            "Cepat & tepat",
+            "Waktu respons insiden"
+          ]
+        ]
+      }
+    },
+    {
+      "theme": "purple",
+      "label": "Bab 6 Â· Batasan",
+      "chapter": "BAB 6 Â· MASA DEPAN & AKSI",
+      "heading": "Batasan & Tanggung Jawab",
+      "body": "Digital Twin bukan sihir. Kualitasnya tergantung pada data dan tata kelolanya. Manusia tetap berwenang mengambil keputusan akhir, dan keamanan data harus selalu dijaga dalam setiap implementasi.",
+      "note": "Jaga keamanan data, hak akses, dan selalu verifikasi sebelum bertindak. Tanggung jawab keputusan tetap ada pada manusia.",
+      "points": [
+        "Ketergantungan kualitas data",
+        "Keamanan & privasi",
+        "Pengawasan manusia (human-in-the-loop)",
+        "Biaya & kompleksitas"
+      ]
+    },
+    {
+      "theme": "teal",
+      "label": "Bab 6 Â· Tren",
+      "chapter": "BAB 6 Â· MASA DEPAN & AKSI",
+      "heading": "Arah Perkembangan",
+      "body": "Digital Twin terus berevolusi menuju twin yang lebih otonom, terhubung, dan cerdas, namun selalu dalam koridor tata kelola yang kuat, transparan, dan beretika.",
+      "points": [
+        "Twin otonom & adaptif",
+        "Federasi twin lintas kota",
+        "AI generatif untuk simulasi",
+        "Standar nasional Indonesia"
+      ]
+    },
+    {
+      "theme": "orange",
+      "label": "Bab 6 Â· Aksi",
+      "chapter": "BAB 6 Â· MASA DEPAN & AKSI",
+      "heading": "Langkah Aksi Anda",
+      "body": "Anda bisa memulai hari ini. Pilih satu masalah nyata di lingkungan Anda, kumpulkan data yang tersedia, lalu rancang twin sederhana yang menjawab satu pertanyaan keputusan yang jelas.",
+      "steps": [
+        "Identifikasi satu masalah nyata",
+        "Inventarisasi data yang ada",
+        "Rancang twin minimal",
+        "Uji & ukur manfaatnya",
+        "Bagikan & replikasi"
+      ]
+    },
+    {
+      "theme": "teal",
+      "label": "Bab 6 Â· Kolaborasi",
+      "chapter": "BAB 6 Â· MASA DEPAN & AKSI",
+      "heading": "Bergabung dengan Komunitas",
+      "body": "IDTC adalah rumah bagi siapa pun yang ingin belajar, berbagi, dan membangun ekosistem Digital Twin Indonesia. Kolaborasi lintas sektor adalah kunci percepatan adopsi yang merata.",
+      "image": "assets/img/profil-anggota.jpeg",
+      "imageCaption": "Komunitas IDTC: bergabunglah untuk belajar dan berkontribusi.",
+      "points": [
+        "Kelompok kerja (Pokja) aktif",
+        "Berbagi materi & praktik",
+        "Pilot project kolaboratif",
+        "Jaringan pemerintah-industri"
+      ]
+    },
+    {
+      "theme": "purple",
+      "label": "Studi Kasus",
+      "chapter": "STUDI KASUS",
+      "heading": "Pemeliharaan Mesin Prediktif",
+      "body": "Sebuah turbin dilengkapi sensor suhu, getaran, dan tekanan. Data operasi dikaitkan dengan model dan riwayat perawatan, lalu ditampilkan untuk membantu teknisi menilai kondisi. Analitik memberi peringatan dini, tetapi teknisi tetap memeriksa bukti dan menentukan tindakan.",
+      "points": [
+        "Objek: turbin beroperasi",
+        "Data: sensor & riwayat",
+        "Twin: model aset + kondisi",
+        "Keputusan: inspeksi berbasis risiko"
+      ],
+      "quote": "Digital Twin menghubungkan representasi digital dengan bukti dari sistem nyata agar keputusan lebih terinformasi."
+    },
+    {
+      "theme": "teal",
+      "label": "Studi Kasus",
+      "chapter": "STUDI KASUS",
+      "heading": "Kota Digital Satu Kawasan",
+      "body": "Latihan terpandu menggabungkan data kawasan, model aset, dashboard, dan skenario sederhana untuk memahami bagaimana satu kawasan dapat dikelola secara lebih pintar, terukur, dan kolaboratif.",
+      "image": "assets/img/dni/ITDC_03.jpeg",
+      "imageCaption": "Dokumentasi kawasan: fondasi membangun Digital Twin kawasan.",
+      "points": [
+        "Data kawasan terpadu",
+        "Model aset & jaringan",
+        "Dashboard pemantauan",
+        "Skenario simulasi"
+      ]
+    },
+    {
+      "theme": "orange",
+      "label": "Checklist",
+      "chapter": "RANGKUMAN",
+      "heading": "Checklist Penguasaan",
+      "body": "Gunakan daftar ini untuk menilai pemahaman Anda setelah membaca seluruh buku. Centang setiap poin yang sudah Anda kuasai dengan percaya diri.",
+      "checklist": [
+        "Menjelaskan definisi Digital Twin",
+        "Membedakan Model, Shadow, Twin",
+        "Menyebut komponen inti",
+        "Memahami jenis data & point cloud",
+        "Menjaga kualitas data",
+        "Memahami lapisan arsitektur",
+        "Menjelaskan peran AI",
+        "Merancang pilot yang terukur",
+        "Mengukur manfaat dengan KPI",
+        "Menjaga tata kelola & keamanan"
+      ]
+    },
+    {
+      "theme": "teal",
       "label": "Penutup",
-      "heading": "Terima kasih, Sampai jumpa!",
-      "body": "Semoga petualangan bersama Twini membantumu memahami Digital Twin. Ayo bergabung dengan Indonesia Digital Twin Community untuk belajar lebih dalam!",
+      "chapter": "TERIMA KASIH",
+      "heading": "Perjalanan Baru Dimulai",
+      "body": "Anda kini memahami fondasi, komponen, data, arsitektur, implementasi, dan masa depan Digital Twin. Saatnya bergabung dengan Indonesia Digital Twin Community untuk belajar lebih dalam dan membangun ekosistem Digital Twin Indonesia.",
+      "image": "assets/img/profil-anggota.jpeg",
+      "imageCaption": "Komunitas IDTC: membangun masa depan digital bersama.",
       "quote": "Satu data, satu masa depan. Mari membangun ekosistem Digital Twin Indonesia."
+    },
+    {
+      "theme": "purple",
+      "label": "Glosarium",
+      "chapter": "REFERENSI",
+      "heading": "Glosarium Istilah",
+      "body": "Istilah-istilah kunci yang sering muncul dalam dunia Digital Twin, dirangkum untuk memudahkan referensi Anda kapan pun diperlukan.",
+      "table": {
+        "kolom": [
+          "Istilah",
+          "Arti Singkat"
+        ],
+        "baris": [
+          [
+            "Digital Twin",
+            "Kembaran digital terhubung data"
+          ],
+          [
+            "Point Cloud",
+            "Kumpulan titik 3D hasil scan"
+          ],
+          [
+            "BIM",
+            "Model informasi bangunan"
+          ],
+          [
+            "GIS",
+            "Sistem informasi geografis"
+          ],
+          [
+            "IoT",
+            "Jaringan perangkat sensor"
+          ],
+          [
+            "LOD",
+            "Level of detail untuk streaming"
+          ],
+          [
+            "Interoperabilitas",
+            "Kemampuan sistem saling bekerja"
+          ],
+          [
+            "Tata kelola",
+            "Aturan akses & tanggung jawab"
+          ]
+        ]
+      }
+    },
+    {
+      "theme": "teal",
+      "label": "Referensi",
+      "chapter": "REFERENSI",
+      "heading": "Sumber & Komunitas",
+      "body": "Perdalam pengetahuan Anda melalui sumber resmi dan bergabung dengan komunitas yang aktif membangun ekosistem Digital Twin Indonesia yang terbuka dan terdokumentasi.",
+      "points": [
+        "Indonesia Digital Twin Community",
+        "Repositori GitHub: idtc-id",
+        "Standar DT-F-01 IDTC",
+        "Dokumentasi materi belajar"
+      ],
+      "note": "Selalu utamakan data sesuai izin dan praktik terbuka yang terdokumentasi dalam setiap kolaborasi."
     }
   ]
 }

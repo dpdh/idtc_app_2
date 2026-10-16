@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="styles.css?v=117" />
+<title>Uji Visual Ebook A5</title>
+</head>
+<body class="flipbook-open">
+<div class="flipbook-portal flipbook-portal--a5">
+  <div class="flipbook-overlay" data-flipbook-overlay role="dialog" aria-modal="true" aria-label="Uji Ebook">
+    <div class="flipbook-backdrop"></div>
+    <div class="flipbook-shell">
+      <header class="flipbook-toolbar">
+        <div class="flipbook-toolbar-title"><p class="flipbook-page-label">Twini Book · Flipbook</p><strong>Fundamental Digital Twin — Bab 1 Konsep Dasar</strong></div>
+        <div class="flipbook-toolbar-actions">
+          <button class="flipbook-tool-btn" type="button"><span>🔊</span></button>
+          <button class="flipbook-tool-btn" type="button"><span>−</span></button>
+          <span class="flipbook-zoom-level">100%</span>
+          <button class="flipbook-tool-btn" type="button"><span>＋</span></button>
+          <button class="flipbook-close" type="button">×</button>
+        </div>
+      </header>
+      <div class="flipbook-stage">
+        <button class="flipbook-nav flipbook-prev" type="button"><span>‹</span></button>
+        <div class="flipbook-book is-cover">
+          <div class="flipbook-spine"></div>
+          <div class="flipbook-page flipbook-page-left">
+            <div class="flipbook-ebook-page theme-teal">
+              <div class="flipbook-ebook-head"><span class="flipbook-ebook-label">Konsep Dasar</span><span class="flipbook-ebook-num">4/35</span></div>
+              <p class="flipbook-ebook-chapter">BAB 1 · KONSEP DASAR</p>
+              <h3 class="flipbook-ebook-heading flipbook-highlight">Apa itu Digital Twin?</h3>
+              <figure class="flipbook-ebook-image"><img src="assets/img/dni/twini-shop-onboarding.png" alt="Twini" /><figcaption>Twini, maskot IDTC, menuntun perjalanan belajarmu memahami konsep dasar.</figcaption></figure>
+              <p class="flipbook-ebook-body">Digital Twin adalah representasi digital dari objek, proses, atau sistem fisik yang memperbarui diri secara real-time berdasarkan data sensor, model, dan interaksi pengguna. Dalam konteks kota, digital twin memungkinkan pemerintah mensimulasikan kebijakan sebelum diterapkan di dunia nyata, memantau infrastruktur secara terpadu, serta berkolaborasi dengan akademisi dan industri melalui satu sumber data yang konsisten dan dapat dipercaya.</p>
+              <ul class="flipbook-ebook-points">
+                <li>Sinkronisasi dua arah antara objek fisik dan representasi digital.</li>
+                <li>Integrasi data IoT, BIM, GIS, dan model analitik dalam satu ruang kerja.</li>
+                <li>Simulasi skenario untuk perencanaan kota yang lebih tangguh.</li>
+                <li>Dukungan pengambilan keputusan berbasis data, bukan intuisi semata.</li>
+              </ul>
+              <aside class="flipbook-ebook-note"><strong>Catatan</strong><p>Digital twin bukan sekadar model 3D — ia hidup karena data yang terus mengalir dan diperbarui.</p></aside>
+            </div>
+          </div>
+          <div class="flipbook-page flipbook-page-right">
+            <div class="flipbook-ebook-page theme-purple">
+              <div class="flipbook-ebook-head"><span class="flipbook-ebook-label">Komponen</span><span class="flipbook-ebook-num">5/35</span></div>
+              <p class="flipbook-ebook-chapter">BAB 1 · KONSEP DASAR</p>
+              <h3 class="flipbook-ebook-heading flipbook-highlight">Tiga Pilar Digital Twin</h3>
+              <ol class="flipbook-ebook-steps">
+                <li><span>1</span>Permodelan — geometri dan perilaku objek fisik direpresentasikan secara digital.</li>
+                <li><span>2</span>Data — sensor dan sumber data terhubung, bersih, dan sinkron realtime.</li>
+                <li><span>3</span>Analitik — simulasi, prediksi, dan rekomendasi dijalankan di atas data.</li>
+              </ol>
+              <ol class="flipbook-ebook-flow">
+                <li>Kumpulkan data dari sensor dan sistem yang ada.</li>
+                <li>Sinkronkan ke platform digital twin secara berkala.</li>
+                <li>Jalankan simulasi dan bandingkan hasil dengan kondisi nyata.</li>
+              </ol>
+              <ul class="flipbook-ebook-checklist">
+                <li><span></span>Definisikan cakupan objek digital twin.</li>
+                <li><span></span>Siapkan sumber data dan jadwal pembaruan.</li>
+                <li><span></span>Validasi model dengan skenario nyata.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="flipbook-flipper"><div class="flipbook-flipper-face flipbook-flipper-front"></div><div class="flipbook-flipper-face flipbook-flipper-back"></div></div>
+        </div>
+        <button class="flipbook-nav flipbook-next" type="button"><span>›</span></button>
+      </div>
+      <footer class="flipbook-footer">
+        <span class="flipbook-progress">Halaman 4–5 dari 35</span>
+        <div class="flipbook-dots"><span class="flipbook-dot"></span><span class="flipbook-dot"></span><span class="flipbook-dot is-active"></span><span class="flipbook-dot"></span><span class="flipbook-dot"></span><span class="flipbook-dot"></span><span class="flipbook-dot"></span><span class="flipbook-dot"></span><span class="flipbook-dot"></span><span class="flipbook-dot"></span><span class="flipbook-dot"></span><span class="flipbook-dot"></span><span class="flipbook-dot"></span><span class="flipbook-dot"></span><span class="flipbook-dot"></span></div>
+      </footer>
+    </div>
+  </div>
+</div>
+<script>
+window.addEventListener('load', () => {
+  const book = document.querySelector('.flipbook-book');
+  const stage = document.querySelector('.flipbook-stage');
+  const page = document.querySelector('.flipbook-page-left');
+  const shell = document.querySelector('.flipbook-shell');
+  const cs = getComputedStyle(page);
+  const r = book.getBoundingClientRect();
+  const sr = stage.getBoundingClientRect();
+  const hr = shell.getBoundingClientRect();
+  const dbg = document.createElement('pre');
+  dbg.id = 'dbg';
+  dbg.textContent = JSON.stringify({
+    vw: innerWidth, vh: innerHeight,
+    cqSup: CSS.supports('container-type', 'size'),
+    shell: [hr.x, hr.width, hr.height],
+    stage: [sr.x, sr.y, sr.width, sr.height],
+    book: [Math.round(r.x), Math.round(r.y), Math.round(r.width), Math.round(r.height)],
+    bookRatio: (r.width / r.height).toFixed(3),
+    padL: cs.paddingLeft, padR: cs.paddingRight, padT: cs.paddingTop,
+    bookFont: getComputedStyle(book).fontSize,
+    pageScrollW: page.scrollWidth, pageClientW: page.clientWidth,
+    docScrollW: document.documentElement.scrollWidth
+  }, null, 1);
+  document.body.appendChild(dbg);
+});
+</script>
+</body>
+</html>

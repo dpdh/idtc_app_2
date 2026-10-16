@@ -1,12 +1,12 @@
-const CACHE_VERSION = 'v172';
+const CACHE_VERSION = 'v175';
 const SHELL_CACHE = `idtc-mobile-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `idtc-runtime-${CACHE_VERSION}`;
 const CORE = [
   './',
   './index.html',
-  './styles.css?v=114',
+  './styles.css?v=117',
   './twini-config.js?v=1',
-  './app.js?v=138',
+  './app.js?v=140',
   './learning-pdf.js?v=2',
   './learning-docx.js?v=1',
   './pilot-city-3d.js?v=8',
@@ -40,6 +40,7 @@ const CORE = [
   './data/twini-ai.json?v=3',
   './data/twini-ai-sensors.json?v=1',
   './data/twini-ai-bim.json?v=1',
+  './data/twini-ebook.json?v=1',
 ];
 const MAX_RUNTIME_ENTRIES = 60;
 

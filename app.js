@@ -1699,23 +1699,89 @@ function flipbookThemeClass(color) {
 function flipbookTwiniImage() {
   return 'assets/img/dni/twini-shop-icon.png';
 }
+let flipbookAudioCtx = null;
+let flipbookMuted = false;
+function flipbookPageSound() {
+  if (flipbookMuted) return;
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    flipbookAudioCtx = flipbookAudioCtx || new AudioCtx();
+    const ctx = flipbookAudioCtx;
+    if (ctx.state === 'suspended') ctx.resume();
+    const now = ctx.currentTime;
+    const duration = 0.3;
+    const sampleRate = ctx.sampleRate;
+    const length = Math.floor(sampleRate * duration);
+    const buffer = ctx.createBuffer(1, length, sampleRate);
+    const channel = buffer.getChannelData(0);
+    for (let i = 0; i < length; i += 1) {
+      const t = i / length;
+      const envelope = Math.pow(1 - t, 2.1) * (0.55 + 0.45 * Math.sin(t * Math.PI));
+      channel[i] = (Math.random() * 2 - 1) * envelope * 0.5;
+    }
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 1700;
+    filter.Q.value = 0.8;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.5, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    source.start(now);
+    source.stop(now + duration);
+  } catch (error) { /* audio tidak tersedia */ }
+}
+function flipbookPageCharBudget() {
+  return window.matchMedia('(orientation:portrait)').matches ? 1150 : 2000;
+}
+function flipbookBlockCharCount(block) {
+  const own = [
+    block.judul, block.kutipan, block.catatan,
+    ...(block.paragraf || []), ...(block.poin || []), ...(block.langkah || []), ...(block.alur || []),
+    ...((block.tabel && block.tabel.kolom) || []),
+    ...(((block.tabel && block.tabel.baris) || []).flat()),
+  ].filter(Boolean).join(' ');
+  return own.length + (block.subbagian || []).reduce((sum, child) => sum + flipbookBlockCharCount(child), 0);
+}
+function flipbookPaginateBlocks(blocks, budget) {
+  const pages = [];
+  let bucket = [];
+  let cost = 0;
+  const flush = () => { if (bucket.length) { pages.push(bucket); bucket = []; cost = 0; } };
+  (blocks || []).forEach(block => {
+    const size = flipbookBlockCharCount(block);
+    if (bucket.length && cost + size > budget) flush();
+    bucket.push(block);
+    cost += size;
+  });
+  flush();
+  return pages;
+}
 function flipbookPages(path, module) {
-  const theme = flipbookThemeClass(path.warna);
   const cover = `<div class="flipbook-cover-page theme-${path.warna === 'orange' ? 'orange' : path.warna === 'purple' ? 'purple' : 'teal'}"><div class="flipbook-cover-head"><span class="flipbook-cover-badge" aria-hidden="true">TW</span><img class="flipbook-cover-twini" src="${flipbookTwiniImage()}" alt="Maskot Twini" loading="lazy" decoding="async" /></div><p class="flipbook-cover-path">JALUR ${esc(path.kode)} · ${esc(path.nama)}</p><h3 class="flipbook-cover-title flipbook-highlight">${esc(module.judul)}</h3><p class="flipbook-cover-summary">${esc(module.ringkasan || 'Ringkasan materi ini belum tersedia.')}</p>${(module.fokus || []).length ? `<div class="flipbook-cover-chips">${module.fokus.map(item => `<span>${esc(item)}</span>`).join('')}</div>` : ''}<p class="flipbook-cover-meta">${esc(module.tingkat || 'Materi belajar')}${module.hasil ? ` · Hasil: ${esc(module.hasil)}` : ''}</p></div>`;
   const intro = `<div class="flipbook-intro-page"><p class="flipbook-page-label">Pengantar</p><h3 class="flipbook-intro-title flipbook-highlight">${esc(module.judul)}</h3>${module.hasil ? `<div class="flipbook-outcome"><strong>Hasil belajar</strong><p>${esc(module.hasil)}</p></div>` : ''}${(module.fokus || []).length ? `<div class="flipbook-focus"><strong>Fokus pembelajaran</strong><ul>${module.fokus.map(item => `<li>${esc(item)}</li>`).join('')}</ul></div>` : ''}<p class="flipbook-intro-hint">Gunakan panah atau ketuk area tepi buku untuk membalik halaman.</p></div>`;
-  const sections = (module.konten || []).map(section => flipbookBlockHtml(section)).join('');
-  const body = sections ? `<div class="flipbook-content-page"><p class="flipbook-page-label">Materi</p>${sections}</div>` : `<div class="flipbook-content-page"><p class="flipbook-page-label">Materi</p><p class="flipbook-empty-note">Uraian section terperinci untuk modul ini belum tersedia. Ringkasan, fokus, dan hasil belajar di atas adalah informasi yang tersedia saat ini.</p></div>`;
-  return [cover, intro, body];
+  const budget = flipbookPageCharBudget();
+  const groups = flipbookPaginateBlocks(module.konten || [], budget);
+  const bodyPages = groups.length
+    ? groups.map(group => `<div class="flipbook-content-page"><p class="flipbook-page-label">Materi</p>${group.map(item => flipbookBlockHtml(item)).join('')}</div>`)
+    : ['<div class="flipbook-content-page"><p class="flipbook-page-label">Materi</p><p class="flipbook-empty-note">Uraian section terperinci untuk modul ini belum tersedia. Ringkasan, fokus, dan hasil belajar di atas adalah informasi yang tersedia saat ini.</p></div>'];
+  return [cover, intro, ...bodyPages];
 }
 function flipbookOverlayMarkup(path, module) {
   return `<div class="flipbook-overlay" data-flipbook-overlay role="dialog" aria-modal="true" aria-label="Flipbook ${esc(module.judul)}"><div class="flipbook-backdrop" data-flipbook-close></div><div class="flipbook-shell"><header class="flipbook-toolbar"><div class="flipbook-toolbar-title"><p class="flipbook-page-label">Twini Book · Flipbook</p><strong>${esc(module.judul)}</strong></div><button class="flipbook-close" type="button" data-flipbook-close aria-label="Tutup flipbook">×</button></header><div class="flipbook-stage" data-flipbook-stage><button class="flipbook-nav flipbook-prev" type="button" data-flipbook-prev aria-label="Halaman sebelumnya"><span aria-hidden="true">‹</span></button><div class="flipbook-book" data-flipbook-book><div class="flipbook-spine" aria-hidden="true"></div><div class="flipbook-page flipbook-page-left" data-flipbook-left></div><div class="flipbook-page flipbook-page-right" data-flipbook-right></div><div class="flipbook-flipper" data-flipbook-flipper aria-hidden="true"><div class="flipbook-flipper-face flipbook-flipper-front" data-flipbook-flipper-front></div><div class="flipbook-flipper-face flipbook-flipper-back" data-flipbook-flipper-back></div></div></div><button class="flipbook-nav flipbook-next" type="button" data-flipbook-next aria-label="Halaman berikutnya"><span aria-hidden="true">›</span></button></div><footer class="flipbook-footer"><span class="flipbook-progress" data-flipbook-progress aria-live="polite">Halaman 1</span><div class="flipbook-dots" data-flipbook-dots></div></footer></div></div>`;
 }
-function openFlipbookPages(title, pages) {
+function openFlipbookPages(title, pages, options = {}) {
   closeFlipbook();
   if (!Array.isArray(pages) || !pages.length) return;
   const overlay = document.createElement('div');
-  overlay.className = 'flipbook-portal';
-  overlay.innerHTML = `<div class="flipbook-overlay" data-flipbook-overlay role="dialog" aria-modal="true" aria-label="Flipbook ${esc(title)}"><div class="flipbook-backdrop" data-flipbook-close></div><div class="flipbook-shell"><header class="flipbook-toolbar"><div class="flipbook-toolbar-title"><p class="flipbook-page-label">Twini Book · Flipbook</p><strong>${esc(title)}</strong></div><button class="flipbook-close" type="button" data-flipbook-close aria-label="Tutup flipbook">×</button></header><div class="flipbook-stage" data-flipbook-stage><button class="flipbook-nav flipbook-prev" type="button" data-flipbook-prev aria-label="Halaman sebelumnya"><span aria-hidden="true">‹</span></button><div class="flipbook-book" data-flipbook-book><div class="flipbook-spine" aria-hidden="true"></div><div class="flipbook-page flipbook-page-left" data-flipbook-left></div><div class="flipbook-page flipbook-page-right" data-flipbook-right></div><div class="flipbook-flipper" data-flipbook-flipper aria-hidden="true"><div class="flipbook-flipper-face flipbook-flipper-front" data-flipbook-flipper-front></div><div class="flipbook-flipper-face flipbook-flipper-back" data-flipbook-flipper-back></div></div></div><button class="flipbook-nav flipbook-next" type="button" data-flipbook-next aria-label="Halaman berikutnya"><span aria-hidden="true">›</span></button></div><footer class="flipbook-footer"><span class="flipbook-progress" data-flipbook-progress aria-live="polite">Halaman 1</span><div class="flipbook-dots" data-flipbook-dots></div></footer></div></div>`;
+  overlay.className = options.paper === 'plain' ? 'flipbook-portal' : 'flipbook-portal flipbook-portal--a5';
+  overlay.innerHTML = `<div class="flipbook-overlay" data-flipbook-overlay role="dialog" aria-modal="true" aria-label="Flipbook ${esc(title)}"><div class="flipbook-backdrop" data-flipbook-close></div><div class="flipbook-shell"><header class="flipbook-toolbar"><div class="flipbook-toolbar-title"><p class="flipbook-page-label">Twini Book · Flipbook</p><strong>${esc(title)}</strong></div><div class="flipbook-toolbar-actions"><button class="flipbook-tool-btn" type="button" data-flipbook-sound aria-label="Suara halaman" aria-pressed="true"><span aria-hidden="true">🔊</span></button><button class="flipbook-tool-btn" type="button" data-flipbook-zoom-out aria-label="Perkecil halaman"><span aria-hidden="true">−</span></button><span class="flipbook-zoom-level" data-flipbook-zoom-level>100%</span><button class="flipbook-tool-btn" type="button" data-flipbook-zoom-in aria-label="Perbesar halaman"><span aria-hidden="true">＋</span></button><button class="flipbook-close" type="button" data-flipbook-close aria-label="Tutup flipbook">×</button></div></header><div class="flipbook-stage" data-flipbook-stage><button class="flipbook-nav flipbook-prev" type="button" data-flipbook-prev aria-label="Halaman sebelumnya"><span aria-hidden="true">‹</span></button><div class="flipbook-book" data-flipbook-book><div class="flipbook-spine" aria-hidden="true"></div><div class="flipbook-page flipbook-page-left" data-flipbook-left></div><div class="flipbook-page flipbook-page-right" data-flipbook-right></div><div class="flipbook-flipper" data-flipbook-flipper aria-hidden="true"><div class="flipbook-flipper-face flipbook-flipper-front" data-flipbook-flipper-front></div><div class="flipbook-flipper-face flipbook-flipper-back" data-flipbook-flipper-back></div></div></div><button class="flipbook-nav flipbook-next" type="button" data-flipbook-next aria-label="Halaman berikutnya"><span aria-hidden="true">›</span></button></div><footer class="flipbook-footer"><span class="flipbook-progress" data-flipbook-progress aria-live="polite">Halaman 1</span><div class="flipbook-dots" data-flipbook-dots></div></footer></div></div>`;
   document.body.appendChild(overlay);
   document.body.classList.add('flipbook-open');
   let current = 0;
@@ -1731,30 +1797,45 @@ function openFlipbookPages(title, pages) {
   const flipperFront = overlay.querySelector('[data-flipbook-flipper-front]');
   const flipperBack = overlay.querySelector('[data-flipbook-flipper-back]');
   dots.innerHTML = pages.map((_, index) => `<span class="flipbook-dot${index === 0 ? ' is-active' : ''}" data-flipbook-dot="${index}"></span>`).join('');
-  const spreadIndex = page => Math.floor(page / 2);
+  const portraitQuery = window.matchMedia('(orientation:portrait)');
+  const isPortrait = () => portraitQuery.matches;
+  const stepSize = () => (isPortrait() ? 1 : 2);
+  const alignPage = page => (isPortrait() ? page : Math.floor(page / 2) * 2);
   const paint = () => {
-    const spread = spreadIndex(current);
-    const leftPage = spread * 2;
-    const rightPage = leftPage + 1;
-    left.innerHTML = pages[leftPage] || '';
-    right.innerHTML = pages[rightPage] || '';
-    left.classList.toggle('is-empty', !pages[leftPage]);
-    right.classList.toggle('is-empty', !pages[rightPage]);
-    book.classList.toggle('is-cover', leftPage === 0);
-    progress.textContent = `Halaman ${current + 1} dari ${pages.length}`;
-    dots.querySelectorAll('[data-flipbook-dot]').forEach((dot, index) => dot.classList.toggle('is-active', index === spread));
-    prevBtn.disabled = current === 0;
-    nextBtn.disabled = current >= pages.length - 1;
-    overlay.querySelectorAll('[data-flipbook-dot]').forEach(dot => dot.addEventListener('click', () => { if (!animating) { current = Number(dot.dataset.flipbookDot) * 2; paint(); } }));
+    if (animating) return;
+    const step = stepSize();
+    const base = alignPage(current);
+    left.innerHTML = pages[base] || '';
+    right.innerHTML = step === 2 ? (pages[base + 1] || '') : '';
+    left.classList.toggle('is-empty', !pages[base]);
+    right.classList.toggle('is-empty', step !== 2 || !pages[base + 1]);
+    book.classList.toggle('is-cover', base === 0);
+    progress.textContent = step === 2 && pages[base + 1]
+      ? `Halaman ${base + 1}–${base + 2} dari ${pages.length}`
+      : `Halaman ${base + 1} dari ${pages.length}`;
+    dots.querySelectorAll('[data-flipbook-dot]').forEach((dot, index) => dot.classList.toggle('is-active', index === base));
+    prevBtn.disabled = base <= 0;
+    nextBtn.disabled = base + step >= pages.length;
   };
   const flip = direction => {
     if (animating) return;
-    const target = current + direction;
-    if (target < 0 || target >= pages.length) return;
+    const step = stepSize();
+    const base = alignPage(current);
+    const target = alignPage(base + direction * step);
+    if (target < 0 || target >= pages.length || target === base) return;
     animating = true;
-    const forward = direction > 0;
-    flipperFront.innerHTML = forward ? pages[current] : pages[target];
-    flipperBack.innerHTML = forward ? pages[target] : pages[current];
+    const forward = target > base;
+    flipbookPageSound();
+    if (isPortrait() || portraitQuery.matches) {
+      left.classList.remove('is-turning-next', 'is-turning-prev');
+      void left.offsetWidth;
+      left.classList.add(forward ? 'is-turning-next' : 'is-turning-prev');
+      current = target;
+      setTimeout(() => { left.classList.remove('is-turning-next', 'is-turning-prev'); paint(); animating = false; }, 320);
+      return;
+    }
+    flipperFront.innerHTML = pages[base] || '';
+    flipperBack.innerHTML = pages[target] || '';
     flipper.classList.remove('is-forward', 'is-backward');
     void flipper.offsetWidth;
     flipper.classList.add('is-flipping', forward ? 'is-forward' : 'is-backward');
@@ -1762,16 +1843,100 @@ function openFlipbookPages(title, pages) {
     flipper.addEventListener('animationend', done, { once: true });
     setTimeout(() => { if (animating) done(); }, 700);
   };
+  const onOrientation = () => { current = alignPage(current); paint(); };
+  if (portraitQuery.addEventListener) portraitQuery.addEventListener('change', onOrientation);
+  else portraitQuery.addListener?.(onOrientation);
   prevBtn.addEventListener('click', () => flip(-1));
   nextBtn.addEventListener('click', () => flip(1));
+  const soundBtn = overlay.querySelector('[data-flipbook-sound]');
+  const syncSoundBtn = () => {
+    if (!soundBtn) return;
+    soundBtn.querySelector('span').textContent = flipbookMuted ? '🔇' : '🔊';
+    soundBtn.setAttribute('aria-pressed', String(!flipbookMuted));
+  };
+  syncSoundBtn();
+  soundBtn?.addEventListener('click', () => { flipbookMuted = !flipbookMuted; syncSoundBtn(); if (!flipbookMuted) flipbookPageSound(); });
+  let zoomLevel = 1;
+  const zoomMin = 1;
+  const zoomMax = 2.4;
+  const zoomStep = 0.2;
+  const zoomLabel = overlay.querySelector('[data-flipbook-zoom-level]');
+  const applyZoom = () => {
+    book.style.zoom = zoomLevel === 1 ? '' : String(zoomLevel);
+    overlay.classList.toggle('is-zoomed', zoomLevel > 1);
+    if (zoomLabel) zoomLabel.textContent = `${Math.round(zoomLevel * 100)}%`;
+    const zoomOut = overlay.querySelector('[data-flipbook-zoom-out]');
+    const zoomIn = overlay.querySelector('[data-flipbook-zoom-in]');
+    if (zoomOut) zoomOut.disabled = zoomLevel <= zoomMin;
+    if (zoomIn) zoomIn.disabled = zoomLevel >= zoomMax;
+  };
+  const setZoom = value => {
+    zoomLevel = Math.min(zoomMax, Math.max(zoomMin, Math.round(value * 100) / 100));
+    applyZoom();
+  };
+  overlay.querySelector('[data-flipbook-zoom-in]')?.addEventListener('click', () => setZoom(zoomLevel + zoomStep));
+  overlay.querySelector('[data-flipbook-zoom-out]')?.addEventListener('click', () => setZoom(zoomLevel - zoomStep));
+  book.addEventListener('dblclick', () => setZoom(zoomLevel > 1 ? 1 : 1.6));
+  let pinchStart = 0;
+  let pinchZoom = 1;
+  book.addEventListener('touchstart', event => {
+    if (event.touches.length === 2) {
+      pinchStart = Math.hypot(event.touches[0].clientX - event.touches[1].clientX, event.touches[0].clientY - event.touches[1].clientY);
+      pinchZoom = zoomLevel;
+    }
+  }, { passive: true });
+  book.addEventListener('touchmove', event => {
+    if (event.touches.length !== 2 || !pinchStart) return;
+    const distance = Math.hypot(event.touches[0].clientX - event.touches[1].clientX, event.touches[0].clientY - event.touches[1].clientY);
+    setZoom(pinchZoom * (distance / pinchStart));
+  }, { passive: true });
+  book.addEventListener('touchend', () => { pinchStart = 0; }, { passive: true });
+  applyZoom();
+  overlay.addEventListener('click', event => {
+    const item = event.target.closest('.flipbook-ebook-checklist li');
+    if (item) { event.preventDefault(); item.classList.toggle('is-checked'); }
+  });
   overlay.querySelectorAll('[data-flipbook-close]').forEach(btn => btn.addEventListener('click', closeFlipbook));
+  overlay.querySelectorAll('[data-flipbook-dot]').forEach(dot => dot.addEventListener('click', () => {
+    if (animating) return;
+    current = alignPage(Number(dot.dataset.flipbookDot) || 0);
+    paint();
+  }));
+  let swipeX = null;
+  let swipeY = null;
+  const stage = overlay.querySelector('[data-flipbook-stage]');
+  stage.addEventListener('touchstart', event => {
+    const touch = event.changedTouches[0];
+    swipeX = touch.clientX;
+    swipeY = touch.clientY;
+  }, { passive: true });
+  stage.addEventListener('touchend', event => {
+    if (swipeX === null) return;
+    const touch = event.changedTouches[0];
+    const dx = touch.clientX - swipeX;
+    const dy = touch.clientY - swipeY;
+    swipeX = null;
+    swipeY = null;
+    if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy)) flip(dx < 0 ? 1 : -1);
+  }, { passive: true });
+  stage.addEventListener('click', event => {
+    if (event.target.closest('.flipbook-nav, .flipbook-dots, a, button, input, label')) return;
+    const rect = stage.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    if (x > rect.width * 0.78) flip(1);
+    else if (x < rect.width * 0.22) flip(-1);
+  });
   const onKey = event => {
     if (event.key === 'Escape') closeFlipbook();
     else if (event.key === 'ArrowRight') flip(1);
     else if (event.key === 'ArrowLeft') flip(-1);
   };
   document.addEventListener('keydown', onKey);
-  overlay._flipbookCleanup = () => document.removeEventListener('keydown', onKey);
+  overlay._flipbookCleanup = () => {
+    document.removeEventListener('keydown', onKey);
+    if (portraitQuery.removeEventListener) portraitQuery.removeEventListener('change', onOrientation);
+    else portraitQuery.removeListener?.(onOrientation);
+  };
   paint();
   const firstOpen = overlay.querySelector('[data-flipbook-next]');
   firstOpen?.focus({ preventScroll: true });
@@ -1829,15 +1994,19 @@ function twiniEbookPageHtml(page, index, total) {
   const parts = [];
   parts.push(`<div class="flipbook-ebook-page theme-${theme}">`);
   parts.push(`<div class="flipbook-ebook-head"><span class="flipbook-ebook-label">${esc(page.label || `Halaman ${index + 1}`)}</span><span class="flipbook-ebook-num">${index + 1}/${total}</span></div>`);
+  if (page.chapter && !isCover) parts.push(`<p class="flipbook-ebook-chapter">${esc(page.chapter)}</p>`);
   if (isCover) parts.push(`<img class="flipbook-ebook-twini" src="${flipbookTwiniImage()}" alt="Maskot Twini" loading="lazy" decoding="async" />`);
   parts.push(`<h3 class="flipbook-ebook-heading flipbook-highlight">${esc(page.heading)}</h3>`);
+  if (page.image) parts.push(`<figure class="flipbook-ebook-image"><img src="${esc(page.image)}" alt="${esc(page.imageCaption || page.heading || '')}" loading="lazy" decoding="async" />${page.imageCaption ? `<figcaption>${esc(page.imageCaption)}</figcaption>` : ''}</figure>`);
   if (page.body) parts.push(`<p class="flipbook-ebook-body">${esc(page.body)}</p>`);
+  if (page.toc) parts.push(`<ul class="flipbook-ebook-toc">${page.toc.map((t, i) => `<li><span>${String(i + 1).padStart(2, '0')}</span>${esc(t)}</li>`).join('')}</ul>`);
   if (page.quote) parts.push(`<blockquote class="flipbook-ebook-quote">${esc(page.quote)}</blockquote>`);
   if (page.note) parts.push(`<aside class="flipbook-ebook-note"><strong>Catatan</strong><p>${esc(page.note)}</p></aside>`);
   if (page.points) parts.push(`<ul class="flipbook-ebook-points">${page.points.map(p => `<li>${esc(p)}</li>`).join('')}</ul>`);
   if (page.steps) parts.push(`<ol class="flipbook-ebook-steps">${page.steps.map((s, i) => `<li><span>${i + 1}</span>${esc(s)}</li>`).join('')}</ol>`);
   if (page.flow) parts.push(`<ol class="flipbook-ebook-flow">${page.flow.map(s => `<li>${esc(s)}</li>`).join('')}</ol>`);
   if (page.table) parts.push(`<div class="flipbook-table-wrap"><table><thead><tr>${page.table.kolom.map(c => `<th scope="col">${esc(c)}</th>`).join('')}</tr></thead><tbody>${page.table.baris.map(row => `<tr>${row.map(cell => `<td>${esc(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`);
+  if (page.checklist) parts.push(`<ul class="flipbook-ebook-checklist">${page.checklist.map(c => `<li><span aria-hidden="true"></span>${esc(c)}</li>`).join('')}</ul>`);
   parts.push(`<img class="flipbook-ebook-twini-floating" src="${flipbookTwiniImage()}" alt="" aria-hidden="true" loading="lazy" decoding="async" />`);
   parts.push(`</div>`);
   return parts.join('');
@@ -1846,7 +2015,7 @@ function openTwiniEbook() {
   ensureTwiniEbook().then(book => {
     if (!book || !Array.isArray(book.pages) || !book.pages.length) return;
     const total = book.pages.length;
-    openFlipbookPages(book.title || 'Twini Ebook', book.pages.map((page, index) => twiniEbookPageHtml(page, index, total)));
+    openFlipbookPages(book.title || 'Twini Ebook', book.pages.map((page, index) => twiniEbookPageHtml(page, index, total)), { paper: 'a5' });
   });
 }
 function closeFlipbook() {

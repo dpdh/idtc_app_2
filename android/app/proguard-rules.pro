@@ -12,10 +12,8 @@
 #   public *;
 #}
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
-
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Preserve line numbers and source file names for readable release
+# stack traces while keeping obfuscation active. The source file name
+# is replaced with "SourceFile" so real file paths stay hidden.
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
